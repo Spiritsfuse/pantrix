@@ -101,7 +101,7 @@
     "in": "docs/evidence/transcripts/terraform-plan-attempt.txt",
     "out": "docs/evidence/terraform-plan-blocked.png",
     "max": 40,
-    "footer": "Real output: terraform plan cannot run without valid AWS credentials on this computer - see docs/SUBMISSION-CHECKLIST.md (M7)"
+    "footer": "Real output: terraform plan cannot run without valid AWS credentials on this computer - see docs/DELIVERY-CHECKLIST.md (M7)"
   },
   {
     "in": "docs/evidence/transcripts/terraform-plan-emulator.txt",

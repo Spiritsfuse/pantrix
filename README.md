@@ -3,7 +3,7 @@
 **Donated stock and expiry tracking for community food banks, taken from a laptop to a monitored
 Kubernetes cluster.**
 
-DevSecOps capstone (Session 21) by **Dhruv Sharma** · GitHub [@Spiritsfuse](https://github.com/spiritsfuse)
+Built by **Dhruv Sharma** · GitHub [@Spiritsfuse](https://github.com/spiritsfuse)
 
 ![Pantrix walkthrough](demo/preview.gif)
 
@@ -11,7 +11,7 @@ DevSecOps capstone (Session 21) by **Dhruv Sharma** · GitHub [@Spiritsfuse](htt
 |---|---|
 | Video walkthrough | [`demo/presentation.mp4`](demo/presentation.mp4) (captions: [`demo/presentation.srt`](demo/presentation.srt)) |
 | Slides | [`demo/presentation.pptx`](demo/presentation.pptx) · [`demo/presentation.pdf`](demo/presentation.pdf) · [script](demo/DEMO-SCRIPT.md) |
-| Grading checklist | [`docs/SUBMISSION-CHECKLIST.md`](docs/SUBMISSION-CHECKLIST.md) |
+| Delivery checklist | [`docs/DELIVERY-CHECKLIST.md`](docs/DELIVERY-CHECKLIST.md) |
 | Evidence | [`docs/evidence/EVIDENCE-MANIFEST.md`](docs/evidence/EVIDENCE-MANIFEST.md) (real output only) |
 
 > **Verification status, in short:** the application, tests, Docker, Helm/Kubernetes with Ingress and
@@ -142,7 +142,7 @@ pantrix/
 ├── troubleshooting/         five break/diagnose/fix drills + README
 ├── scripts/                 k8s/, monitoring/, gitops/, troubleshooting/, terraform/, evidence/, video/, lib/
 ├── security/                Trivy policy, controls overview, SBOMs
-├── docs/                    adr/ (14 ADRs), runbooks/, engineering/, evidence/, presentation/, SUBMISSION-CHECKLIST.md
+├── docs/                    adr/ (14 ADRs), runbooks/, engineering/, evidence/, presentation/, DELIVERY-CHECKLIST.md
 └── demo/                    presentation.pptx/.pdf/.mp4, preview.gif, DEMO-SCRIPT.md
 ```
 
@@ -493,5 +493,5 @@ is left in AWS.
 
 ---
 
-Pantrix · built by Dhruv Sharma ([@Spiritsfuse](https://github.com/spiritsfuse)) for the Session 21
-DevOps Final Capstone.
+Pantrix · built by Dhruv Sharma ([@Spiritsfuse](https://github.com/spiritsfuse)), an end-to-end DevSecOps
+reference: application, pipeline, infrastructure, GitOps and observability in one repository.

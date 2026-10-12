@@ -2,7 +2,7 @@
 
 Presenter: Dhruv Sharma ([@Spiritsfuse](https://github.com/spiritsfuse)) · target length 13 to 15 minutes.
 
-The order follows `SUBMISSION.md`: slides first, then the live walkthrough. Each
+The order is: slides first, then the live walkthrough. Each
 segment lists the target duration, what is on screen and the narration. Commands are
 the real ones from this repository; run them in a terminal whose prompt shows
 `dhruv-sharma@pantrix`.
