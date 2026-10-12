@@ -1,0 +1,50 @@
+
+[0;33m# Drill 5 - bad release and rollback on the real Helm release (zero-downtime check)[0m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ helm history pantrix -n pantrix --max 3
+REVISION	UPDATED                 	STATUS    	CHART        	APP VERSION	DESCRIPTION                                                                                                               
+7       	Mon Oct 12 23:33:42 2026	failed    	pantrix-1.0.0	1.0.0      	Upgrade "pantrix" failed: resource Deployment/pantrix/pantrix-backend not ready. status: InProgress, message: Updated: ...
+8       	Mon Oct 12 23:34:47 2026	superseded	pantrix-1.0.0	1.0.0      	Rollback to 5                                                                                                             
+9       	Mon Oct 12 23:35:44 2026	deployed  	pantrix-1.0.0	1.0.0      	Upgrade complete                                                                                                          
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ helm upgrade pantrix helm/pantrix -n pantrix -f helm/pantrix/values-dev.yaml --reuse-values --set image.tag=0000000-does-not-exist --wait --timeout 60s 2>&1 | tail -3
+Error: UPGRADE FAILED: resource Deployment/pantrix/pantrix-backend not ready. status: InProgress, message: Updated: 1/2
+resource Deployment/pantrix/pantrix-frontend not ready. status: InProgress, message: Updated: 1/2
+context deadline exceeded
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get pods -n pantrix
+NAME                                READY   STATUS              RESTARTS   AGE
+pantrix-backend-5ccd6648b-6swlj     0/1     Init:ErrImagePull   0          60s
+pantrix-backend-6845997984-cw7cr    1/1     Running             0          68s
+pantrix-backend-6845997984-gzn7l    1/1     Running             0          74s
+pantrix-frontend-687df846cd-wjllg   0/1     ErrImagePull        0          60s
+pantrix-frontend-796bb88c6-26m5r    1/1     Running             0          73s
+pantrix-frontend-796bb88c6-pbxk8    1/1     Running             0          74s
+pantrix-postgres-0                  1/1     Running             0          13m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ for i in 1 2 3; do curl -s -o /dev/null -w 'GET /api/items/stats -> %{http_code}\n' http://pantrix.localtest.me/api/items/stats; sleep 1; done
+GET /api/items/stats -> 200
+GET /api/items/stats -> 200
+GET /api/items/stats -> 200
+
+[0;33m# Old pods keep serving (maxUnavailable: 0), new pods are ImagePullBackOff. Roll back to the last good revision.[0m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ helm rollback pantrix -n pantrix --wait --timeout 3m
+Rollback was a success! Happy Helming!
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ helm history pantrix -n pantrix --max 4
+REVISION	UPDATED                 	STATUS    	CHART        	APP VERSION	DESCRIPTION                                                                                                               
+8       	Mon Oct 12 23:34:47 2026	superseded	pantrix-1.0.0	1.0.0      	Rollback to 5                                                                                                             
+9       	Mon Oct 12 23:35:44 2026	superseded	pantrix-1.0.0	1.0.0      	Upgrade complete                                                                                                          
+10      	Mon Oct 12 23:35:57 2026	failed    	pantrix-1.0.0	1.0.0      	Upgrade "pantrix" failed: resource Deployment/pantrix/pantrix-backend not ready. status: InProgress, message: Updated: ...
+11      	Mon Oct 12 23:37:01 2026	deployed  	pantrix-1.0.0	1.0.0      	Rollback to 9                                                                                                             
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get pods -n pantrix
+NAME                                READY   STATUS        RESTARTS   AGE
+pantrix-backend-5ccd6648b-6swlj     0/1     Terminating   0          64s
+pantrix-backend-6845997984-cw7cr    1/1     Running       0          72s
+pantrix-backend-6845997984-gzn7l    1/1     Running       0          78s
+pantrix-frontend-687df846cd-wjllg   0/1     Terminating   0          64s
+pantrix-frontend-796bb88c6-26m5r    1/1     Running       0          77s
+pantrix-frontend-796bb88c6-pbxk8    1/1     Running       0          78s
+pantrix-postgres-0                  1/1     Running       0          13m

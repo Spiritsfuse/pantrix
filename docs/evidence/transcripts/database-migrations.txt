@@ -1,0 +1,44 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker compose exec backend alembic current
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+0001_initial_schema (head)
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker compose exec backend alembic history --verbose
+Rev: 0001_initial_schema (head)
+Parent: <base>
+Path: /app/alembic/versions/0001_initial_schema.py
+
+    initial schema: donors, stock_items, distributions
+    
+    Revision ID: 0001_initial_schema
+    Revises:
+    Create Date: 2026-10-12
+
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker compose exec postgres psql -U pantrix -d pantrix -c '\dt'
+             List of relations
+ Schema |      Name       | Type  |  Owner  
+--------+-----------------+-------+---------
+ public | alembic_version | table | pantrix
+ public | distributions   | table | pantrix
+ public | donors          | table | pantrix
+ public | stock_items     | table | pantrix
+(4 rows)
+
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker compose exec postgres psql -U pantrix -d pantrix -c 'SELECT id, name, category, quantity, unit, expiry_date, location FROM stock_items ORDER BY expiry_date NULLS LAST LIMIT 10;'
+ id |           name           | category | quantity |  unit  | expiry_date | location 
+----+--------------------------+----------+----------+--------+-------------+----------
+  8 | Paneer blocks            | dairy    |        8 | packs  | 2026-10-11  | COLD-3
+  5 | Spinach bunches          | produce  |       12 | units  | 2026-10-13  | COLD-1
+  9 | Multigrain bread loaves  | bakery   |       20 | units  | 2026-10-14  | B2-02
+  4 | Fresh tomatoes           | produce  |       18 | kg     | 2026-10-15  | COLD-1
+  7 | Toned milk 1L            | dairy    |       36 | litres | 2026-10-16  | COLD-3
+  6 | Bananas                  | produce  |       25 | kg     | 2026-10-17  | COLD-2
+ 14 | Infant formula stage 1   | baby     |        6 | boxes  | 2026-12-11  | D1-01
+  2 | Whole wheat atta         | grains   |       30 | kg     | 2026-12-26  | A1-05
+ 12 | Peanut butter jars       | protein  |       15 | units  | 2027-02-09  | C2-04
+  3 | Red lentils (masoor dal) | grains   |       55 | kg     | 2027-04-10  | A2-01
+(10 rows)
+

@@ -1,0 +1,34 @@
+
+[0;33m# Drill 4 - migration failure: the Alembic init container cannot resolve the database host[0m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ apply_with_image troubleshooting/04-migration-failure.yaml
+deployment.apps/lab-migrate created
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get pods -n pantrix-lab -l app=lab-migrate
+NAME                           READY   STATUS       RESTARTS      AGE
+lab-migrate-75ffc46bb5-pwn4j   0/1     Init:Error   2 (30s ago)   40s
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl logs -n pantrix-lab deploy/lab-migrate -c migrate --tail=40 | grep -m3 -iE 'OperationalError|could not translate|failed to resolve|Name or service not known'
+sqlalchemy.exc.OperationalError: (psycopg.OperationalError) failed to resolve host 'lab-postgresql': [Errno -5] No address associated with hostname
+
+[0;33m# Diagnosis: Init:Error - the init container cannot resolve lab-postgresql; the Service is lab-postgres. Fix: correct the URL.[0m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl set env deployment/lab-migrate -n pantrix-lab -c migrate --from=secret/lab-db --keys=DATABASE_URL
+deployment.apps/lab-migrate env updated
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl rollout status deployment/lab-migrate -n pantrix-lab --timeout=180s
+Waiting for deployment "lab-migrate" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "lab-migrate" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "lab-migrate" rollout to finish: 1 old replicas are pending termination...
+deployment "lab-migrate" successfully rolled out
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get pods -n pantrix-lab -l app=lab-migrate
+NAME                           READY   STATUS        RESTARTS      AGE
+lab-migrate-5c45bd6b5-lhrws    1/1     Running       0             4s
+lab-migrate-75ffc46bb5-pwn4j   0/1     Terminating   2 (34s ago)   44s
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl logs -n pantrix-lab deploy/lab-migrate -c migrate --tail=3
+Found 2 pods, using pod/lab-migrate-5c45bd6b5-lhrws
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial_schema, initial schema: donors, stock_items, distributions

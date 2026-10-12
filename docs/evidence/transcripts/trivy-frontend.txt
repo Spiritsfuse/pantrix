@@ -1,0 +1,31 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker build -q -t ghcr.io/spiritsfuse/pantrix-frontend:ae29a5948a680a76559bcf9a0875a3994914e965 frontend
+sha256:8f0095f4615976fbcd34b50123a9a2163408826be5268b16c97d1c1befce3e0b
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 ghcr.io/spiritsfuse/pantrix-frontend:ae29a5948a680a76559bcf9a0875a3994914e965
+2026-10-12T23:42:11+05:30	INFO	[vuln] Vulnerability scanning is enabled
+2026-10-12T23:42:11+05:30	INFO	[secret] Secret scanning is enabled
+2026-10-12T23:42:11+05:30	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+2026-10-12T23:42:11+05:30	INFO	[secret] Please see https://trivy.dev/docs/v0.75/guide/scanner/secret#recommendation for faster secret detection
+2026-10-12T23:42:12+05:30	INFO	Detected OS	family="alpine" version="3.23.4"
+2026-10-12T23:42:12+05:30	INFO	[alpine] Detecting vulnerabilities...	os_version="3.23" repository="3.23" pkg_num=70
+2026-10-12T23:42:12+05:30	INFO	Number of language-specific files	num=0
+
+Report Summary
+
+┌───────────────────────────────────────────────────────────────────────────────┬────────┬─────────────────┬─────────┐
+│                                    Target                                     │  Type  │ Vulnerabilities │ Secrets │
+├───────────────────────────────────────────────────────────────────────────────┼────────┼─────────────────┼─────────┤
+│ ghcr.io/spiritsfuse/pantrix-frontend:ae29a5948a680a76559bcf9a0875a3994914e965 │ alpine │        0        │    -    │
+│ (alpine 3.23.4)                                                               │        │                 │         │
+└───────────────────────────────────────────────────────────────────────────────┴────────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ echo "gate exit code: $?"
+gate exit code: 0
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ trivy image --quiet --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL ghcr.io/spiritsfuse/pantrix-frontend:ae29a5948a680a76559bcf9a0875a3994914e965 | grep -E 'Total|Legend' | head -4
+Legend:

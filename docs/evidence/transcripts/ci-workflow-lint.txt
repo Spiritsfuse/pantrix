@@ -1,0 +1,37 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ actionlint -version
+1.7.12
+installed by downloading from release page
+built with go1.26.1 compiler for windows/amd64
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ actionlint .github/workflows/ci-cd.yml .github/workflows/promote.yml
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ echo "actionlint exit code: $?"
+actionlint exit code: 0
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ grep -nE '^  [a-z-]+:$|needs:|trivy-action|exit-code|severity|ignore-unfixed|github.sha|GITHUB_SHA' .github/workflows/ci-cd.yml | head -40
+17:  push:
+38:  backend-test:
+74:  frontend-test:
+105:  secret-scan:
+118:          ./gitleaks git --redact --verbose --exit-code 1 .
+120:  iac-scan:
+142:        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+146:          severity: HIGH,CRITICAL
+147:          exit-code: "1"
+151:  build-scan-push:
+153:    needs: [backend-test, frontend-test, secret-scan, iac-scan]
+174:          echo "tag=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+184:            org.opencontainers.image.revision=${{ github.sha }}
+194:        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+199:          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+200:          exit-code: "0"
+202:        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+206:          severity: HIGH,CRITICAL
+207:          ignore-unfixed: true
+208:          exit-code: "1"
+212:        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+257:    needs: build-scan-push
+276:            docker pull "ghcr.io/${owner}/pantrix-${c}:${GITHUB_SHA}"
+277:            kind load docker-image --name pantrix-ci "ghcr.io/${owner}/pantrix-${c}:${GITHUB_SHA}"
+288:            --set image.tag=${GITHUB_SHA} \

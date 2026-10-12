@@ -1,0 +1,21 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ for i in 1 2 3; do curl -s -o /dev/null http://localhost:8000/api/items; curl -s -o /dev/null http://localhost:8000/api/items/stats; done; curl -s -o /dev/null http://localhost:8000/api/items/999
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s http://localhost:8000/metrics | grep -E '^# (HELP|TYPE) http_requests_total|^http_requests_total' | head -10
+# HELP http_requests_total Total number of requests by method, status and handler.
+# TYPE http_requests_total counter
+http_requests_total{handler="/api/donors",method="GET",status="200"} 1.0
+http_requests_total{handler="/api/items",method="GET",status="200"} 3.0
+http_requests_total{handler="/api/items/stats",method="GET",status="200"} 3.0
+http_requests_total{handler="/api/items/{item_id}",method="GET",status="404"} 1.0
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s http://localhost:8000/metrics | grep -E '^http_request_duration_seconds_(bucket\{handler="/api/items".*le="0\.(05|1|5)"|count|sum)' | head -6
+http_request_duration_seconds_count{handler="/api/donors",method="GET"} 1.0
+http_request_duration_seconds_sum{handler="/api/donors",method="GET"} 0.007482648999939556
+http_request_duration_seconds_bucket{handler="/api/items",le="0.1",method="GET"} 3.0
+http_request_duration_seconds_bucket{handler="/api/items",le="0.5",method="GET"} 3.0
+http_request_duration_seconds_count{handler="/api/items",method="GET"} 3.0
+http_request_duration_seconds_sum{handler="/api/items",method="GET"} 0.01836498499960726
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s http://localhost:8000/metrics | grep -E '^pantrix_[a-z_]+(total|\{)' | head -6
+pantrix_units_distributed_total 0.0

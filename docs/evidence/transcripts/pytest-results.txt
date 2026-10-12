@@ -1,0 +1,70 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/backend[0m$ source .venv/Scripts/activate
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/backend[0m$ pytest -v
+============================= test session starts =============================
+platform win32 -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0 -- C:\Codeing\pantrix\backend\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Codeing\pantrix\backend
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.15.1, platformdirs-4.13.0, cov-7.1.0
+collecting ... collected 31 items
+
+tests/test_donors_and_distributions.py::test_create_and_list_donors_with_item_counts PASSED [  3%]
+tests/test_donors_and_distributions.py::test_duplicate_donor_name_returns_409 PASSED [  6%]
+tests/test_donors_and_distributions.py::test_donor_rejects_invalid_email PASSED [  9%]
+tests/test_donors_and_distributions.py::test_update_and_delete_donor_keeps_items PASSED [ 12%]
+tests/test_donors_and_distributions.py::test_distribution_decrements_stock PASSED [ 16%]
+tests/test_donors_and_distributions.py::test_distribution_cannot_exceed_stock PASSED [ 19%]
+tests/test_donors_and_distributions.py::test_expired_stock_cannot_be_distributed PASSED [ 22%]
+tests/test_donors_and_distributions.py::test_distribution_for_missing_item_returns_404 PASSED [ 25%]
+tests/test_donors_and_distributions.py::test_distribution_validates_quantity PASSED [ 29%]
+tests/test_items.py::test_list_items_starts_empty PASSED                 [ 32%]
+tests/test_items.py::test_create_item_returns_201_and_computed_status PASSED [ 35%]
+tests/test_items.py::test_create_item_rejects_invalid_payload[bad_field0] PASSED [ 38%]
+tests/test_items.py::test_create_item_rejects_invalid_payload[bad_field1] PASSED [ 41%]
+tests/test_items.py::test_create_item_rejects_invalid_payload[bad_field2] PASSED [ 45%]
+tests/test_items.py::test_create_item_rejects_invalid_payload[bad_field3] PASSED [ 48%]
+tests/test_items.py::test_create_item_rejects_invalid_payload[bad_field4] PASSED [ 51%]
+tests/test_items.py::test_create_item_rejects_unknown_donor PASSED       [ 54%]
+tests/test_items.py::test_get_item_by_id PASSED                          [ 58%]
+tests/test_items.py::test_get_missing_item_returns_404 PASSED            [ 61%]
+tests/test_items.py::test_update_item_changes_only_sent_fields PASSED    [ 64%]
+tests/test_items.py::test_update_item_rejects_null_required_field PASSED [ 67%]
+tests/test_items.py::test_update_missing_item_returns_404 PASSED         [ 70%]
+tests/test_items.py::test_delete_item_then_it_is_gone PASSED             [ 74%]
+tests/test_items.py::test_list_orders_by_soonest_expiry_and_filters PASSED [ 77%]
+tests/test_items.py::test_stats_summarise_stock PASSED                   [ 80%]
+tests/test_seed.py::test_seed_populates_empty_database_once PASSED       [ 83%]
+tests/test_system.py::test_health_is_ok PASSED                           [ 87%]
+tests/test_system.py::test_ready_checks_database PASSED                  [ 90%]
+tests/test_system.py::test_ready_reports_unavailable_database PASSED     [ 93%]
+tests/test_system.py::test_metrics_exposes_prometheus_format PASSED      [ 96%]
+tests/test_system.py::test_root_describes_service PASSED                 [100%]
+
+============================= 31 passed in 0.45s ==============================
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/backend[0m$ pytest -q --cov=app --cov-report=term
+...............................                                          [100%]
+=============================== tests coverage ================================
+______________ coverage: platform win32, python 3.12.13-final-0 _______________
+
+Name                           Stmts   Miss  Cover
+--------------------------------------------------
+app\__init__.py                    0      0   100%
+app\config.py                     18      0   100%
+app\database.py                   14      0   100%
+app\main.py                       51      8    84%
+app\models.py                     39      0   100%
+app\observability.py              33      5    85%
+app\routers\__init__.py            0      0   100%
+app\routers\distributions.py      31      0   100%
+app\routers\donors.py             56      1    98%
+app\routers\items.py              79      4    95%
+app\schemas.py                    85      1    99%
+app\seed.py                       23      0   100%
+app\services.py                   19      0   100%
+--------------------------------------------------
+TOTAL                            448     19    96%
+31 passed in 0.74s

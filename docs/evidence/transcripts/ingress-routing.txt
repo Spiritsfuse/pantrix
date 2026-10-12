@@ -1,0 +1,42 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl describe ingress pantrix -n pantrix
+Name:             pantrix
+Labels:           app.kubernetes.io/instance=pantrix
+                  app.kubernetes.io/managed-by=Helm
+                  app.kubernetes.io/name=pantrix
+                  app.kubernetes.io/part-of=pantrix
+                  app.kubernetes.io/version=82d36e69f0ec
+                  helm.sh/chart=pantrix-1.0.0
+Namespace:        pantrix
+Address:          localhost
+Ingress Class:    nginx
+Default backend:  <default>
+Rules:
+  Host                  Path  Backends
+  ----                  ----  --------
+  pantrix.localtest.me  
+                        /api   pantrix-backend:http (10.244.0.91:8000,10.244.0.94:8000)
+                        /      pantrix-frontend:http (10.244.0.92:8080,10.244.0.93:8080)
+Annotations:            meta.helm.sh/release-name: pantrix
+                        meta.helm.sh/release-namespace: pantrix
+Events:
+  Type    Reason  Age                  From                      Message
+  ----    ------  ----                 ----                      -------
+  Normal  Sync    48m (x3 over 83m)    nginx-ingress-controller  Scheduled for sync
+  Normal  Sync    33m (x2 over 33m)    nginx-ingress-controller  Scheduled for sync
+  Normal  Sync    29m (x2 over 29m)    nginx-ingress-controller  Scheduled for sync
+  Normal  Sync    6m45s (x9 over 25m)  nginx-ingress-controller  Scheduled for sync
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s -o /dev/null -w 'GET  http://pantrix.localtest.me/            -> %{http_code} (frontend)\n' http://pantrix.localtest.me/
+GET  http://pantrix.localtest.me/            -> 200 (frontend)
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s -w '  <- GET http://pantrix.localtest.me/api/items/stats (backend)\n' http://pantrix.localtest.me/api/items/stats
+{"total_items":17,"total_units":483,"expiring_soon":5,"expired":1,"out_of_stock":1,"donors":5,"distributed_units_30d":47,"by_category":{"baby":6,"bakery":20,"canned":64,"dairy":44,"grains":137,"hygiene":120,"produce":55,"protein":37}}  <- GET http://pantrix.localtest.me/api/items/stats (backend)
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ bash scripts/k8s/smoke-test.sh http://pantrix.localtest.me
+GET  http://pantrix.localtest.me/
+GET  http://pantrix.localtest.me/api/items/stats
+{"total_items":17,"total_units":483,"expiring_soon":5,"expired":1,"out_of_stock":1,"donors":5,"distributed_units_30d":47,"by_category":{"baby":6,"bakery":20,"canned":64,"dairy":44,"grains":137,"hygiene":120,"produce":55,"protein":37}}
+POST http://pantrix.localtest.me/api/items
+DELETE http://pantrix.localtest.me/api/items/1093
+smoke test passed

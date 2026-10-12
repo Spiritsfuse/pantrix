@@ -1,0 +1,36 @@
+
+[0;33m# Drill 1 - broken image: a Deployment references a tag that was never published[0m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl apply -f troubleshooting/01-broken-image.yaml
+deployment.apps/shelf-ui created
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get pods -n pantrix-lab -l app=shelf-ui
+NAME                        READY   STATUS         RESTARTS   AGE
+shelf-ui-6d6554fd74-tcv69   0/1     ErrImagePull   0          20s
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl describe pod -n pantrix-lab -l app=shelf-ui | grep -A12 '^Events:'
+Events:
+  Type     Reason     Age   From               Message
+  ----     ------     ----  ----               -------
+  Normal   Scheduled  20s   default-scheduler  Successfully assigned pantrix-lab/shelf-ui-6d6554fd74-tcv69 to pantrix-control-plane
+  Normal   Pulling    19s   kubelet            Pulling image "ghcr.io/spiritsfuse/pantrix-frontend:v9.9.9-typo"
+  Warning  Failed     14s   kubelet            Failed to pull image "ghcr.io/spiritsfuse/pantrix-frontend:v9.9.9-typo": failed to pull and unpack image "ghcr.io/spiritsfuse/pantrix-frontend:v9.9.9-typo": failed to resolve reference "ghcr.io/spiritsfuse/pantrix-frontend:v9.9.9-typo": failed to authorize: failed to fetch anonymous token: unexpected status from GET request to https://ghcr.io/token?scope=repository%3Aspiritsfuse%2Fpantrix-frontend%3Apull&service=ghcr.io: 403 Forbidden
+  Warning  Failed     14s   kubelet            Error: ErrImagePull
+  Normal   BackOff    14s   kubelet            Back-off pulling image "ghcr.io/spiritsfuse/pantrix-frontend:v9.9.9-typo"
+  Warning  Failed     14s   kubelet            Error: ImagePullBackOff
+
+[0;33m# Diagnosis: ErrImagePull/ImagePullBackOff - v9.9.9-typo was never published (GHCR refuses unknown references). Fix: deploy the Git-SHA tag CI built.[0m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl set image deployment/shelf-ui -n pantrix-lab frontend=ghcr.io/spiritsfuse/pantrix-frontend:1bfb95a6ec5f39b57e346f86a648a259c0191ff0
+deployment.apps/shelf-ui image updated
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl rollout status deployment/shelf-ui -n pantrix-lab --timeout=120s
+Waiting for deployment "shelf-ui" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "shelf-ui" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "shelf-ui" rollout to finish: 1 old replicas are pending termination...
+deployment "shelf-ui" successfully rolled out
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get pods -n pantrix-lab -l app=shelf-ui
+NAME                        READY   STATUS        RESTARTS   AGE
+shelf-ui-6d6554fd74-tcv69   0/1     Terminating   0          22s
+shelf-ui-8ccdf89cf-mjfvl    1/1     Running       0          1s

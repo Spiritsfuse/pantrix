@@ -1,0 +1,72 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/frontend[0m$ npm run lint
+
+> pantrix-frontend@1.0.0 lint
+> eslint .
+
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/frontend[0m$ npm run format:check
+
+> pantrix-frontend@1.0.0 format:check
+> prettier --check "src/**/*.{js,jsx,css}"
+
+Checking formatting...
+All matched files use Prettier code style!
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/frontend[0m$ npm test
+
+> pantrix-frontend@1.0.0 test
+> vitest run
+
+
+ RUN  v5.0.4 C:/Codeing/pantrix/frontend
+
+
+ Test Files  2 passed (2)
+      Tests  10 passed (10)
+   Start at  23:40:19
+   Duration  16.62s (environment 74%, setup 19%, tests 4%, import 2%, transform 1%)
+
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/frontend[0m$ npm audit --omit=dev --audit-level=high
+found 0 vulnerabilities
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/frontend[0m$ npm run build
+
+> pantrix-frontend@1.0.0 build
+> vite build
+
+[36mvite v8.3.4 [32mbuilding client environment for production...[36m[39m
+transforming...
+✓ 1926 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                              0.64 kB │ gzip:  0.38 kB
+dist/assets/fraunces-vietnamese-600-normal-BjlAJixd.woff2    6.28 kB
+dist/assets/fraunces-vietnamese-700-normal-DH94m5DZ.woff2    6.34 kB
+dist/assets/dm-sans-latin-ext-400-normal-BtiwyxMk.woff2      7.36 kB
+dist/assets/dm-sans-latin-ext-500-normal-BJfUCQsA.woff2      7.43 kB
+dist/assets/dm-sans-latin-ext-700-normal-CJIcxD6K.woff2      7.45 kB
+dist/assets/fraunces-vietnamese-600-normal-DlAl5EAR.woff     7.93 kB
+dist/assets/fraunces-vietnamese-700-normal-DxawQjq2.woff     7.99 kB
+dist/assets/dm-sans-latin-ext-400-normal-BjWJ59Pq.woff       9.97 kB
+dist/assets/dm-sans-latin-ext-700-normal-BLI3TTWz.woff      10.01 kB
+dist/assets/dm-sans-latin-ext-500-normal-DR84L5F-.woff      10.06 kB
+dist/assets/dm-sans-latin-400-normal-CW0RaeGs.woff2         14.20 kB
+dist/assets/dm-sans-latin-500-normal-B9HHJjqV.woff2         14.30 kB
+dist/assets/dm-sans-latin-700-normal-DvUfVpUG.woff2         14.34 kB
+dist/assets/fraunces-latin-ext-600-normal-BtzmzP0X.woff2    17.33 kB
+dist/assets/fraunces-latin-ext-700-normal-CanUGppC.woff2    17.66 kB
+dist/assets/fraunces-latin-600-normal-BFCDtZfi.woff2        18.09 kB
+dist/assets/fraunces-latin-700-normal-CEOla-zY.woff2        18.21 kB
+dist/assets/dm-sans-latin-400-normal-BwCSEQnW.woff          18.35 kB
+dist/assets/dm-sans-latin-700-normal-CUSSCpQX.woff          18.50 kB
+dist/assets/dm-sans-latin-500-normal-Dr3UlScf.woff          18.52 kB
+dist/assets/fraunces-latin-ext-600-normal-B0Dy4lqi.woff     22.36 kB
+dist/assets/fraunces-latin-600-normal-DL5QCzvS.woff         22.51 kB
+dist/assets/fraunces-latin-700-normal-DTjk5d1Q.woff         22.51 kB
+dist/assets/fraunces-latin-ext-700-normal-DuBstVeD.woff     22.60 kB
+dist/assets/index-D653aDER.css                              16.61 kB │ gzip:  4.05 kB
+dist/assets/index-DHkskc9R.js                              255.54 kB │ gzip: 80.04 kB
+
+[32m✓ built in 727ms[39m

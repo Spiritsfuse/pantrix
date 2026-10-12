@@ -1,0 +1,215 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker compose down -v
+ Container pantrix-frontend-1 Stopping 
+ Container pantrix-frontend-1 Stopped 
+ Container pantrix-frontend-1 Removing 
+ Container pantrix-frontend-1 Removed 
+ Container pantrix-backend-1 Stopping 
+ Container pantrix-backend-1 Stopped 
+ Container pantrix-backend-1 Removing 
+ Container pantrix-backend-1 Removed 
+ Container pantrix-postgres-1 Stopping 
+ Container pantrix-postgres-1 Stopped 
+ Container pantrix-postgres-1 Removing 
+ Container pantrix-postgres-1 Removed 
+ Network pantrix_pantrix Removing 
+ Volume pantrix_pantrix-db Removing 
+ Volume pantrix_pantrix-db Removed 
+ Network pantrix_pantrix Removed 
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker compose up --build --wait
+ Image pantrix-backend:local Building 
+ Image pantrix-frontend:local Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 961B done
+#1 DONE 0.0s
+
+#2 [backend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 2.10kB done
+#2 DONE 0.0s
+
+#3 [frontend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 1.36kB done
+#3 DONE 0.0s
+
+#4 [frontend] resolve image config for docker-image://docker.io/docker/dockerfile:1
+#4 DONE 12.5s
+
+#5 [frontend] docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+#5 resolve docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e 0.0s done
+#5 CACHED
+
+#6 [frontend internal] load metadata for docker.io/library/node:22-alpine
+#6 ...
+
+#7 [frontend internal] load metadata for docker.io/nginxinc/nginx-unprivileged:1.29-alpine
+#7 DONE 2.0s
+
+#6 [frontend internal] load metadata for docker.io/library/node:22-alpine
+#6 DONE 2.1s
+
+#8 [backend internal] load metadata for docker.io/library/python:3.12-slim
+#8 ...
+
+#9 [frontend internal] load .dockerignore
+#9 transferring context: 103B done
+#9 DONE 0.0s
+
+#10 [frontend build 1/8] FROM docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+#10 resolve docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402 0.0s done
+#10 DONE 0.0s
+
+#11 [frontend runtime 1/4] FROM docker.io/nginxinc/nginx-unprivileged:1.29-alpine@sha256:0c79d56aee561a1d81c63f00eee5fb5fe29279560cdc55e91425133104c7fbe6
+#11 resolve docker.io/nginxinc/nginx-unprivileged:1.29-alpine@sha256:0c79d56aee561a1d81c63f00eee5fb5fe29279560cdc55e91425133104c7fbe6 0.0s done
+#11 DONE 0.0s
+
+#12 [frontend internal] load build context
+#12 transferring context: 1.16kB done
+#12 DONE 0.0s
+
+#13 [frontend build 4/8] RUN npm ci --no-audit --no-fund
+#13 CACHED
+
+#14 [frontend build 6/8] COPY public ./public
+#14 CACHED
+
+#15 [frontend runtime 3/4] COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+#15 CACHED
+
+#16 [frontend runtime 2/4] RUN apk upgrade --no-cache && rm -f /etc/nginx/conf.d/default.conf
+#16 CACHED
+
+#17 [frontend build 8/8] RUN npm run build
+#17 CACHED
+
+#18 [frontend build 2/8] WORKDIR /src
+#18 CACHED
+
+#19 [frontend build 3/8] COPY package.json package-lock.json ./
+#19 CACHED
+
+#20 [frontend build 5/8] COPY index.html vite.config.js ./
+#20 CACHED
+
+#21 [frontend build 7/8] COPY src ./src
+#21 CACHED
+
+#22 [frontend runtime 4/4] COPY --from=build /src/dist /usr/share/nginx/html
+#22 CACHED
+
+#23 [frontend] exporting to image
+#23 exporting layers done
+#23 exporting manifest sha256:8d490e7e597fa6a2e15e70fabecb76296deed9d0a6289a6f7a0874ecb361bc4a done
+#23 exporting config sha256:cae9dabcd3de0fa5c26efe79f7f203ab2164f353497ce8435e36137835f2b4fd done
+#23 exporting attestation manifest sha256:741ba786316355dbd423cbb0795bf6663adf77c8b6e0aa8342f968e5d5284d44 0.0s done
+#23 exporting manifest list sha256:d45089f8880c3e80f613108f2c991fb2cb2eaab24282b55746c0f5df2e93d048 done
+#23 naming to docker.io/library/pantrix-frontend:local done
+#23 unpacking to docker.io/library/pantrix-frontend:local 0.0s done
+#23 DONE 0.1s
+
+#8 [backend internal] load metadata for docker.io/library/python:3.12-slim
+#8 DONE 2.4s
+
+#24 [backend internal] load .dockerignore
+#24 transferring context: 149B done
+#24 DONE 0.0s
+
+#25 [backend internal] load build context
+#25 transferring context: 1.95kB done
+#25 DONE 0.0s
+
+#26 [backend build 1/4] FROM docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+#26 resolve docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1 0.0s done
+#26 DONE 0.0s
+
+#27 [frontend] resolving provenance for metadata file
+#27 DONE 0.0s
+
+#28 [backend build 2/4] RUN python -m venv /opt/venv
+#28 CACHED
+
+#29 [backend runtime 4/8] COPY --from=build /opt/venv /opt/venv
+#29 CACHED
+
+#30 [backend runtime 7/8] COPY --chown=root:root app ./app
+#30 CACHED
+
+#31 [backend build 3/4] COPY requirements.txt .
+#31 CACHED
+
+#32 [backend build 4/4] RUN pip install --upgrade pip  && pip install -r requirements.txt  && python -m pip uninstall -y pip
+#32 CACHED
+
+#33 [backend runtime 6/8] COPY --chown=root:root alembic ./alembic
+#33 CACHED
+
+#34 [backend runtime 2/8] RUN python -m pip uninstall -y pip setuptools wheel || true  && rm -rf /usr/local/lib/python3.12/ensurepip/_bundled /usr/local/bin/pip*  && groupadd --system --gid 10001 pantrix  && useradd --system --uid 10001 --gid pantrix --no-create-home --shell /usr/sbin/nologin pantrix
+#34 CACHED
+
+#35 [backend runtime 3/8] WORKDIR /app
+#35 CACHED
+
+#36 [backend runtime 5/8] COPY --chown=root:root alembic.ini ./
+#36 CACHED
+
+#37 [backend runtime 8/8] COPY --chown=root:root --chmod=0755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+#37 CACHED
+
+#38 [backend] exporting to image
+#38 exporting layers done
+#38 exporting manifest sha256:72f04732c98a4322109b75108d5354a3ec5183b75d643abf040455519413d9b3 done
+#38 exporting config sha256:36edb4d0ae86f3598b41ac85d0849ced8941ac5f9ad4819d7a3768a3a4e5d5ea done
+#38 exporting attestation manifest sha256:e46ca57b3451ff386a828fce05cccbafe241acd0c3ba4100118fba9ae913a90d 0.0s done
+#38 exporting manifest list sha256:b4325d2b72283daa4a722f19db2ade696f99ee968aa7ddc7675612b5044e5f3c done
+#38 naming to docker.io/library/pantrix-backend:local done
+#38 unpacking to docker.io/library/pantrix-backend:local done
+#38 DONE 0.1s
+
+#39 [backend] resolving provenance for metadata file
+#39 DONE 0.0s
+ Image pantrix-backend:local Built 
+ Image pantrix-frontend:local Built 
+ Network pantrix_pantrix Creating 
+ Network pantrix_pantrix Created 
+ Volume pantrix_pantrix-db Creating 
+ Volume pantrix_pantrix-db Created 
+ Container pantrix-postgres-1 Creating 
+ Container pantrix-postgres-1 Created 
+ Container pantrix-backend-1 Creating 
+ Container pantrix-backend-1 Created 
+ Container pantrix-frontend-1 Creating 
+ Container pantrix-frontend-1 Created 
+ Container pantrix-postgres-1 Starting 
+ Container pantrix-postgres-1 Started 
+ Container pantrix-postgres-1 Waiting 
+ Container pantrix-postgres-1 Healthy 
+ Container pantrix-backend-1 Starting 
+ Container pantrix-backend-1 Started 
+ Container pantrix-backend-1 Waiting 
+ Container pantrix-backend-1 Healthy 
+ Container pantrix-frontend-1 Starting 
+ Container pantrix-frontend-1 Started 
+ Container pantrix-frontend-1 Waiting 
+ Container pantrix-postgres-1 Waiting 
+ Container pantrix-backend-1 Waiting 
+ Container pantrix-backend-1 Healthy 
+ Container pantrix-postgres-1 Healthy 
+ Container pantrix-frontend-1 Healthy 
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker compose ps
+NAME                 IMAGE                    COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+pantrix-backend-1    pantrix-backend:local    "docker-entrypoint.s…"   backend    17 seconds ago   Up 11 seconds (healthy)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+pantrix-frontend-1   pantrix-frontend:local   "/docker-entrypoint.…"   frontend   17 seconds ago   Up 5 seconds (healthy)    0.0.0.0:3000->8080/tcp, [::]:3000->8080/tcp
+pantrix-postgres-1   postgres:17-alpine       "docker-entrypoint.s…"   postgres   17 seconds ago   Up 17 seconds (healthy)   5432/tcp
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker compose logs backend | head -12
+backend-1  | {"level":"INFO","logger":"pantrix.entrypoint","msg":"running alembic upgrade head"}
+backend-1  | INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+backend-1  | INFO  [alembic.runtime.migration] Will assume transactional DDL.
+backend-1  | INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial_schema, initial schema: donors, stock_items, distributions
+backend-1  | INFO:     Started server process [1]
+backend-1  | INFO:     Waiting for application startup.
+backend-1  | {"ts": "2026-10-12T18:11:11.937384+00:00", "level": "INFO", "logger": "pantrix", "msg": "startup", "environment": "compose"}
+backend-1  | {"ts": "2026-10-12T18:11:12.115228+00:00", "level": "INFO", "logger": "pantrix.seed", "msg": "seeded demo data", "donors": 5, "items": 16}
+backend-1  | INFO:     Application startup complete.
+backend-1  | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)

@@ -1,0 +1,33 @@
+
+[0;33m# Drill 2 - broken Service: selector matches no pods[0m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl apply -f troubleshooting/02-broken-service.yaml
+service/shelf-ui created
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get svc -n pantrix-lab shelf-ui
+NAME       TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+shelf-ui   ClusterIP   10.96.26.133   <none>        80/TCP    0s
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get endpointslices -n pantrix-lab -l kubernetes.io/service-name=shelf-ui
+NAME             ADDRESSTYPE   PORTS     ENDPOINTS   AGE
+shelf-ui-kjmg9   IPv4          <unset>   <unset>     0s
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl exec -n pantrix-lab deploy/shelf-ui -- wget -q -O- -T 3 http://shelf-ui/healthz 2>&1 || true
+wget: can't connect to remote host (10.96.26.133): Connection refused
+command terminated with exit code 1
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get pods -n pantrix-lab --show-labels -l app=shelf-ui
+NAME                       READY   STATUS    RESTARTS   AGE   LABELS
+shelf-ui-8ccdf89cf-mjfvl   1/1     Running   0          4s    app=shelf-ui,pod-template-hash=8ccdf89cf
+
+[0;33m# Diagnosis: no endpoints - the Service selects app=shelf-frontend but pods carry app=shelf-ui. Fix: correct the selector.[0m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl patch svc shelf-ui -n pantrix-lab --type=merge -p '{"spec":{"selector":{"app":"shelf-ui"}}}'
+service/shelf-ui patched
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get endpointslices -n pantrix-lab -l kubernetes.io/service-name=shelf-ui
+NAME             ADDRESSTYPE   PORTS   ENDPOINTS     AGE
+shelf-ui-kjmg9   IPv4          8080    10.244.0.80   2s
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl exec -n pantrix-lab deploy/shelf-ui -- wget -q -O- -T 3 http://shelf-ui/healthz
+ok

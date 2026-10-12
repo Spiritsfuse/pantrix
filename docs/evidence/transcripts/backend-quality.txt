@@ -1,0 +1,16 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/backend[0m$ source .venv/Scripts/activate
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/backend[0m$ ruff check .
+All checks passed!
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/backend[0m$ ruff format --check .
+21 files already formatted
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/backend[0m$ bandit -q -r app -ll
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/backend[0m$ echo "bandit exit code: $?"
+bandit exit code: 0
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/backend[0m$ pip-audit -r requirements.txt
+No known vulnerabilities found

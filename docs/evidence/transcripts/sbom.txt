@@ -1,0 +1,8 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ trivy image --quiet --format cyclonedx --output security/sbom/pantrix-backend.cdx.json ghcr.io/spiritsfuse/pantrix-backend:ae29a5948a680a76559bcf9a0875a3994914e965
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ trivy image --quiet --format cyclonedx --output security/sbom/pantrix-frontend.cdx.json ghcr.io/spiritsfuse/pantrix-frontend:ae29a5948a680a76559bcf9a0875a3994914e965
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ python -c "import json; [print(f, len(json.load(open(f))['components']), 'components') for f in ('security/sbom/pantrix-backend.cdx.json','security/sbom/pantrix-frontend.cdx.json')]"
+security/sbom/pantrix-backend.cdx.json 119 components
+security/sbom/pantrix-frontend.cdx.json 71 components

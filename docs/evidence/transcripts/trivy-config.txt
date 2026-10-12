@@ -1,0 +1,56 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ trivy config --quiet --severity HIGH,CRITICAL --skip-dirs terraform/.terraform --skip-dirs troubleshooting --exit-code 1 .
+
+Report Summary
+
+┌──────────────────────────────────────────────┬────────────┬───────────────────┐
+│                    Target                    │    Type    │ Misconfigurations │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ backend/Dockerfile                           │ dockerfile │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ frontend/Dockerfile                          │ dockerfile │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ gitops/application.yaml                      │ kubernetes │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ gitops/git-server/Dockerfile                 │ dockerfile │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ gitops/local-git-server.yaml                 │ kubernetes │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ gitops/namespace.yaml                        │ kubernetes │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ helm/pantrix/templates/backend.yaml          │    helm    │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ helm/pantrix/templates/configmap.yaml        │    helm    │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ helm/pantrix/templates/frontend.yaml         │    helm    │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ helm/pantrix/templates/hpa.yaml              │    helm    │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ helm/pantrix/templates/ingress.yaml          │    helm    │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ helm/pantrix/templates/policies.yaml         │    helm    │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ helm/pantrix/templates/postgres.yaml         │    helm    │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ helm/pantrix/templates/secret.yaml           │    helm    │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ k8s/namespace.yaml                           │ kubernetes │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ monitoring/pantrix-alerts.yaml               │ kubernetes │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ terraform                                    │ terraform  │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ terraform-aws-modules/eks/aws/main.tf        │ terraform  │         0         │
+├──────────────────────────────────────────────┼────────────┼───────────────────┤
+│ terraform-aws-modules/eks/aws/node_groups.tf │ terraform  │         0         │
+└──────────────────────────────────────────────┴────────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ echo "exit code: $?"
+exit code: 0
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ grep -v '^#' .trivyignore | grep .
+AWS-0104

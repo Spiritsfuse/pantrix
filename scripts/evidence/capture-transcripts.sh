@@ -140,7 +140,7 @@ t_trivy_frontend() {
 }
 
 t_trivy_config() {
-  run trivy config --severity HIGH,CRITICAL --skip-dirs terraform/.terraform --skip-dirs troubleshooting --exit-code 1 .
+  run trivy config --quiet --severity HIGH,CRITICAL --skip-dirs terraform/.terraform --skip-dirs troubleshooting --exit-code 1 .
   run 'echo "exit code: $?"'
   run "grep -v '^#' .trivyignore | grep ."
 }

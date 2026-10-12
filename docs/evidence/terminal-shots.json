@@ -1,0 +1,195 @@
+[
+  {
+    "in": "docs/evidence/transcripts/pytest-results.txt",
+    "out": "docs/evidence/pytest-results.png",
+    "until": "31 passed in",
+    "max": 52
+  },
+  {
+    "in": "docs/evidence/transcripts/pytest-results.txt",
+    "out": "docs/evidence/pytest-coverage.png",
+    "from": "pytest -q --cov",
+    "max": 30
+  },
+  {
+    "in": "docs/evidence/transcripts/backend-quality.txt",
+    "out": "docs/evidence/backend-quality-gates.png",
+    "max": 40
+  },
+  {
+    "in": "docs/evidence/transcripts/frontend-checks.txt",
+    "out": "docs/evidence/frontend-lint-test-build.png",
+    "max": 60
+  },
+  {
+    "in": "docs/evidence/transcripts/docker-compose-up.txt",
+    "out": "docs/evidence/docker-compose-up.png",
+    "from": "docker compose up --build --wait",
+    "until": "Container pantrix-frontend-1 Healthy",
+    "max": 60
+  },
+  {
+    "in": "docs/evidence/transcripts/docker-compose-up.txt",
+    "out": "docs/evidence/docker-compose-ps.png",
+    "from": "docker compose ps",
+    "max": 30
+  },
+  {
+    "in": "docs/evidence/transcripts/docker-nonroot-users.txt",
+    "out": "docs/evidence/docker-nonroot-users.png",
+    "max": 40
+  },
+  {
+    "in": "docs/evidence/transcripts/docker-persistence.txt",
+    "out": "docs/evidence/docker-persistence.png",
+    "max": 50
+  },
+  {
+    "in": "docs/evidence/transcripts/api-crud-curl.txt",
+    "out": "docs/evidence/api-crud-curl.png",
+    "max": 60
+  },
+  {
+    "in": "docs/evidence/transcripts/database-migrations.txt",
+    "out": "docs/evidence/database-migrations.png",
+    "max": 60
+  },
+  {
+    "in": "docs/evidence/transcripts/git-history.txt",
+    "out": "docs/evidence/git-local-history.png",
+    "max": 70
+  },
+  {
+    "in": "docs/evidence/transcripts/trivy-backend.txt",
+    "out": "docs/evidence/trivy-backend.png",
+    "max": 62
+  },
+  {
+    "in": "docs/evidence/transcripts/trivy-backend-before-fix.txt",
+    "out": "docs/evidence/trivy-backend-before-fix.png",
+    "from": "Python (python-pkg)",
+    "max": 40,
+    "title": "trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 ghcr.io/spiritsfuse/pantrix-backend:5196d75 (exit 1)",
+    "footer": "Saved Trivy report for image 5196d75, before the fix in commit 964bf54 - docs/evidence/transcripts/trivy-backend-before-fix.txt"
+  },
+  {
+    "in": "docs/evidence/transcripts/trivy-frontend.txt",
+    "out": "docs/evidence/trivy-frontend.png",
+    "max": 62
+  },
+  {
+    "in": "docs/evidence/transcripts/trivy-config.txt",
+    "out": "docs/evidence/trivy-config-iac.png",
+    "max": 62
+  },
+  {
+    "in": "docs/evidence/transcripts/gitleaks.txt",
+    "out": "docs/evidence/gitleaks-history-scan.png",
+    "max": 40
+  },
+  {
+    "in": "docs/evidence/transcripts/sbom.txt",
+    "out": "docs/evidence/sbom-generation.png",
+    "max": 20
+  },
+  {
+    "in": "docs/evidence/transcripts/terraform-init-validate.txt",
+    "out": "docs/evidence/terraform-init-validate.png",
+    "max": 62
+  },
+  {
+    "in": "docs/evidence/transcripts/terraform-plan-attempt.txt",
+    "out": "docs/evidence/terraform-plan-blocked.png",
+    "max": 40,
+    "footer": "Real output: terraform plan cannot run without valid AWS credentials on this computer - see docs/SUBMISSION-CHECKLIST.md (M7)"
+  },
+  {
+    "in": "docs/evidence/transcripts/kubernetes-resources.txt",
+    "out": "docs/evidence/kubernetes-pods.png",
+    "from": "kubectl get nodes",
+    "until": "pantrix-postgres-0",
+    "max": 40
+  },
+  {
+    "in": "docs/evidence/transcripts/kubernetes-resources.txt",
+    "out": "docs/evidence/kubernetes-services-ingress-hpa.png",
+    "from": "kubectl get svc -n pantrix",
+    "max": 50
+  },
+  {
+    "in": "docs/evidence/transcripts/helm-release.txt",
+    "out": "docs/evidence/helm-release.png",
+    "from": "helm list -n pantrix",
+    "max": 50
+  },
+  {
+    "in": "docs/evidence/transcripts/helm-release.txt",
+    "out": "docs/evidence/helm-lint-template.png",
+    "until": "kind: StatefulSet",
+    "max": 40
+  },
+  {
+    "in": "docs/evidence/transcripts/ingress-routing.txt",
+    "out": "docs/evidence/ingress-routing.png",
+    "from": "Rules:",
+    "max": 50
+  },
+  {
+    "in": "docs/evidence/transcripts/hpa-scaling.txt",
+    "out": "docs/evidence/hpa-scaling.png",
+    "until": "kubectl describe hpa",
+    "max": 40
+  },
+  {
+    "in": "docs/evidence/transcripts/hpa-scaling.txt",
+    "out": "docs/evidence/hpa-scaled-pods.png",
+    "from": "SuccessfulRescale             2m",
+    "max": 20
+  },
+  {
+    "in": "docs/evidence/transcripts/metrics-endpoint.txt",
+    "out": "docs/evidence/metrics-endpoint.png",
+    "max": 40
+  },
+  {
+    "in": "docs/evidence/transcripts/prometheus-scrape.txt",
+    "out": "docs/evidence/prometheus-servicemonitor.png",
+    "until": "python -m json.tool | head -40",
+    "max": 40
+  },
+  {
+    "in": "docs/evidence/transcripts/argocd-gitops.txt",
+    "out": "docs/evidence/argocd-gitops-cli.png",
+    "max": 50
+  },
+  {
+    "in": "docs/evidence/transcripts/ci-workflow-lint.txt",
+    "out": "docs/evidence/ci-workflow-validation.png",
+    "max": 55
+  },
+  {
+    "in": "docs/evidence/transcripts/troubleshooting-01-broken-image.txt",
+    "out": "docs/evidence/troubleshooting-01-broken-image.png",
+    "max": 48
+  },
+  {
+    "in": "docs/evidence/transcripts/troubleshooting-02-broken-service.txt",
+    "out": "docs/evidence/troubleshooting-02-broken-service.png",
+    "max": 48
+  },
+  {
+    "in": "docs/evidence/transcripts/troubleshooting-03-readiness.txt",
+    "out": "docs/evidence/troubleshooting-03-readiness.png",
+    "max": 55
+  },
+  {
+    "in": "docs/evidence/transcripts/troubleshooting-04-migration.txt",
+    "out": "docs/evidence/troubleshooting-04-migration.png",
+    "max": 50
+  },
+  {
+    "in": "docs/evidence/transcripts/troubleshooting-05-rollback.txt",
+    "out": "docs/evidence/troubleshooting-05-rollback.png",
+    "max": 55
+  }
+]

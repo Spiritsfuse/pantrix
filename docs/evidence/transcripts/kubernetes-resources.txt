@@ -1,0 +1,55 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl config current-context
+kind-pantrix
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get nodes -o wide
+NAME                    STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION                              CONTAINER-RUNTIME
+pantrix-control-plane   Ready    control-plane   85m   v1.37.0   172.25.0.2    <none>        Debian GNU/Linux 13 (trixie)   6.18.33.1-microsoft-standard-WSL2 (amd64)   containerd://2.3.4
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl apply -f k8s/namespace.yaml
+namespace/pantrix unchanged
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ helm list -n pantrix
+NAME   	NAMESPACE	REVISION	UPDATED                              	STATUS  	CHART        	APP VERSION
+pantrix	pantrix  	11      	2026-10-12 23:37:01.8119649 +0530 IST	deployed	pantrix-1.0.0	1.0.0      
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get pods -n pantrix -o wide
+NAME                               READY   STATUS    RESTARTS   AGE     IP            NODE                    NOMINATED NODE   READINESS GATES
+pantrix-backend-6845997984-cw7cr   1/1     Running   0          7m50s   10.244.0.94   pantrix-control-plane   <none>           <none>
+pantrix-backend-6845997984-gzn7l   1/1     Running   0          7m56s   10.244.0.91   pantrix-control-plane   <none>           <none>
+pantrix-frontend-796bb88c6-26m5r   1/1     Running   0          7m55s   10.244.0.93   pantrix-control-plane   <none>           <none>
+pantrix-frontend-796bb88c6-pbxk8   1/1     Running   0          7m56s   10.244.0.92   pantrix-control-plane   <none>           <none>
+pantrix-postgres-0                 1/1     Running   0          20m     10.244.0.56   pantrix-control-plane   <none>           <none>
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get svc -n pantrix
+NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+pantrix-backend    ClusterIP   10.96.238.101   <none>        8000/TCP   83m
+pantrix-frontend   ClusterIP   10.96.91.71     <none>        80/TCP     83m
+pantrix-postgres   ClusterIP   10.96.119.226   <none>        5432/TCP   83m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get ingress -n pantrix
+NAME      CLASS   HOSTS                  ADDRESS     PORTS   AGE
+pantrix   nginx   pantrix.localtest.me   localhost   80      83m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get hpa -n pantrix
+NAME               REFERENCE                     TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+pantrix-backend    Deployment/pantrix-backend    cpu: 2%/60%   2         6         2          83m
+pantrix-frontend   Deployment/pantrix-frontend   cpu: 4%/70%   2         4         2          83m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get deploy,statefulset,pvc,networkpolicy,pdb -n pantrix
+NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/pantrix-backend    2/2     2            2           83m
+deployment.apps/pantrix-frontend   2/2     2            2           83m
+
+NAME                                READY   AGE
+statefulset.apps/pantrix-postgres   1/1     83m
+
+NAME                                            STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+persistentvolumeclaim/data-pantrix-postgres-0   Bound    pvc-2c492622-65e0-4017-b2ea-e651b1455965   1Gi        RWO            standard       <unset>                 83m
+
+NAME                                               POD-SELECTOR                                                                                             AGE
+networkpolicy.networking.k8s.io/pantrix-postgres   app.kubernetes.io/component=postgres,app.kubernetes.io/instance=pantrix,app.kubernetes.io/name=pantrix   83m
+
+NAME                                          MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
+poddisruptionbudget.policy/pantrix-backend    1               N/A               1                     83m
+poddisruptionbudget.policy/pantrix-frontend   1               N/A               1                     83m

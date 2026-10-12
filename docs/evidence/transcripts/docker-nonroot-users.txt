@@ -1,0 +1,25 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker image inspect --format '{{.RepoTags}} User={{.Config.User}}' pantrix-backend:local pantrix-frontend:local
+[pantrix-backend:local] User=10001:10001
+[pantrix-frontend:local] User=101
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker compose exec backend id
+uid=10001(pantrix) gid=10001(pantrix) groups=10001(pantrix)
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker compose exec frontend id
+uid=101(nginx) gid=101(nginx) groups=101(nginx)
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker compose exec backend sh -c 'grep -E "^(Name|Uid|Gid):" /proc/1/status'
+Name:	uvicorn
+Uid:	10001	10001	10001	10001
+Gid:	10001	10001	10001	10001
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker compose exec frontend sh -c 'grep -E "^(Name|Uid|Gid):" /proc/1/status'
+Name:	nginx
+Uid:	101	101	101	101
+Gid:	101	101	101	101
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ docker image ls --format 'table {{.Repository}}:{{.Tag}}\t{{.Size}}' | grep -E 'REPOSITORY|pantrix-(backend|frontend):local'
+REPOSITORY:TAG                                                                            SIZE
+pantrix-frontend:local                                                                    114MB
+pantrix-backend:local                                                                     311MB

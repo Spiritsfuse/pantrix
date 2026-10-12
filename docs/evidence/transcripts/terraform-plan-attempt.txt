@@ -1,0 +1,20 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/terraform[0m$ aws sts get-caller-identity
+
+aws: [ERROR]: An error occurred (InvalidClientTokenId) when calling the GetCallerIdentity operation: The security token included in the request is invalid.
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/terraform[0m$ terraform plan -input=false
+
+Changes to Outputs:
+  [32m+[0m[0m region = "ap-south-1"
+
+You can apply this plan to save these new output values to the Terraform
+state, without changing any real infrastructure.
+[31m╷[0m[0m
+[31m│[0m [0m[1m[31mError: [0m[0m[1mRetrieving AWS account details: validating provider credentials: retrieving caller identity from STS: operation error STS: GetCallerIdentity, https response error StatusCode: 403, RequestID: 92ed6c23-5848-45db-b3eb-77db2bf17954, api error InvalidClientTokenId: The security token included in the request is invalid.[0m
+[31m│[0m [0m
+[31m│[0m [0m[0m  with provider["registry.terraform.io/hashicorp/aws"],
+[31m│[0m [0m  on versions.tf line 21, in provider "aws":
+[31m│[0m [0m  21: provider "aws" [4m{[0m[0m
+[31m│[0m [0m
+[31m╵[0m[0m

@@ -1,0 +1,31 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s http://localhost:8000/health
+{"status":"ok"}
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s http://localhost:8000/ready
+{"status":"ready","database":"ok"}
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s http://localhost:8000/api/items | head -c 420; echo
+[{"name":"Paneer blocks","category":"dairy","quantity":8,"unit":"packs","expiry_date":"2026-10-11","location":"COLD-3","notes":null,"donor_id":4,"id":8,"status":"expired","days_to_expiry":-1,"donor_name":"Northgate Wholesale Foods","created_at":"2026-10-12T18:11:12.084029Z","updated_at":"2026-10-12T18:11:12.084029Z"},{"name":"Spinach bunches","category":"produce","quantity":12,"unit":"units","expiry_date":"2026-10-13
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s -X POST http://localhost:8000/api/items -H 'Content-Type: application/json' -d '{"name":"Rajma (kidney beans)","category":"grains","quantity":25,"unit":"kg","expiry_date":"2027-03-01","location":"A2-04"}'; echo
+{"name":"Rajma (kidney beans)","category":"grains","quantity":25,"unit":"kg","expiry_date":"2027-03-01","location":"A2-04","notes":null,"donor_id":null,"id":17,"status":"ok","days_to_expiry":140,"donor_name":null,"created_at":"2026-10-12T18:11:19.414424Z","updated_at":"2026-10-12T18:11:19.414424Z"}
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s http://localhost:8000/api/items/17; echo
+{"name":"Rajma (kidney beans)","category":"grains","quantity":25,"unit":"kg","expiry_date":"2027-03-01","location":"A2-04","notes":null,"donor_id":null,"id":17,"status":"ok","days_to_expiry":140,"donor_name":null,"created_at":"2026-10-12T18:11:19.414424Z","updated_at":"2026-10-12T18:11:19.414424Z"}
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s -X PUT http://localhost:8000/api/items/17 -H 'Content-Type: application/json' -d '{"quantity":18,"location":"A2-05"}'; echo
+{"name":"Rajma (kidney beans)","category":"grains","quantity":18,"unit":"kg","expiry_date":"2027-03-01","location":"A2-05","notes":null,"donor_id":null,"id":17,"status":"ok","days_to_expiry":140,"donor_name":null,"created_at":"2026-10-12T18:11:19.414424Z","updated_at":"2026-10-12T18:11:19.588671Z"}
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s -X POST http://localhost:8000/api/distributions -H 'Content-Type: application/json' -d '{"item_id":17,"quantity":5,"recipient":"Evening Meal Program"}'; echo
+{"id":5,"item_id":17,"item_name":"Rajma (kidney beans)","quantity":5,"recipient":"Evening Meal Program","distributed_on":"2026-10-12","created_at":"2026-10-12T18:11:19.650053Z"}
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s -o /dev/null -w 'DELETE -> HTTP %{http_code}\n' -X DELETE http://localhost:8000/api/items/17
+DELETE -> HTTP 204
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s -w '  HTTP %{http_code}\n' http://localhost:8000/api/items/17
+{"detail":"Stock item 17 not found"}  HTTP 404
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s -w '  HTTP %{http_code}\n' -X POST http://localhost:8000/api/items -H 'Content-Type: application/json' -d '{"name":"x","category":"tools","quantity":-1}' | cut -c1-260
+{"detail":[{"type":"string_too_short","loc":["body","name"],"msg":"String should have at least 2 characters","input":"x","ctx":{"min_length":2}},{"type":"literal_error","loc":["body","category"],"msg":"Input should be 'produce', 'dairy', 'grains', 'canned', 'p
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ curl -s http://localhost:8000/api/items/stats; echo
+{"total_items":16,"total_units":473,"expiring_soon":5,"expired":1,"out_of_stock":1,"donors":5,"distributed_units_30d":42,"by_category":{"baby":6,"bakery":20,"canned":64,"dairy":44,"grains":127,"hygiene":120,"produce":55,"protein":37}}

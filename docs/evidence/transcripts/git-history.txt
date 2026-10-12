@@ -1,0 +1,45 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ git log --oneline
+ae29a59 Promote green main builds to the GitOps dev environment automatically
+82d36e6 Roll the drill back to the previous release, not the last superseded one
+ef04dee Promote 1bfb95a to the dev environment through GitOps
+1bfb95a Let the frontend start before the backend exists
+2d953c5 Add five troubleshooting drills with a scripted break-diagnose-fix runner
+60c78d7 Promote cdb406e to the dev environment through GitOps
+cdb406e Normalise line endings to LF and enforce it with .gitattributes
+b48cf60 Right-size the laptop demo: one replica per tier in GitOps dev, no Alertmanager
+571688a Describe the AWS VPC and EKS cluster in Terraform
+6020c58 Keep PostgreSQL running across application releases
+964bf54 Drop pip from the backend runtime image to clear Trivy HIGH findings
+a48d6c8 Make the GitOps rehearsal work end to end on kind
+59d6fdb Add an Argo CD Application so Git drives the dev environment
+adb735b Monitor Pantrix with Prometheus and Grafana
+5196d75 Package Pantrix as a Helm chart with Ingress, HPA and hardened pods
+c37d849 Add the GitHub Actions pipeline with test, security and publish gates
+7bd60b8 Containerise Pantrix and run the full stack with Docker Compose
+9d7d22d Build the Pantrix React frontend: shelf, donors and hand-out views
+e73ab8a Cover the API with pytest against a migrated SQLite test database
+a127116 Add Pantrix FastAPI backend with donors, stock items and distributions
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ git rev-list --count HEAD
+20
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ git branch --show-current
+main
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ git remote -v; echo "(remotes configured: $(git remote | wc -l))"
+(remotes configured: 0)
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ git status --short --branch
+## main
+?? docs/
+?? scripts/evidence/
+?? security/
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ git check-ignore -v .env NEXT_MACHINE_AGENT_PROMPT.md backend/.venv frontend/node_modules terraform/.terraform terraform/terraform.tfstate
+.gitignore:2:.env	.env
+.gitignore:14:NEXT_MACHINE_AGENT_PROMPT.md	NEXT_MACHINE_AGENT_PROMPT.md
+.gitignore:20:.venv/	backend/.venv
+.gitignore:32:node_modules/	frontend/node_modules
+.gitignore:39:.terraform/	terraform/.terraform
+.gitignore:40:*.tfstate	terraform/terraform.tfstate

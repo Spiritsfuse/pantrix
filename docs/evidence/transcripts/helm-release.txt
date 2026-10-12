@@ -1,0 +1,48 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ helm lint helm/pantrix -f helm/pantrix/values-dev.yaml --strict
+==> Linting helm/pantrix
+[INFO] Chart.yaml: icon is recommended
+
+1 chart(s) linted, 0 chart(s) failed
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ helm template pantrix helm/pantrix -f helm/pantrix/values-dev.yaml -n pantrix | grep -E '^kind:' | sort | uniq -c
+      1 kind: ConfigMap
+      2 kind: Deployment
+      2 kind: HorizontalPodAutoscaler
+      1 kind: Ingress
+      1 kind: NetworkPolicy
+      1 kind: Pod
+      2 kind: PodDisruptionBudget
+      1 kind: Secret
+      3 kind: Service
+      1 kind: ServiceMonitor
+      1 kind: StatefulSet
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ helm list -n pantrix
+NAME   	NAMESPACE	REVISION	UPDATED                              	STATUS  	CHART        	APP VERSION
+pantrix	pantrix  	11      	2026-10-12 23:37:01.8119649 +0530 IST	deployed	pantrix-1.0.0	1.0.0      
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ helm history pantrix -n pantrix --max 6
+REVISION	UPDATED                 	STATUS    	CHART        	APP VERSION	DESCRIPTION                                                                                                               
+6       	Mon Oct 12 23:30:11 2026	superseded	pantrix-1.0.0	1.0.0      	Upgrade complete                                                                                                          
+7       	Mon Oct 12 23:33:42 2026	failed    	pantrix-1.0.0	1.0.0      	Upgrade "pantrix" failed: resource Deployment/pantrix/pantrix-backend not ready. status: InProgress, message: Updated: ...
+8       	Mon Oct 12 23:34:47 2026	superseded	pantrix-1.0.0	1.0.0      	Rollback to 5                                                                                                             
+9       	Mon Oct 12 23:35:44 2026	superseded	pantrix-1.0.0	1.0.0      	Upgrade complete                                                                                                          
+10      	Mon Oct 12 23:35:57 2026	failed    	pantrix-1.0.0	1.0.0      	Upgrade "pantrix" failed: resource Deployment/pantrix/pantrix-backend not ready. status: InProgress, message: Updated: ...
+11      	Mon Oct 12 23:37:01 2026	deployed  	pantrix-1.0.0	1.0.0      	Rollback to 9                                                                                                             
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ helm test pantrix -n pantrix --logs
+NAME: pantrix
+LAST DEPLOYED: Mon Oct 12 23:37:01 2026
+NAMESPACE: pantrix
+STATUS: deployed
+REVISION: 11
+DESCRIPTION: Rollback to 9
+TEST SUITE:     pantrix-test-api
+Last Started:   Mon Oct 12 23:43:41 2026
+Last Completed: Mon Oct 12 23:43:47 2026
+Phase:          Succeeded
+
+POD LOGS: pantrix-test-api (api-check)
+items: 17
+

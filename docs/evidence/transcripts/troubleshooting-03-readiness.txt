@@ -1,0 +1,49 @@
+
+[0;33m# Drill 3 - readiness failure: the API is alive but its database credentials are wrong[0m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ apply_with_image troubleshooting/03-readiness-failure.yaml
+secret/lab-db-wrong created
+deployment.apps/lab-api created
+service/lab-api created
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get pods -n pantrix-lab -l app=lab-api
+NAME                       READY   STATUS    RESTARTS   AGE
+lab-api-769987946c-xfh4w   0/1     Running   0          26s
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get endpointslices -n pantrix-lab -l kubernetes.io/service-name=lab-api
+NAME            ADDRESSTYPE   PORTS   ENDPOINTS     AGE
+lab-api-2fdfm   IPv4          8000    10.244.0.81   26s
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl exec -n pantrix-lab deploy/lab-api -- python -c "import urllib.request as u
+for p in ('/health','/ready'):
+    try: r=u.urlopen('http://127.0.0.1:8000'+p); print(p, r.status, r.read().decode())
+    except Exception as e: print(p, e.code, e.read().decode())"
+/health 200 {"status":"ok"}
+/ready 503 {"status":"not ready","database":"unreachable"}
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl logs -n pantrix-lab deploy/lab-api --tail=40 | grep -m2 -i 'password authentication failed\|database error' || kubectl logs -n pantrix-lab deploy/lab-api --tail=5
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+{"ts": "2026-10-12T18:02:30.904918+00:00", "level": "INFO", "logger": "pantrix", "msg": "startup", "environment": "local"}
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+
+[0;33m# Diagnosis: liveness passes (process up) but readiness fails (DB auth) so the pod gets no traffic. Fix: use the correct Secret.[0m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl set env deployment/lab-api -n pantrix-lab --from=secret/lab-db --keys=DATABASE_URL
+deployment.apps/lab-api env updated
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl rollout status deployment/lab-api -n pantrix-lab --timeout=120s
+Waiting for deployment "lab-api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "lab-api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "lab-api" rollout to finish: 1 old replicas are pending termination...
+deployment "lab-api" successfully rolled out
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get pods -n pantrix-lab -l app=lab-api
+NAME                       READY   STATUS        RESTARTS   AGE
+lab-api-68644b4dff-bhklp   1/1     Running       0          7s
+lab-api-769987946c-xfh4w   0/1     Terminating   0          34s
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get endpointslices -n pantrix-lab -l kubernetes.io/service-name=lab-api
+NAME            ADDRESSTYPE   PORTS   ENDPOINTS                 AGE
+lab-api-2fdfm   IPv4          8000    10.244.0.81,10.244.0.82   34s

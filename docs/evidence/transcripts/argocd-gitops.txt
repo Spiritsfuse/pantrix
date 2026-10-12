@@ -1,0 +1,36 @@
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get applications.argoproj.io -n argocd
+NAME          SYNC STATUS   HEALTH STATUS
+pantrix-dev   Synced        Healthy
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get applications.argoproj.io pantrix-dev -n argocd -o jsonpath='{"repo: "}{.spec.source.repoURL}{"\npath: "}{.spec.source.path}{"\nrevision: "}{.status.sync.revision}{"\nsync: "}{.status.sync.status}{"\nhealth: "}{.status.health.status}{"\n"}'
+repo: git://git-server.gitops.svc.cluster.local/pantrix.git
+path: helm/pantrix
+revision: ef04deee801cd42d688f5019a867ec14f952836e
+sync: Synced
+health: Healthy
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ git log --oneline -- gitops/environments/dev/values.yaml
+ef04dee Promote 1bfb95a to the dev environment through GitOps
+60c78d7 Promote cdb406e to the dev environment through GitOps
+cdb406e Normalise line endings to LF and enforce it with .gitattributes
+b48cf60 Right-size the laptop demo: one replica per tier in GitOps dev, no Alertmanager
+59d6fdb Add an Argo CD Application so Git drives the dev environment
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ grep -E 'registry|tag' gitops/environments/dev/values.yaml
+# Promotion = changing image.tag to a Git SHA that CI built, scanned and pushed
+  registry: ghcr.io/spiritsfuse
+  tag: "1bfb95a6ec5f39b57e346f86a648a259c0191ff0"
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get pods -n pantrix-gitops
+NAME                                READY   STATUS    RESTARTS   AGE
+pantrix-backend-588f67cfcf-c6r7q    1/1     Running   0          12m
+pantrix-frontend-7f89748fd5-xtm7n   1/1     Running   0          12m
+pantrix-postgres-0                  1/1     Running   0          16m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ kubectl get deploy -n pantrix-gitops -o custom-columns=NAME:.metadata.name,IMAGE:.spec.template.spec.containers[0].image
+NAME               IMAGE
+pantrix-backend    ghcr.io/spiritsfuse/pantrix-backend:1bfb95a6ec5f39b57e346f86a648a259c0191ff0
+pantrix-frontend   ghcr.io/spiritsfuse/pantrix-frontend:1bfb95a6ec5f39b57e346f86a648a259c0191ff0
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ git remote -v
