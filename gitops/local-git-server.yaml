@@ -1,0 +1,75 @@
+# A throw-away in-cluster Git server for rehearsing GitOps before the project has
+# a GitHub remote. scripts/gitops/bootstrap-gitops.sh pushes the local main branch
+# here (by URL — no remote is added to the repository). Once the GitHub repository
+# exists, application.yaml's repoURL is switched to it and this server is deleted.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gitops
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: git-server
+  namespace: gitops
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: git-server }
+  template:
+    metadata:
+      labels: { app: git-server }
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: git-daemon
+          image: alpine/git:v2.54.0
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              [ -d /srv/git/pantrix.git ] || git init --bare --initial-branch=main /srv/git/pantrix.git
+              git -C /srv/git/pantrix.git config http.receivepack true
+              exec git daemon --reuseaddr --base-path=/srv/git --export-all \
+                --enable=receive-pack --informative-errors --verbose --listen=0.0.0.0 /srv/git
+          env:
+            - name: HOME
+              value: /tmp
+          ports:
+            - { name: git, containerPort: 9418 }
+          readinessProbe:
+            tcpSocket: { port: git }
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits: { cpu: 200m, memory: 128Mi }
+          volumeMounts:
+            - { name: repos, mountPath: /srv/git }
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - name: repos
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: git-server
+  namespace: gitops
+spec:
+  selector: { app: git-server }
+  ports:
+    - { name: git, port: 9418, targetPort: git }

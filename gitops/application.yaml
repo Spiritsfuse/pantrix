@@ -1,0 +1,35 @@
+# Argo CD Application: keep namespace "pantrix-gitops" in sync with Git.
+# repoURL points at the in-cluster rehearsal server until the GitHub repository
+# exists; then switch it to https://github.com/<owner>/<repo>.git (see
+# docs/engineering/gitops.md) and delete gitops/local-git-server.yaml.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pantrix-dev
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: git://git-server.gitops.svc.cluster.local/pantrix.git
+    targetRevision: main
+    path: helm/pantrix
+    helm:
+      releaseName: pantrix
+      valueFiles:
+        - values-dev.yaml
+        - ../../gitops/environments/dev/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pantrix-gitops
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff: { duration: 10s, factor: 2, maxDuration: 3m }

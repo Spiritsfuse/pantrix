@@ -1,0 +1,16 @@
+# Desired state for the "dev" environment, reconciled by Argo CD.
+# Promotion = changing image.tag to a Git SHA that CI built, scanned and pushed
+# (done by .github/workflows/promote.yml or by hand). Never "latest".
+image:
+  registry: ghcr.io/spiritsfuse
+  tag: "5196d75da5e28222f489dd303a01898f498d6b5b"
+postgres:
+  # Argo CD renders charts without cluster access, so the chart cannot look up a
+  # generated password; bootstrap-gitops.sh creates this Secret once instead.
+  existingSecret: pantrix-db
+ingress:
+  host: pantrix-gitops.localtest.me
+serviceMonitor:
+  # The Helm-installed release in namespace "pantrix" is the one scraped for the
+  # demo dashboard; keep this copy out of the same Prometheus job.
+  enabled: false

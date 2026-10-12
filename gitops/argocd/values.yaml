@@ -1,0 +1,59 @@
+# Argo CD (argo/argo-cd chart 10.10.3) trimmed for the local demo cluster.
+#   helm upgrade --install argocd argo/argo-cd -n argocd --create-namespace \
+#     --version 10.10.3 -f gitops/argocd/values.yaml
+global:
+  domain: argocd.localtest.me
+
+configs:
+  params:
+    # TLS terminates at (or is skipped on) the local Ingress.
+    server.insecure: true
+  cm:
+    timeout.reconciliation: 60s
+    # Report an HPA whose metrics are still warming up as Progressing, not Degraded.
+    resource.customizations.health.autoscaling_HorizontalPodAutoscaler: |
+      hs = {}
+      hs.status = "Healthy"
+      hs.message = "HPA is active"
+      if obj.status ~= nil and obj.status.conditions ~= nil then
+        for _, c in ipairs(obj.status.conditions) do
+          if c.type == "ScalingActive" and c.status == "False" then
+            hs.status = "Progressing"
+            hs.message = c.message
+          end
+        end
+      end
+      return hs
+
+server:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+  resources:
+    requests: { cpu: 25m, memory: 64Mi }
+    limits: { memory: 256Mi }
+
+repoServer:
+  resources:
+    requests: { cpu: 25m, memory: 96Mi }
+    limits: { memory: 384Mi }
+
+controller:
+  resources:
+    requests: { cpu: 100m, memory: 192Mi }
+    limits: { memory: 768Mi }
+
+redis:
+  resources:
+    requests: { cpu: 10m, memory: 32Mi }
+    limits: { memory: 128Mi }
+
+dex:
+  enabled: false
+notifications:
+  enabled: false
+applicationSet:
+  replicas: 1
+  resources:
+    requests: { cpu: 10m, memory: 32Mi }
+    limits: { memory: 128Mi }
