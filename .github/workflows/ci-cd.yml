@@ -1,0 +1,298 @@
+# Pantrix CI/CD
+#
+#   quality gates (parallel)            build, scan, publish            deploy rehearsal
+#   ─────────────────────────           ──────────────────────          ────────────────
+#   backend-test  ─┐
+#   frontend-test ─┼──► build-scan-push (backend, frontend) ──► k8s-smoke (kind + Helm + Ingress)
+#   secret-scan   ─┤        build → Trivy (fail on HIGH/CRITICAL)
+#   iac-scan      ─┘        → SBOM → push ghcr.io/<owner>/pantrix-*:<git sha> → provenance
+#
+# Images are only pushed for pushes to main, and only after every gate passed.
+# Deployment to the long-lived cluster is reconciled by Argo CD from gitops/ (see
+# docs/engineering/gitops.md); promote.yml bumps the tag there.
+
+name: ci-cd
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["**.md", "docs/**", "demo/**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  REGISTRY: ghcr.io
+  PYTHON_VERSION: "3.12"
+  NODE_VERSION: "22"
+
+jobs:
+  backend-test:
+    name: backend · lint, SAST, audit, pytest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: backend/requirements*.txt
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Ruff lint and format check
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Bandit (SAST)
+        run: bandit -r app -ll
+      - name: pip-audit (dependency CVEs)
+        run: pip-audit -r requirements.txt --strict
+      - name: Pytest (fails the build on any failure)
+        run: pytest -v --cov=app --cov-report=term --cov-report=xml --cov-fail-under=85 --junitxml=pytest-report.xml
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: backend-test-reports
+          path: |
+            backend/pytest-report.xml
+            backend/coverage.xml
+          retention-days: 14
+
+  frontend-test:
+    name: frontend · lint, unit tests, audit, build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --no-fund
+      - name: ESLint and Prettier
+        run: |
+          npm run lint
+          npm run format:check
+      - name: Vitest
+        run: npm test
+      - name: npm audit (runtime dependencies)
+        run: npm audit --omit=dev --audit-level=high
+      - name: Vite production build
+        run: npm run build
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: frontend-dist
+          path: frontend/dist
+          retention-days: 7
+
+  secret-scan:
+    name: secrets · gitleaks over full history
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Gitleaks
+        env:
+          GITLEAKS_VERSION: 8.30.1
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" | tar -xz gitleaks
+          ./gitleaks git --redact --verbose --exit-code 1 .
+
+  iac-scan:
+    name: IaC · terraform validate, helm lint, Trivy config
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_wrapper: false
+      - name: Terraform fmt and validate
+        working-directory: terraform
+        run: |
+          terraform fmt -check -recursive
+          terraform init -backend=false -input=false
+          terraform validate
+      - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+      - name: Helm lint and render
+        run: |
+          helm lint helm/pantrix -f helm/pantrix/values-dev.yaml --strict
+          helm template pantrix helm/pantrix -f helm/pantrix/values-dev.yaml > /tmp/rendered.yaml
+          kubectl apply --dry-run=client -f k8s/namespace.yaml
+      - name: Trivy misconfiguration scan (Terraform, Helm, Dockerfiles)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: config
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          trivyignores: .trivyignore
+          skip-dirs: troubleshooting
+
+  build-scan-push:
+    name: image · ${{ matrix.component }}
+    needs: [backend-test, frontend-test, secret-scan, iac-scan]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: true
+      matrix:
+        component: [backend, frontend]
+    permissions:
+      contents: read
+      packages: write # push to GHCR
+      id-token: write # keyless signing for the provenance attestation
+      attestations: write
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Compute image name (GHCR requires lowercase)
+        id: meta
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          echo "image=${REGISTRY}/${owner}/pantrix-${{ matrix.component }}" >> "$GITHUB_OUTPUT"
+          echo "tag=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build image (local, not pushed yet)
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ${{ matrix.component }}
+          load: true
+          push: false
+          tags: ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
+          labels: |
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          cache-from: type=gha,scope=${{ matrix.component }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.component }}
+      - name: Verify the image runs as non-root
+        run: |
+          user=$(docker image inspect --format '{{.Config.User}}' "${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}")
+          echo "Configured user: '${user}'"
+          case "$user" in ""|root|0|0:0) echo "::error::image runs as root"; exit 1;; esac
+      - name: Trivy image scan (report)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
+          format: table
+          output: trivy-${{ matrix.component }}.txt
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          exit-code: "0"
+      - name: Trivy image scan (gate — fail on fixable HIGH/CRITICAL)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+          trivyignores: .trivyignore
+          skip-setup-trivy: true
+      - name: Generate CycloneDX SBOM
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
+          format: cyclonedx
+          output: sbom-${{ matrix.component }}.cdx.json
+          skip-setup-trivy: true
+      - name: Upload scan report and SBOM
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: security-${{ matrix.component }}
+          path: |
+            trivy-${{ matrix.component }}.txt
+            sbom-${{ matrix.component }}.cdx.json
+          retention-days: 30
+          if-no-files-found: ignore
+
+      # ---- publish: only for main, only after every gate above passed ----------
+      - name: Log in to GHCR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push image tagged with the commit SHA
+        id: push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          ref="${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}"
+          docker push "$ref"
+          digest=$(docker image inspect --format '{{index .RepoDigests 0}}' "$ref" | cut -d@ -f2)
+          echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+          echo "### ${{ matrix.component }} published" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`${ref}\` (\`${digest}\`)" >> "$GITHUB_STEP_SUMMARY"
+      - name: Attest build provenance
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ steps.meta.outputs.image }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+
+  k8s-smoke:
+    name: deploy rehearsal · kind + Helm + Ingress
+    needs: build-scan-push
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+      - uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
+        with:
+          cluster_name: pantrix-ci
+          config: k8s/kind-config.yaml
+      - name: Pull the just-published images and load them into kind
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          for c in backend frontend; do
+            docker pull "ghcr.io/${owner}/pantrix-${c}:${GITHUB_SHA}"
+            kind load docker-image --name pantrix-ci "ghcr.io/${owner}/pantrix-${c}:${GITHUB_SHA}"
+          done
+      - name: Install ingress-nginx and metrics-server
+        run: scripts/k8s/install-addons.sh
+      - name: Helm upgrade --install
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          kubectl apply -f k8s/namespace.yaml
+          helm upgrade --install pantrix helm/pantrix -n pantrix \
+            -f helm/pantrix/values-dev.yaml \
+            --set image.registry=ghcr.io/${owner} \
+            --set image.tag=${GITHUB_SHA} \
+            --set image.pullPolicy=IfNotPresent \
+            --set serviceMonitor.enabled=false \
+            --wait --timeout 6m --atomic
+      - name: Smoke test through the Ingress
+        run: scripts/k8s/smoke-test.sh http://pantrix.localtest.me
+      - name: Diagnostics on failure
+        if: failure()
+        run: |
+          kubectl get all,ingress,hpa -n pantrix -o wide || true
+          kubectl describe pods -n pantrix || true
+          kubectl logs -n pantrix -l app.kubernetes.io/component=backend --tail=100 || true
