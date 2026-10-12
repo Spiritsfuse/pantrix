@@ -3,6 +3,21 @@
 # metrics-server (needed by the HPA). Idempotent; safe to re-run.
 set -euo pipefail
 
+# On failure, say why: the pod table and the newest events, one line each so CI
+# surfaces them as annotations even when the full log is not at hand.
+diagnose() {
+  echo "::group::add-on diagnostics"
+  kubectl get pods -A -o wide || true
+  kubectl get events -A --sort-by=.lastTimestamp | tail -25 || true
+  echo "::endgroup::"
+  if [ "${GITHUB_ACTIONS:-}" = "true" ]; then
+    echo "::error title=add-ons failed::pods: $(kubectl get pods -A --no-headers 2>&1 | awk '{printf "%s/%s %s %s; ", $1, $2, $4, $3}')"
+    echo "::error title=add-on events::$(kubectl get events -A --sort-by=.lastTimestamp --no-headers 2>&1 | tail -6 | tr '
+' '|' | cut -c1-900)"
+  fi
+}
+trap diagnose ERR
+
 INGRESS_NGINX_VERSION="${INGRESS_NGINX_VERSION:-controller-v1.15.1}"
 METRICS_SERVER_VERSION="${METRICS_SERVER_VERSION:-v0.9.0}"
 
@@ -16,7 +31,7 @@ kubectl -n kube-system patch deployment metrics-server --type=json \
   -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]' 2>/dev/null || true
 
 echo "==> waiting for the ingress controller"
-kubectl -n ingress-nginx rollout status deployment/ingress-nginx-controller --timeout=180s
+kubectl -n ingress-nginx rollout status deployment/ingress-nginx-controller --timeout=300s
 # The admission webhook answers a few seconds after the pod is Ready; installing
 # an Ingress before then fails with "failed calling webhook".
 for _ in $(seq 1 30); do
@@ -26,5 +41,5 @@ for _ in $(seq 1 30); do
   fi
   sleep 2
 done
-kubectl -n kube-system rollout status deployment/metrics-server --timeout=180s
+kubectl -n kube-system rollout status deployment/metrics-server --timeout=300s
 echo "==> add-ons ready"
