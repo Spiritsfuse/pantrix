@@ -1,2 +1,10 @@
-# Trivy exceptions. Every entry needs: the ID, why it is accepted, and a review date.
-# Policy: security/TRIVY-POLICY.md. Empty on purpose: no findings are suppressed.
+# Trivy exceptions. Every entry needs the ID, why the risk is accepted, and a review date.
+# Policy: security/TRIVY-POLICY.md. Image CVEs are never ignored here.
+
+# AWS-0104 (CRITICAL) EKS node security group allows egress to 0.0.0.0/0.
+# Why accepted: worker nodes must reach ECR/GHCR, the EKS API and AWS service
+# endpoints through the NAT gateway; the rule comes from the upstream EKS module.
+# Mitigation: nodes sit in private subnets with no inbound internet route, IMDSv2
+# hop limit 1, and VPC flow logs. Production follow-up: VPC endpoints + an egress
+# firewall/allow-list. Review: 2027-01-31.
+AWS-0104

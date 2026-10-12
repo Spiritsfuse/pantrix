@@ -1,0 +1,20 @@
+# Copy to terraform.tfvars (git-ignored) and adjust. No credentials belong here:
+# Terraform reads them from the AWS CLI profile or environment, never from files in Git.
+region             = "ap-south-1"
+project            = "pantrix"
+environment        = "dev"
+owner              = "dhruv-sharma"
+vpc_cidr           = "10.42.0.0/16"
+az_count           = 2
+single_nat_gateway = true
+kubernetes_version = "1.35"
+
+# Your public IP so kubectl/helm can reach the API from your laptop
+# (curl -s https://checkip.amazonaws.com). Leave [] for a private-only endpoint.
+endpoint_public_access_cidrs = ["203.0.113.10/32"]
+
+node_instance_types = ["t3.medium"]
+node_capacity_type  = "ON_DEMAND" # "SPOT" is cheaper for a short demo
+node_min_size       = 1
+node_desired_size   = 2
+node_max_size       = 3

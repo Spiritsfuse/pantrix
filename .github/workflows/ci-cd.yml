@@ -145,7 +145,7 @@ jobs:
           severity: HIGH,CRITICAL
           exit-code: "1"
           trivyignores: .trivyignore
-          skip-dirs: troubleshooting
+          skip-dirs: troubleshooting,terraform/.terraform
 
   build-scan-push:
     name: image · ${{ matrix.component }}
