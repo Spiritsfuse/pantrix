@@ -1,0 +1,63 @@
+# Pantrix local stack: PostgreSQL + FastAPI backend + Nginx/React frontend.
+#   docker compose up --build      -> http://localhost:3000 (app), :8000/docs (API)
+# Override any ${VAR} through a local .env file (see .env.example).
+name: pantrix
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pantrix}
+      POSTGRES_USER: ${POSTGRES_USER:-pantrix}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pantrix}
+    volumes:
+      - pantrix-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [pantrix]
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    image: pantrix-backend:local
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-pantrix}:${POSTGRES_PASSWORD:-pantrix}@postgres:5432/${POSTGRES_DB:-pantrix}
+      ENVIRONMENT: compose
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
+      CORS_ORIGINS: http://localhost:3000
+      LOG_LEVEL: INFO
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    networks: [pantrix]
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    image: pantrix-frontend:local
+    environment:
+      API_UPSTREAM: backend:8000
+    ports:
+      - "3000:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    networks: [pantrix]
+    restart: unless-stopped
+
+volumes:
+  pantrix-db:
+
+networks:
+  pantrix:
