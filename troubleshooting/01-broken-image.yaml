@@ -24,7 +24,7 @@ spec:
           # BUG: no image was ever published with this tag.
           image: ghcr.io/spiritsfuse/pantrix-frontend:v9.9.9-typo
           env:
-            - { name: API_UPSTREAM, value: "lab-api:8000" }
+            - { name: API_UPSTREAM, value: "lab-api.pantrix-lab.svc.cluster.local:8000" }
           ports:
             - { name: http, containerPort: 8080 }
           securityContext:

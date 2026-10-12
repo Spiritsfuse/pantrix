@@ -29,7 +29,7 @@ drill1() {
   sleep 20
   run kubectl get pods -n "$NS" -l app=shelf-ui
   run "kubectl describe pod -n $NS -l app=shelf-ui | grep -A12 '^Events:'"
-  note "Diagnosis: ErrImagePull/ImagePullBackOff - the tag v9.9.9-typo does not exist. Fix: deploy the real Git-SHA tag."
+  note "Diagnosis: ErrImagePull/ImagePullBackOff - v9.9.9-typo was never published (GHCR refuses unknown references). Fix: deploy the Git-SHA tag CI built."
   run kubectl set image deployment/shelf-ui -n "$NS" frontend="$FRONTEND_IMAGE"
   run kubectl rollout status deployment/shelf-ui -n "$NS" --timeout=120s
   run kubectl get pods -n "$NS" -l app=shelf-ui
@@ -39,12 +39,14 @@ drill2() {
   note "Drill 2 - broken Service: selector matches no pods"
   kubectl -n "$NS" get deploy shelf-ui >/dev/null 2>&1 || { kubectl apply -f troubleshooting/01-broken-image.yaml >/dev/null; kubectl set image deployment/shelf-ui -n "$NS" frontend="$FRONTEND_IMAGE" >/dev/null; kubectl rollout status deployment/shelf-ui -n "$NS" --timeout=120s >/dev/null; }
   run kubectl apply -f troubleshooting/02-broken-service.yaml
-  run kubectl get svc,endpoints -n "$NS" shelf-ui
-  run "kubectl run probe -n $NS --rm -i --restart=Never --image=$BACKEND_IMAGE --overrides='{\"spec\":{\"securityContext\":{\"runAsNonRoot\":true,\"runAsUser\":10001,\"seccompProfile\":{\"type\":\"RuntimeDefault\"}},\"containers\":[{\"name\":\"probe\",\"image\":\"$BACKEND_IMAGE\",\"command\":[\"python\",\"-c\",\"import urllib.request as u; print(u.urlopen(\\\"http://shelf-ui/healthz\\\", timeout=3).read())\"],\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]}}}]}}' 2>&1 | tail -2"
+  run kubectl get svc -n "$NS" shelf-ui
+  run kubectl get endpointslices -n "$NS" -l kubernetes.io/service-name=shelf-ui
+  run "kubectl exec -n $NS deploy/shelf-ui -- wget -q -O- -T 3 http://shelf-ui/healthz 2>&1 || true"
   run kubectl get pods -n "$NS" --show-labels -l app=shelf-ui
   note "Diagnosis: no endpoints - the Service selects app=shelf-frontend but pods carry app=shelf-ui. Fix: correct the selector."
   run "kubectl patch svc shelf-ui -n $NS --type=merge -p '{\"spec\":{\"selector\":{\"app\":\"shelf-ui\"}}}'"
-  run kubectl get endpoints -n "$NS" shelf-ui
+  run kubectl get endpointslices -n "$NS" -l kubernetes.io/service-name=shelf-ui
+  run "kubectl exec -n $NS deploy/shelf-ui -- wget -q -O- -T 3 http://shelf-ui/healthz"
 }
 
 drill3() {
@@ -52,7 +54,7 @@ drill3() {
   run apply_with_image troubleshooting/03-readiness-failure.yaml
   sleep 25
   run kubectl get pods -n "$NS" -l app=lab-api
-  run kubectl get endpoints -n "$NS" lab-api
+  run kubectl get endpointslices -n "$NS" -l kubernetes.io/service-name=lab-api
   run "kubectl exec -n $NS deploy/lab-api -- python -c \"import urllib.request as u
 for p in ('/health','/ready'):
     try: r=u.urlopen('http://127.0.0.1:8000'+p); print(p, r.status, r.read().decode())
@@ -61,7 +63,8 @@ for p in ('/health','/ready'):
   note "Diagnosis: liveness passes (process up) but readiness fails (DB auth) so the pod gets no traffic. Fix: use the correct Secret."
   run "kubectl set env deployment/lab-api -n $NS --from=secret/lab-db --keys=DATABASE_URL"
   run kubectl rollout status deployment/lab-api -n "$NS" --timeout=120s
-  run kubectl get pods,endpoints -n "$NS" -l app=lab-api
+  run kubectl get pods -n "$NS" -l app=lab-api
+  run kubectl get endpointslices -n "$NS" -l kubernetes.io/service-name=lab-api
 }
 
 drill4() {

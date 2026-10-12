@@ -9,6 +9,9 @@ image:
 
 imagePullSecrets: []
 
+# DNS suffix of the cluster; used to build fully qualified Service names.
+clusterDomain: cluster.local
+
 backend:
   replicaCount: 2
   port: 8000

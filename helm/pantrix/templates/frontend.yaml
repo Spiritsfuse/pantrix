@@ -59,7 +59,8 @@ spec:
               containerPort: {{ .Values.frontend.port }}
           env:
             - name: API_UPSTREAM
-              value: {{ printf "%s-backend:%v" $fullname .Values.backend.port | quote }}
+              # Fully qualified: nginx's runtime resolver does not use search domains.
+              value: {{ printf "%s-backend.%s.svc.%s:%v" $fullname .Release.Namespace .Values.clusterDomain .Values.backend.port | quote }}
           securityContext:
             {{- include "pantrix.containerSecurity" . | nindent 12 }}
           livenessProbe:

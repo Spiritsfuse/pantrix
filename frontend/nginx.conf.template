@@ -19,8 +19,16 @@ server {
         return 200 "ok\n";
     }
 
+    # Resolve the API host per request (cached 10s) instead of once at boot, so the
+    # UI still starts when the backend Service does not exist yet and follows it if
+    # its IP changes. NGINX_LOCAL_RESOLVERS comes from the container's resolv.conf.
+    # nginx's resolver ignores search domains: API_UPSTREAM must be a full name
+    # (Compose service name, or <svc>.<ns>.svc.cluster.local in Kubernetes).
+    resolver ${NGINX_LOCAL_RESOLVERS} valid=10s ipv6=off;
+
     location /api/ {
-        proxy_pass http://${API_UPSTREAM};
+        set $api_upstream ${API_UPSTREAM};
+        proxy_pass http://$api_upstream;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;

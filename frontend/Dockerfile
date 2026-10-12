@@ -17,8 +17,10 @@ LABEL org.opencontainers.image.title="pantrix-frontend" \
       org.opencontainers.image.authors="Dhruv Sharma (Spiritsfuse)" \
       org.opencontainers.image.source="https://github.com/spiritsfuse"
 
-# Upstream for /api; Compose uses the "backend" service, Helm sets the Service name.
-ENV API_UPSTREAM=backend:8000
+# Upstream for /api; Compose uses the "backend" service, Helm sets the Service FQDN.
+# LOCAL_RESOLVERS exposes the container's DNS server to the nginx template.
+ENV API_UPSTREAM=backend:8000 \
+    NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
 
 USER root
 RUN apk upgrade --no-cache && rm -f /etc/nginx/conf.d/default.conf
