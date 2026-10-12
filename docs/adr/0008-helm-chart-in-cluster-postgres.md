@@ -4,7 +4,7 @@
 
 ## Context
 
-The rubric needs a Helm chart with Deployments (2+ replicas each), ClusterIP
+The deployment needs a Helm chart with Deployments (2+ replicas each), ClusterIP
 Services, an Ingress (`/` → frontend, `/api` → backend) and an HPA. The app needs
 a database in the cluster for the live demo.
 

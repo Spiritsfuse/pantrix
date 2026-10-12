@@ -57,7 +57,7 @@ aws eks update-kubeconfig --region ap-south-1 --name pantrix-dev
 kubectl get nodes -o wide             # the managed nodes are Ready
 ```
 
-Console screenshots for the rubric (VPC console and EKS console):
+Console screenshots as evidence (VPC console and EKS console):
 - the VPC `pantrix-dev` and its 4 subnets;
 - the EKS cluster `pantrix-dev`;
 - the node group `general-*` with its nodes.
@@ -77,7 +77,7 @@ Console screenshots for the rubric (VPC console and EKS console):
 ```bash
 helm uninstall pantrix -n pantrix || true      # removes load balancers created by Kubernetes first
 cd terraform
-terraform destroy                              # capture this output for the rubric
+terraform destroy                              # capture this output as evidence
 ```
 
 ## Verify that nothing is left (and nothing is billing)

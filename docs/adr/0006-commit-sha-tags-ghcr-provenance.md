@@ -4,7 +4,7 @@
 
 ## Context
 
-The rubric requires images in GitHub Container Registry tagged with the commit
+Images in GitHub Container Registry must be tagged with the commit
 SHA, not `latest`. A tag must lead back to exactly one source commit.
 
 ## Options considered

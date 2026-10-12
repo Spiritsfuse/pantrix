@@ -57,7 +57,7 @@ Evidence: `docs/evidence/terraform-plan-emulator.png`,
 - The configuration is shown to resolve and order a complete resource graph,
   well beyond `validate`.
 - **This is not AWS.** No VPC or EKS cluster exists in any AWS account. Every
-  emulator screenshot says so in its title and footer. The rubric items "VPC +
+  emulator screenshot says so in its title and footer. The items "VPC +
   EKS provisioned (AWS Console)" and real `terraform destroy` stay pending until
   real credentials and cost approval exist.
 

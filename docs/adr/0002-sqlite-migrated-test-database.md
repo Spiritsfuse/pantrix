@@ -4,7 +4,7 @@
 
 ## Context
 
-The rubric requires that tests use a test database or mocks, never the real
+Tests must use a test database or mocks, never the real
 database. Tests must also run in CI without extra services and on a Windows
 laptop.
 

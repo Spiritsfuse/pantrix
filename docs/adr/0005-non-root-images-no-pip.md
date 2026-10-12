@@ -4,7 +4,7 @@
 
 ## Context
 
-The rubric requires both images to run as non-root. The first Trivy scan of the
+Both images must to run as non-root. The first Trivy scan of the
 backend image (`5196d75`) then failed the gate with four fixable HIGH findings
 (`docs/evidence/trivy-backend-before-fix.png`):
 

@@ -5,7 +5,7 @@
 ## Context
 
 Pantrix needs a REST API for donors, stock items and distributions, backed by
-PostgreSQL. The course stack is Python, and the rubric asks for at least one
+PostgreSQL. The team's stack is Python, and the design calls for at least one
 table managed by migrations, `/health`, and Prometheus metrics.
 
 ## Options considered

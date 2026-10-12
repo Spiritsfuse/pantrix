@@ -1,10 +1,10 @@
 # 0011 — Argo CD GitOps, rehearsed against an in-cluster Git daemon
 
-**Status:** Accepted (`repoURL` switches to GitHub on the second computer)
+**Status:** Accepted (`repoURL` switches to GitHub once a cluster should track the public repository)
 
 ## Context
 
-The submission video must show Argo CD and a GitOps flow. Argo CD needs a Git
+The demo must show Argo CD and a GitOps flow. Argo CD needs a Git
 URL it can reach. On this computer the repository deliberately has no GitHub
 remote, and none may be added.
 

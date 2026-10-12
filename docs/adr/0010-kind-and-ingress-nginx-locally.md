@@ -17,7 +17,7 @@ with Docker Desktop (8 GB for the Docker VM).
 3. **Docker Desktop Kubernetes.** Shared with other projects on this machine.
 
 For the Ingress controller:
-- **ingress-nginx.** Matches the instructor's `ingressClassName: nginx`.
+- **ingress-nginx.** Most widely documented option (`ingressClassName: nginx`).
 - **Traefik.**
 - **Gateway API implementation.**
 

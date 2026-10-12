@@ -4,7 +4,7 @@
 
 ## Context
 
-The rubric asks for Prometheus scraping the app, Grafana installed, and at least
+The stack needs Prometheus scraping the app, Grafana installed, and at least
 one panel with live application metrics. All of it has to fit on the same
 laptop cluster as the app and Argo CD.
 

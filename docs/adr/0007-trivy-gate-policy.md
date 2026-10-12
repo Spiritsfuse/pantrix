@@ -4,7 +4,7 @@
 
 ## Context
 
-The rubric asks that the pipeline fail on HIGH or CRITICAL CVEs. Base OS images
+The pipeline must fail on HIGH or CRITICAL CVEs. Base OS images
 always carry some HIGH findings that have no fixed package yet. Failing on
 those would block every build with nothing actionable to do.
 
@@ -13,8 +13,7 @@ those would block every build with nothing actionable to do.
 1. **Fail on any HIGH/CRITICAL.** Blocks forever on unfixable Debian findings.
 2. **Fail on HIGH/CRITICAL that have a fix (`--ignore-unfixed`), report everything.**
    Every failure then has a concrete remedy.
-3. **Report only.** This is what the instructor's working workflow effectively
-   did: no `--exit-code`.
+3. **Report only.** This is what many example workflows do: no `--exit-code`.
 
 ## Decision
 

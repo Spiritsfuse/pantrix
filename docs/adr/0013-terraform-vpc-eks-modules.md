@@ -4,10 +4,10 @@
 
 ## Context
 
-The rubric needs Terraform that provisions a VPC with at least two public
+The infrastructure needs Terraform that provisions a VPC with at least two public
 subnets and an EKS cluster with a managed node group, plus
 `terraform.tfvars.example`. The design should be secure by default and cheap for
-a short-lived student demo.
+a short-lived demo environment.
 
 ## Options considered
 
@@ -15,7 +15,7 @@ a short-lived student demo.
    right by hand.
 2. **`terraform-aws-modules/vpc` (~> 6.7) and `terraform-aws-modules/eks`
    (~> 21.29).** Widely used, current with AWS provider 6.x.
-3. **eksctl.** Fast, but not Terraform, which the course requires.
+3. **eksctl.** Fast, but not Terraform, which is the chosen tool here.
 
 ## Decision
 
