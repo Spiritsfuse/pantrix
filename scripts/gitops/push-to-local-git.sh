@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
-# Push local main to the in-cluster rehearsal Git server through a temporary
-# port-forward. Uses a URL, so `git remote -v` stays empty.
+# Publish local main to the in-cluster rehearsal Git server.
+# A git bundle is copied into the pod and fetched there; streaming a push over
+# `kubectl port-forward` hangs on Windows. `git remote -v` stays empty.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
-kubectl -n gitops port-forward svc/git-server 19418:9418 >/dev/null 2>&1 &
-pf=$!
-trap 'kill ${pf} 2>/dev/null || true' EXIT
-for _ in $(seq 1 20); do (echo > /dev/tcp/127.0.0.1/19418) 2>/dev/null && break; sleep 1; done
-git push --force git://127.0.0.1:19418/pantrix.git HEAD:refs/heads/main
+bundle="$(mktemp -d)/pantrix.bundle"
+git bundle create "${bundle}" main >/dev/null 2>&1
+pod="$(kubectl -n gitops get pod -l app=git-server -o jsonpath='{.items[0].metadata.name}')"
+# kubectl cp mis-parses Windows drive letters ("C:"), so stream the file instead.
+kubectl -n gitops exec -i "${pod}" -- sh -c 'cat > /tmp/pantrix.bundle' < "${bundle}"
+kubectl -n gitops exec "${pod}" -- sh -c \
+  'git -C /srv/git/pantrix.git fetch --force /tmp/pantrix.bundle main:main && rm /tmp/pantrix.bundle && git -C /srv/git/pantrix.git log --oneline -1 main'
+rm -f "${bundle}"

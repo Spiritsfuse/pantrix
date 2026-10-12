@@ -23,6 +23,8 @@ if ! kubectl -n pantrix-gitops get secret pantrix-db >/dev/null 2>&1; then
 fi
 
 echo "==> rehearsal Git server"
+docker build -q -t pantrix-git-server:1.0.0 gitops/git-server >/dev/null
+kind load docker-image --name "${KIND_CLUSTER:-pantrix}" pantrix-git-server:1.0.0 >/dev/null
 kubectl apply -f gitops/local-git-server.yaml
 kubectl -n gitops rollout status deploy/git-server --timeout=120s
 bash scripts/gitops/push-to-local-git.sh

@@ -31,7 +31,9 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: git-daemon
-          image: alpine/git:v2.54.0
+          # Built from gitops/git-server/Dockerfile and loaded with `kind load`.
+          image: pantrix-git-server:1.0.0
+          imagePullPolicy: Never
           command: ["sh", "-c"]
           args:
             - |

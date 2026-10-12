@@ -23,6 +23,13 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: pantrix-gitops
+  # The API server defaults fields inside StatefulSet volumeClaimTemplates
+  # (apiVersion, kind, volumeMode, status); they are immutable, so do not diff them.
+  ignoreDifferences:
+    - group: apps
+      kind: StatefulSet
+      jqPathExpressions:
+        - .spec.volumeClaimTemplates[]?
   syncPolicy:
     automated:
       prune: true
@@ -30,6 +37,7 @@ spec:
     syncOptions:
       - CreateNamespace=false
       - ServerSideApply=true
+      - RespectIgnoreDifferences=true
     retry:
       limit: 5
       backoff: { duration: 10s, factor: 2, maxDuration: 3m }
