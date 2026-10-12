@@ -1,0 +1,12 @@
+# Keep every text file LF in the repository and working tree so shell scripts,
+# Dockerfiles and YAML behave identically on Windows, macOS and Linux CI runners.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.gif binary
+*.mp4 binary
+*.pptx binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
