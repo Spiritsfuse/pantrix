@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pantrix.fullname" . }}-backend
+  labels:
+    {{- include "pantrix.labels" . | nindent 4 }}
+data:
+  ENVIRONMENT: {{ .Release.Namespace | quote }}
+  LOG_LEVEL: {{ .Values.backend.logLevel | quote }}
+  SEED_DEMO_DATA: {{ .Values.backend.seedDemoData | quote }}
+  EXPIRY_WARNING_DAYS: {{ .Values.backend.expiryWarningDays | quote }}
+  CORS_ORIGINS: {{ printf "http://%s,https://%s" .Values.ingress.host .Values.ingress.host | quote }}

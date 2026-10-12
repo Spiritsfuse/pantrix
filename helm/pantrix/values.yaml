@@ -1,0 +1,74 @@
+# Default values for the Pantrix chart. Environment overlays: values-dev.yaml, values-prod.yaml.
+
+image:
+  # Images are published by CI as <registry>/pantrix-backend and <registry>/pantrix-frontend.
+  registry: ghcr.io/spiritsfuse
+  # Always the Git commit SHA that produced the image. Never "latest".
+  tag: "0000000000000000000000000000000000000000"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+backend:
+  replicaCount: 2
+  port: 8000
+  logLevel: INFO
+  seedDemoData: true
+  expiryWarningDays: 7
+  resources:
+    requests: { cpu: 100m, memory: 160Mi }
+    limits: { cpu: 500m, memory: 384Mi }
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 60
+
+frontend:
+  replicaCount: 2
+  port: 8080
+  resources:
+    requests: { cpu: 25m, memory: 32Mi }
+    limits: { cpu: 200m, memory: 128Mi }
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 70
+
+postgres:
+  # In-cluster PostgreSQL for the classroom/kind demo. On AWS prefer Amazon RDS
+  # (set enabled=false and point externalHost at it).
+  enabled: true
+  image: postgres:17-alpine
+  database: pantrix
+  username: pantrix
+  # Name of an existing Secret with keys POSTGRES_PASSWORD and DATABASE_URL.
+  # Leave empty to let the chart generate one (kept stable across upgrades).
+  existingSecret: ""
+  externalHost: ""
+  storage: 2Gi
+  storageClassName: ""
+  resources:
+    requests: { cpu: 100m, memory: 192Mi }
+    limits: { cpu: 500m, memory: 512Mi }
+
+ingress:
+  enabled: true
+  className: nginx
+  host: pantrix.localtest.me
+  annotations: {}
+  tls: []
+
+serviceMonitor:
+  # Requires the Prometheus Operator CRDs (kube-prometheus-stack).
+  enabled: false
+  interval: 15s
+  labels:
+    release: kube-prometheus-stack
+
+networkPolicy:
+  enabled: true
+
+podDisruptionBudget:
+  enabled: true

@@ -1,0 +1,115 @@
+{{- $fullname := include "pantrix.fullname" . }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullname }}-backend
+  labels:
+    {{- include "pantrix.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "pantrix.selector" (list . "backend") | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.backend.port }}
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullname }}-backend
+  labels:
+    {{- include "pantrix.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  {{- if not .Values.backend.autoscaling.enabled }}
+  replicas: {{ .Values.backend.replicaCount }}
+  {{- end }}
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxSurge: 1, maxUnavailable: 0 }
+  selector:
+    matchLabels:
+      {{- include "pantrix.selector" (list . "backend") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "pantrix.labels" . | nindent 8 }}
+        {{- include "pantrix.selector" (list . "backend") | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      automountServiceAccountToken: false
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        # Migrations run before the API starts; alembic/env.py takes a Postgres
+        # advisory lock so concurrent replicas apply them one at a time.
+        - name: migrate
+          image: {{ include "pantrix.image" (list . "backend") }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["alembic", "upgrade", "head"]
+          envFrom:
+            - configMapRef:
+                name: {{ $fullname }}-backend
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pantrix.dbSecret" . }}
+                  key: DATABASE_URL
+          securityContext:
+            {{- include "pantrix.containerSecurity" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+      containers:
+        - name: backend
+          image: {{ include "pantrix.image" (list . "backend") }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.backend.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ $fullname }}-backend
+          env:
+            - name: RUN_MIGRATIONS
+              value: "false"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pantrix.dbSecret" . }}
+                  key: DATABASE_URL
+          securityContext:
+            {{- include "pantrix.containerSecurity" . | nindent 12 }}
+          startupProbe:
+            httpGet: { path: /health, port: http }
+            periodSeconds: 3
+            failureThreshold: 20
+          livenessProbe:
+            httpGet: { path: /health, port: http }
+            periodSeconds: 15
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet: { path: /ready, port: http }
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}

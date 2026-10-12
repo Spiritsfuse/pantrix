@@ -1,0 +1,20 @@
+# Shape of a production (EKS) install. Database is external (RDS), TLS on the Ingress.
+backend:
+  seedDemoData: false
+  replicaCount: 3
+  autoscaling:
+    minReplicas: 3
+    maxReplicas: 10
+postgres:
+  enabled: false
+  externalHost: pantrix-db.example.internal
+  existingSecret: pantrix-db
+ingress:
+  host: pantrix.example.com
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  tls:
+    - secretName: pantrix-tls
+      hosts: [pantrix.example.com]
+serviceMonitor:
+  enabled: true

@@ -1,0 +1,10 @@
+# Local kind/minikube cluster used for the live demo.
+image:
+  pullPolicy: IfNotPresent
+ingress:
+  enabled: true
+  host: pantrix.localtest.me
+serviceMonitor:
+  enabled: true
+postgres:
+  storage: 1Gi

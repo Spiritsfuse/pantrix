@@ -1,0 +1,83 @@
+{{- $fullname := include "pantrix.fullname" . }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullname }}-frontend
+  labels:
+    {{- include "pantrix.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "pantrix.selector" (list . "frontend") | nindent 4 }}
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullname }}-frontend
+  labels:
+    {{- include "pantrix.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+spec:
+  {{- if not .Values.frontend.autoscaling.enabled }}
+  replicas: {{ .Values.frontend.replicaCount }}
+  {{- end }}
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxSurge: 1, maxUnavailable: 0 }
+  selector:
+    matchLabels:
+      {{- include "pantrix.selector" (list . "frontend") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "pantrix.labels" . | nindent 8 }}
+        {{- include "pantrix.selector" (list . "frontend") | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: frontend
+          image: {{ include "pantrix.image" (list . "frontend") }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.frontend.port }}
+          env:
+            - name: API_UPSTREAM
+              value: {{ printf "%s-backend:%v" $fullname .Values.backend.port | quote }}
+          securityContext:
+            {{- include "pantrix.containerSecurity" . | nindent 12 }}
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 15
+          readinessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.frontend.resources | nindent 12 }}
+          volumeMounts:
+            # nginx renders its config into conf.d at start and needs /tmp for pid/cache.
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: nginx-conf
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}

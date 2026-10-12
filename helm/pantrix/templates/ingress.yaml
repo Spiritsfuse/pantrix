@@ -1,0 +1,38 @@
+{{- if .Values.ingress.enabled }}
+{{- $fullname := include "pantrix.fullname" . }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullname }}
+  labels:
+    {{- include "pantrix.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- with .Values.ingress.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          # /api/* goes straight to FastAPI (its routes already live under /api).
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fullname }}-backend
+                port:
+                  name: http
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fullname }}-frontend
+                port:
+                  name: http
+{{- end }}

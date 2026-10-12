@@ -1,0 +1,11 @@
+apiVersion: v2
+name: pantrix
+description: Pantrix — donated stock and expiry tracking for community food banks (frontend, API, PostgreSQL)
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+home: https://github.com/spiritsfuse
+maintainers:
+  - name: Dhruv Sharma
+    url: https://github.com/spiritsfuse
+keywords: [fastapi, react, postgresql, food-bank]
