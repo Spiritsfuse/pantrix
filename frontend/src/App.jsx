@@ -69,7 +69,7 @@ export default function App() {
           <a href="https://github.com/spiritsfuse" target="_blank" rel="noreferrer">
             @Spiritsfuse
           </a>
-          ) · DevSecOps capstone
+          ) · Open-source food bank stock tracker
         </footer>
       </div>
     </ToastProvider>
