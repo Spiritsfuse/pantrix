@@ -287,6 +287,7 @@ for s in "${sections[@]}"; do
               capture trivy-config t_trivy_config; capture gitleaks t_gitleaks; capture sbom t_sbom ;;
     terraform) capture terraform-init-validate t_terraform; capture terraform-plan-attempt t_terraform_plan ;;
     terraform-emulator) capture terraform-emulator-summary t_terraform_emulator ;;
+    gitleaks) capture gitleaks t_gitleaks ;;
     k8s) capture kubernetes-resources t_k8s; capture helm-release t_helm; capture ingress-routing t_ingress ;;
     hpa) capture hpa-scaling t_hpa ;;
     monitoring) capture metrics-endpoint t_metrics; capture prometheus-scrape t_monitoring ;;
