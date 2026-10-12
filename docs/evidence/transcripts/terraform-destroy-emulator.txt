@@ -1,0 +1,1483 @@
+
+[0;33m# Terraform working copy: /c/Codeing/.pantrix-tf-emulator (AWS API emulator at http://127.0.0.1:5055 - NOT a real AWS account)[0m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/c/Codeing/.pantrix-tf-emulator[0m$ terraform init -input=false -no-color > /dev/null && echo terraform init: ok
+terraform init: ok
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/c/Codeing/.pantrix-tf-emulator[0m$ terraform destroy -input=false -no-color -auto-approve -refresh=false
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # module.eks.aws_cloudwatch_log_group.this[0] will be destroyed
+  - resource "aws_cloudwatch_log_group" "this" {
+      - arn                         = "arn:aws:logs:ap-south-1:123456789012:log-group:/aws/eks/pantrix-dev/cluster" -> null
+      - deletion_protection_enabled = false -> null
+      - id                          = "/aws/eks/pantrix-dev/cluster" -> null
+      - name                        = "/aws/eks/pantrix-dev/cluster" -> null
+      - region                      = "ap-south-1" -> null
+      - retention_in_days           = 7 -> null
+      - skip_destroy                = false -> null
+      - tags                        = {
+          - "Name" = "/aws/eks/pantrix-dev/cluster"
+        } -> null
+      - tags_all                    = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "/aws/eks/pantrix-dev/cluster"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.eks.aws_eks_cluster.this[0] will be destroyed
+  - resource "aws_eks_cluster" "this" {
+      - arn                           = "arn:aws:eks:ap-south-1:123456789012:cluster/pantrix-dev" -> null
+      - bootstrap_self_managed_addons = false -> null
+      - certificate_authority         = [
+          - {
+              - data = "2C8OjTh09kVNy5AihVT7Nu4sS0je9LgAEKDM0dvDYvK6RnblMqqDBhEpvmcXKPeNeKMqYjBK9Y21WxkeCJTlxhsqaelbdxfOfzy8EeD0FJUO7pkGUxcikPVrLulwtbunTglbedM2GnzA18TMS97sQPmdRoEOPzlkwB39NNEK1CC0AEBt5UI7DDpRIDE4LoXReAcOfVflxrbfN7PQObdq4grlFmpbAuHfQfDWjO6r3Efz9INAi4pqtpqUq9u5fpYUZsLttIYMnw4wk1ENeosN9CPV8x6Kp7SnXULQNxGL2G1stXu0k0h9hNwIh1OisrQnwfNwfSMMNsXl8pVqDR7RiOFm5CVz2qvmrrPPRCTMpEcXsFJBKbP8XMqcX2ueabKvcczqQaTSKHRvGJDCqYplgSEcl2KAoqO0QqnPfJBGJw4m2Ag1cvyFa45boN8yFveaXxRfyZms6goaDjhI4MlwE9pAwmyfMzSChesSrVAi0ewt7DzUMzScGbBvD8KqbsAn1JIv44UaAOHbbOFtp3W4tFDojoj1m3WKbVPpLgPAqpViDoPLB4269wYupzwI7RPeOVHxvOk0JGLKtyjR1OdwNZNFnFk1jAt0tSe4SGEmrAq3Gvfnp9d1qaufVnDrYpp2eCZsJSglg2WhAUQp6vKoMMctMaUnZ9G7xCt4Dr5AFb0LqEdydZW8EQWBCl69mzGa7q98riZCeu2MpnSdAJ5mMK4VL717lf38WvSTroRdsjI59nqWEjl466xACXUi9aFKI8vwLsaV71IQOIK0FC4rRaZwMXYcgqS0404tntaDxZWsTjP2jRuqrJg87XaPHwr1QKViDIYWHys8MAzth3rHelmuoxyBP1MkIm2csPLmfAgyrGt93F8yh6Vd1jsOXDHtmZsB7njXtfFoH4QSQOA5AMnzJWPvxWx3OJJBl6gybH3xmIiWMIdctnthbZyZFuLNYHOcQQpBbBWB5WSYyigY64ctwnsvePLHNmJ7bOGsqafQQ89ViT8WI33Xtwy1klUEpYdWIpKJdKsK5xDPgcmSraw7IbL6svco5sEqJw8aLHULdaKdrYuq46xxnqy2k7rWx0sXEJTRVkGKVWLi3hSBimMzfF4o55eMlVWYA1dcT6ey175k8VcJlmy07gTVPGsPn9uCO3PiRTZJouYevQz8zTX61JcYVWy07v2gDQmdehgZg3Z1jYcO7iZvG3Hue4dUNelqKf2M2znL30vlH0YmWZZe1FR7PiRYIeBWASZAdQIjffaXQERmXuG8k7f8EkHOND2WUZ7uBHHRjvXPqVp4LGkIgsvqsr7NDJggSqhYL4Gjgndjz36F08FE6TG8YTceb5pRzcpLonFHyu7WozJxFI2lQb9fQUJQJWIgkt91SluCwzzlszaJMHAG"
+            },
+        ] -> null
+      - created_at                    = "2026-10-12T18:32:55Z" -> null
+      - deletion_protection           = false -> null
+      - enabled_cluster_log_types     = [
+          - "api",
+          - "audit",
+          - "authenticator",
+        ] -> null
+      - endpoint                      = "https://Wqs8PQ3k59HEjaNETPjs.oTP.ap-south-1.eks.amazonaws.com/" -> null
+      - id                            = "pantrix-dev" -> null
+      - identity                      = [
+          - {
+              - oidc = [
+                  - {
+                      - issuer = "https://oidc.eks.ap-south-1.amazonaws.com/id/OzHRG9EUJV"
+                    },
+                ]
+            },
+        ] -> null
+      - name                          = "pantrix-dev" -> null
+      - platform_version              = "eks.4" -> null
+      - region                        = "ap-south-1" -> null
+      - role_arn                      = "arn:aws:iam::123456789012:role/pantrix-dev-cluster-6f794e3fa2f771b65b47389521" -> null
+      - status                        = "ACTIVE" -> null
+      - tags_all                      = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - version                       = "1.35" -> null
+
+      - access_config {
+          - authentication_mode                         = "API_AND_CONFIG_MAP" -> null
+          - bootstrap_cluster_creator_admin_permissions = false -> null
+        }
+
+      - encryption_config {
+          - resources = [
+              - "secrets",
+            ] -> null
+
+          - provider {
+              - key_arn = "arn:aws:kms:ap-south-1:123456789012:key/3483a11c-e019-4791-be65-3d19d6b011af" -> null
+            }
+        }
+
+      - kubernetes_network_config {
+          - ip_family         = "ipv4" -> null
+            # (2 unchanged attributes hidden)
+        }
+
+      - vpc_config {
+          - endpoint_private_access   = true -> null
+          - endpoint_public_access    = false -> null
+          - public_access_cidrs       = [] -> null
+          - security_group_ids        = [
+              - "sg-c026ecc0cd2436b33",
+            ] -> null
+          - subnet_ids                = [
+              - "subnet-8354bc37447cc2a8a",
+              - "subnet-afaf617cc0cf26cfb",
+            ] -> null
+            # (3 unchanged attributes hidden)
+        }
+    }
+
+  # module.eks.aws_iam_openid_connect_provider.oidc_provider[0] will be destroyed
+  - resource "aws_iam_openid_connect_provider" "oidc_provider" {
+      - arn             = "arn:aws:iam::123456789012:oidc-provider/oidc.eks.ap-south-1.amazonaws.com/id/OzHRG9EUJV" -> null
+      - client_id_list  = [
+          - "sts.amazonaws.com",
+        ] -> null
+      - id              = "arn:aws:iam::123456789012:oidc-provider/oidc.eks.ap-south-1.amazonaws.com/id/OzHRG9EUJV" -> null
+      - tags            = {
+          - "Name" = "pantrix-dev-eks-irsa"
+        } -> null
+      - tags_all        = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "pantrix-dev-eks-irsa"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - thumbprint_list = [
+          - "06b25927c42a721631c1efd9431e648fa62e1e39",
+        ] -> null
+      - url             = "oidc.eks.ap-south-1.amazonaws.com/id/OzHRG9EUJV" -> null
+    }
+
+  # module.eks.aws_iam_policy.cluster_encryption[0] will be destroyed
+  - resource "aws_iam_policy" "cluster_encryption" {
+      - arn              = "arn:aws:iam::123456789012:policy/pantrix-dev-cluster-ClusterEncryptionaf0143640e22fd876f03383974" -> null
+      - attachment_count = 0 -> null
+      - description      = "Cluster encryption policy to allow cluster role to utilize CMK provided" -> null
+      - id               = "arn:aws:iam::123456789012:policy/pantrix-dev-cluster-ClusterEncryptionaf0143640e22fd876f03383974" -> null
+      - name             = "pantrix-dev-cluster-ClusterEncryptionaf0143640e22fd876f03383974" -> null
+      - name_prefix      = "pantrix-dev-cluster-ClusterEncryption" -> null
+      - path             = "/" -> null
+      - policy           = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action   = [
+                          - "kms:Encrypt",
+                          - "kms:Decrypt",
+                          - "kms:ListGrants",
+                          - "kms:DescribeKey",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:kms:ap-south-1:123456789012:key/3483a11c-e019-4791-be65-3d19d6b011af"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - policy_id        = "AT0D00JHM2HULQO57OLV9" -> null
+      - tags_all         = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+    }
+
+  # module.eks.aws_iam_role.this[0] will be destroyed
+  - resource "aws_iam_role" "this" {
+      - arn                   = "arn:aws:iam::123456789012:role/pantrix-dev-cluster-6f794e3fa2f771b65b47389521" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = [
+                          - "sts:TagSession",
+                          - "sts:AssumeRole",
+                        ]
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - Service = "eks.amazonaws.com"
+                        }
+                      - Sid       = "EKSClusterAssumeRole"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-10-12T18:32:43Z" -> null
+      - force_detach_policies = true -> null
+      - id                    = "pantrix-dev-cluster-6f794e3fa2f771b65b47389521" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "pantrix-dev-cluster-6f794e3fa2f771b65b47389521" -> null
+      - name_prefix           = "pantrix-dev-cluster-" -> null
+      - path                  = "/" -> null
+      - tags_all              = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - unique_id             = "AROARZPUZDIKMST5FPCXA" -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # module.eks.aws_iam_role_policy_attachment.cluster_encryption[0] will be destroyed
+  - resource "aws_iam_role_policy_attachment" "cluster_encryption" {
+      - id         = "pantrix-dev-cluster-6f794e3fa2f771b65b47389521/arn:aws:iam::123456789012:policy/pantrix-dev-cluster-ClusterEncryptionaf0143640e22fd876f03383974" -> null
+      - policy_arn = "arn:aws:iam::123456789012:policy/pantrix-dev-cluster-ClusterEncryptionaf0143640e22fd876f03383974" -> null
+      - role       = "pantrix-dev-cluster-6f794e3fa2f771b65b47389521" -> null
+    }
+
+  # module.eks.aws_iam_role_policy_attachment.this["AmazonEKSClusterPolicy"] will be destroyed
+  - resource "aws_iam_role_policy_attachment" "this" {
+      - id         = "pantrix-dev-cluster-6f794e3fa2f771b65b47389521/arn:aws:iam::aws:policy/AmazonEKSClusterPolicy" -> null
+      - policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy" -> null
+      - role       = "pantrix-dev-cluster-6f794e3fa2f771b65b47389521" -> null
+    }
+
+  # module.eks.aws_security_group.cluster[0] will be destroyed
+  - resource "aws_security_group" "cluster" {
+      - arn                    = "arn:aws:ec2:ap-south-1:123456789012:security-group/sg-c026ecc0cd2436b33" -> null
+      - description            = "EKS cluster security group" -> null
+      - egress                 = [] -> null
+      - id                     = "sg-c026ecc0cd2436b33" -> null
+      - ingress                = [] -> null
+      - name                   = "pantrix-dev-cluster-707fa39e9dbddc0a99612c28b1" -> null
+      - name_prefix            = "pantrix-dev-cluster-" -> null
+      - owner_id               = "123456789012" -> null
+      - region                 = "ap-south-1" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {
+          - "Name" = "pantrix-dev-cluster"
+        } -> null
+      - tags_all               = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "pantrix-dev-cluster"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - vpc_id                 = "vpc-f6e482378519608b8" -> null
+    }
+
+  # module.eks.aws_security_group.node[0] will be destroyed
+  - resource "aws_security_group" "node" {
+      - arn                    = "arn:aws:ec2:ap-south-1:123456789012:security-group/sg-3f073cac7e590cf32" -> null
+      - description            = "EKS node shared security group" -> null
+      - egress                 = [] -> null
+      - id                     = "sg-3f073cac7e590cf32" -> null
+      - ingress                = [] -> null
+      - name                   = "pantrix-dev-node-64683fa727e54f08f73b88ee6a" -> null
+      - name_prefix            = "pantrix-dev-node-" -> null
+      - owner_id               = "123456789012" -> null
+      - region                 = "ap-south-1" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {
+          - "Name"                              = "pantrix-dev-node"
+          - "kubernetes.io/cluster/pantrix-dev" = "owned"
+        } -> null
+      - tags_all               = {
+          - "Environment"                       = "dev"
+          - "ManagedBy"                         = "terraform"
+          - "Name"                              = "pantrix-dev-node"
+          - "Owner"                             = "dhruv-sharma"
+          - "Project"                           = "pantrix"
+          - "Repository"                        = "pantrix"
+          - "kubernetes.io/cluster/pantrix-dev" = "owned"
+        } -> null
+      - vpc_id                 = "vpc-f6e482378519608b8" -> null
+    }
+
+  # module.eks.aws_security_group_rule.cluster["ingress_nodes_443"] will be destroyed
+  - resource "aws_security_group_rule" "cluster" {
+      - description              = "Node groups to cluster API" -> null
+      - from_port                = 443 -> null
+      - id                       = "sgrule-4062194262" -> null
+      - protocol                 = "tcp" -> null
+      - region                   = "ap-south-1" -> null
+      - security_group_id        = "sg-c026ecc0cd2436b33" -> null
+      - security_group_rule_id   = "sgr-3dce96462e4a9ae0a" -> null
+      - self                     = false -> null
+      - source_security_group_id = "sg-3f073cac7e590cf32" -> null
+      - to_port                  = 443 -> null
+      - type                     = "ingress" -> null
+    }
+
+  # module.eks.aws_security_group_rule.node["egress_all"] will be destroyed
+  - resource "aws_security_group_rule" "node" {
+      - cidr_blocks            = [
+          - "0.0.0.0/0",
+        ] -> null
+      - description            = "Allow all egress" -> null
+      - from_port              = 0 -> null
+      - id                     = "sgrule-1340274943" -> null
+      - protocol               = "-1" -> null
+      - region                 = "ap-south-1" -> null
+      - security_group_id      = "sg-3f073cac7e590cf32" -> null
+      - security_group_rule_id = "sgr-7090f6c554c54af9a" -> null
+      - self                   = false -> null
+      - to_port                = 0 -> null
+      - type                   = "egress" -> null
+    }
+
+  # module.eks.aws_security_group_rule.node["ingress_cluster_10251_webhook"] will be destroyed
+  - resource "aws_security_group_rule" "node" {
+      - description              = "Cluster API to node 10251/tcp webhook" -> null
+      - from_port                = 10251 -> null
+      - id                       = "sgrule-3854765116" -> null
+      - protocol                 = "tcp" -> null
+      - region                   = "ap-south-1" -> null
+      - security_group_id        = "sg-3f073cac7e590cf32" -> null
+      - security_group_rule_id   = "sgr-8d9055e0b4495ea9a" -> null
+      - self                     = false -> null
+      - source_security_group_id = "sg-c026ecc0cd2436b33" -> null
+      - to_port                  = 10251 -> null
+      - type                     = "ingress" -> null
+    }
+
+  # module.eks.aws_security_group_rule.node["ingress_cluster_443"] will be destroyed
+  - resource "aws_security_group_rule" "node" {
+      - description              = "Cluster API to node groups" -> null
+      - from_port                = 443 -> null
+      - id                       = "sgrule-3344274384" -> null
+      - protocol                 = "tcp" -> null
+      - region                   = "ap-south-1" -> null
+      - security_group_id        = "sg-3f073cac7e590cf32" -> null
+      - security_group_rule_id   = "sgr-14f15e560c0a8cc9a" -> null
+      - self                     = false -> null
+      - source_security_group_id = "sg-c026ecc0cd2436b33" -> null
+      - to_port                  = 443 -> null
+      - type                     = "ingress" -> null
+    }
+
+  # module.eks.aws_security_group_rule.node["ingress_cluster_4443_webhook"] will be destroyed
+  - resource "aws_security_group_rule" "node" {
+      - description              = "Cluster API to node 4443/tcp webhook" -> null
+      - from_port                = 4443 -> null
+      - id                       = "sgrule-3586783111" -> null
+      - protocol                 = "tcp" -> null
+      - region                   = "ap-south-1" -> null
+      - security_group_id        = "sg-3f073cac7e590cf32" -> null
+      - security_group_rule_id   = "sgr-f244cfd50e5e2e1d0" -> null
+      - self                     = false -> null
+      - source_security_group_id = "sg-c026ecc0cd2436b33" -> null
+      - to_port                  = 4443 -> null
+      - type                     = "ingress" -> null
+    }
+
+  # module.eks.aws_security_group_rule.node["ingress_cluster_6443_webhook"] will be destroyed
+  - resource "aws_security_group_rule" "node" {
+      - description              = "Cluster API to node 6443/tcp webhook" -> null
+      - from_port                = 6443 -> null
+      - id                       = "sgrule-478908433" -> null
+      - protocol                 = "tcp" -> null
+      - region                   = "ap-south-1" -> null
+      - security_group_id        = "sg-3f073cac7e590cf32" -> null
+      - security_group_rule_id   = "sgr-74d7bb82eda4a4b42" -> null
+      - self                     = false -> null
+      - source_security_group_id = "sg-c026ecc0cd2436b33" -> null
+      - to_port                  = 6443 -> null
+      - type                     = "ingress" -> null
+    }
+
+  # module.eks.aws_security_group_rule.node["ingress_cluster_8443_webhook"] will be destroyed
+  - resource "aws_security_group_rule" "node" {
+      - description              = "Cluster API to node 8443/tcp webhook" -> null
+      - from_port                = 8443 -> null
+      - id                       = "sgrule-265792560" -> null
+      - protocol                 = "tcp" -> null
+      - region                   = "ap-south-1" -> null
+      - security_group_id        = "sg-3f073cac7e590cf32" -> null
+      - security_group_rule_id   = "sgr-781d49fcdceb000f0" -> null
+      - self                     = false -> null
+      - source_security_group_id = "sg-c026ecc0cd2436b33" -> null
+      - to_port                  = 8443 -> null
+      - type                     = "ingress" -> null
+    }
+
+  # module.eks.aws_security_group_rule.node["ingress_cluster_9443_webhook"] will be destroyed
+  - resource "aws_security_group_rule" "node" {
+      - description              = "Cluster API to node 9443/tcp webhook" -> null
+      - from_port                = 9443 -> null
+      - id                       = "sgrule-1802936315" -> null
+      - protocol                 = "tcp" -> null
+      - region                   = "ap-south-1" -> null
+      - security_group_id        = "sg-3f073cac7e590cf32" -> null
+      - security_group_rule_id   = "sgr-cabde65784951fc6a" -> null
+      - self                     = false -> null
+      - source_security_group_id = "sg-c026ecc0cd2436b33" -> null
+      - to_port                  = 9443 -> null
+      - type                     = "ingress" -> null
+    }
+
+  # module.eks.aws_security_group_rule.node["ingress_cluster_kubelet"] will be destroyed
+  - resource "aws_security_group_rule" "node" {
+      - description              = "Cluster API to node kubelets" -> null
+      - from_port                = 10250 -> null
+      - id                       = "sgrule-3515505735" -> null
+      - protocol                 = "tcp" -> null
+      - region                   = "ap-south-1" -> null
+      - security_group_id        = "sg-3f073cac7e590cf32" -> null
+      - security_group_rule_id   = "sgr-a4ec66c9511f83fc1" -> null
+      - self                     = false -> null
+      - source_security_group_id = "sg-c026ecc0cd2436b33" -> null
+      - to_port                  = 10250 -> null
+      - type                     = "ingress" -> null
+    }
+
+  # module.eks.aws_security_group_rule.node["ingress_nodes_ephemeral"] will be destroyed
+  - resource "aws_security_group_rule" "node" {
+      - description            = "Node to node ingress on ephemeral ports" -> null
+      - from_port              = 1025 -> null
+      - id                     = "sgrule-2506802939" -> null
+      - protocol               = "tcp" -> null
+      - region                 = "ap-south-1" -> null
+      - security_group_id      = "sg-3f073cac7e590cf32" -> null
+      - security_group_rule_id = "sgr-8cfb2ff5cb21952fe" -> null
+      - self                   = true -> null
+      - to_port                = 65535 -> null
+      - type                   = "ingress" -> null
+    }
+
+  # module.eks.aws_security_group_rule.node["ingress_self_coredns_tcp"] will be destroyed
+  - resource "aws_security_group_rule" "node" {
+      - description            = "Node to node CoreDNS" -> null
+      - from_port              = 53 -> null
+      - id                     = "sgrule-535396337" -> null
+      - protocol               = "tcp" -> null
+      - region                 = "ap-south-1" -> null
+      - security_group_id      = "sg-3f073cac7e590cf32" -> null
+      - security_group_rule_id = "sgr-72949aabc849d03b7" -> null
+      - self                   = true -> null
+      - to_port                = 53 -> null
+      - type                   = "ingress" -> null
+    }
+
+  # module.eks.aws_security_group_rule.node["ingress_self_coredns_udp"] will be destroyed
+  - resource "aws_security_group_rule" "node" {
+      - description            = "Node to node CoreDNS UDP" -> null
+      - from_port              = 53 -> null
+      - id                     = "sgrule-3149323294" -> null
+      - protocol               = "udp" -> null
+      - region                 = "ap-south-1" -> null
+      - security_group_id      = "sg-3f073cac7e590cf32" -> null
+      - security_group_rule_id = "sgr-c2a552ffe0d52e7fe" -> null
+      - self                   = true -> null
+      - to_port                = 53 -> null
+      - type                   = "ingress" -> null
+    }
+
+  # module.eks.time_sleep.this[0] will be destroyed
+  - resource "time_sleep" "this" {
+      - create_duration = "30s" -> null
+      - id              = "2026-10-12T18:33:25Z" -> null
+      - triggers        = {
+          - "certificate_authority_data" = "2C8OjTh09kVNy5AihVT7Nu4sS0je9LgAEKDM0dvDYvK6RnblMqqDBhEpvmcXKPeNeKMqYjBK9Y21WxkeCJTlxhsqaelbdxfOfzy8EeD0FJUO7pkGUxcikPVrLulwtbunTglbedM2GnzA18TMS97sQPmdRoEOPzlkwB39NNEK1CC0AEBt5UI7DDpRIDE4LoXReAcOfVflxrbfN7PQObdq4grlFmpbAuHfQfDWjO6r3Efz9INAi4pqtpqUq9u5fpYUZsLttIYMnw4wk1ENeosN9CPV8x6Kp7SnXULQNxGL2G1stXu0k0h9hNwIh1OisrQnwfNwfSMMNsXl8pVqDR7RiOFm5CVz2qvmrrPPRCTMpEcXsFJBKbP8XMqcX2ueabKvcczqQaTSKHRvGJDCqYplgSEcl2KAoqO0QqnPfJBGJw4m2Ag1cvyFa45boN8yFveaXxRfyZms6goaDjhI4MlwE9pAwmyfMzSChesSrVAi0ewt7DzUMzScGbBvD8KqbsAn1JIv44UaAOHbbOFtp3W4tFDojoj1m3WKbVPpLgPAqpViDoPLB4269wYupzwI7RPeOVHxvOk0JGLKtyjR1OdwNZNFnFk1jAt0tSe4SGEmrAq3Gvfnp9d1qaufVnDrYpp2eCZsJSglg2WhAUQp6vKoMMctMaUnZ9G7xCt4Dr5AFb0LqEdydZW8EQWBCl69mzGa7q98riZCeu2MpnSdAJ5mMK4VL717lf38WvSTroRdsjI59nqWEjl466xACXUi9aFKI8vwLsaV71IQOIK0FC4rRaZwMXYcgqS0404tntaDxZWsTjP2jRuqrJg87XaPHwr1QKViDIYWHys8MAzth3rHelmuoxyBP1MkIm2csPLmfAgyrGt93F8yh6Vd1jsOXDHtmZsB7njXtfFoH4QSQOA5AMnzJWPvxWx3OJJBl6gybH3xmIiWMIdctnthbZyZFuLNYHOcQQpBbBWB5WSYyigY64ctwnsvePLHNmJ7bOGsqafQQ89ViT8WI33Xtwy1klUEpYdWIpKJdKsK5xDPgcmSraw7IbL6svco5sEqJw8aLHULdaKdrYuq46xxnqy2k7rWx0sXEJTRVkGKVWLi3hSBimMzfF4o55eMlVWYA1dcT6ey175k8VcJlmy07gTVPGsPn9uCO3PiRTZJouYevQz8zTX61JcYVWy07v2gDQmdehgZg3Z1jYcO7iZvG3Hue4dUNelqKf2M2znL30vlH0YmWZZe1FR7PiRYIeBWASZAdQIjffaXQERmXuG8k7f8EkHOND2WUZ7uBHHRjvXPqVp4LGkIgsvqsr7NDJggSqhYL4Gjgndjz36F08FE6TG8YTceb5pRzcpLonFHyu7WozJxFI2lQb9fQUJQJWIgkt91SluCwzzlszaJMHAG"
+          - "endpoint"                   = "https://Wqs8PQ3k59HEjaNETPjs.oTP.ap-south-1.eks.amazonaws.com/"
+          - "kubernetes_version"         = "1.35"
+          - "name"                       = "pantrix-dev"
+          - "service_cidr"               = null
+        } -> null
+    }
+
+  # module.vpc.aws_cloudwatch_log_group.flow_log[0] will be destroyed
+  - resource "aws_cloudwatch_log_group" "flow_log" {
+      - arn                         = "arn:aws:logs:ap-south-1:123456789012:log-group:/aws/vpc-flow-log/vpc-f6e482378519608b8" -> null
+      - deletion_protection_enabled = false -> null
+      - id                          = "/aws/vpc-flow-log/vpc-f6e482378519608b8" -> null
+      - name                        = "/aws/vpc-flow-log/vpc-f6e482378519608b8" -> null
+      - region                      = "ap-south-1" -> null
+      - retention_in_days           = 7 -> null
+      - skip_destroy                = false -> null
+      - tags_all                    = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+        # (3 unchanged attributes hidden)
+    }
+
+  # module.vpc.aws_default_network_acl.this[0] will be destroyed
+  - resource "aws_default_network_acl" "this" {
+      - arn                    = "arn:aws:ec2:ap-south-1:123456789012:network-acl/acl-633ebf42ce891db46" -> null
+      - default_network_acl_id = "acl-633ebf42ce891db46" -> null
+      - id                     = "acl-633ebf42ce891db46" -> null
+      - owner_id               = "123456789012" -> null
+      - region                 = "ap-south-1" -> null
+      - subnet_ids             = [
+          - "subnet-5a719f11f4a3a37c5",
+          - "subnet-73d206acf914f0475",
+          - "subnet-8354bc37447cc2a8a",
+          - "subnet-afaf617cc0cf26cfb",
+        ] -> null
+      - tags                   = {
+          - "Name" = "pantrix-dev-default"
+        } -> null
+      - tags_all               = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "pantrix-dev-default"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - vpc_id                 = "vpc-f6e482378519608b8" -> null
+
+      - egress {
+          - action          = "allow" -> null
+          - from_port       = 0 -> null
+          - ipv6_cidr_block = "::/0" -> null
+          - protocol        = "-1" -> null
+          - rule_no         = 101 -> null
+          - to_port         = 0 -> null
+            # (1 unchanged attribute hidden)
+        }
+      - egress {
+          - action          = "allow" -> null
+          - cidr_block      = "0.0.0.0/0" -> null
+          - from_port       = 0 -> null
+          - protocol        = "-1" -> null
+          - rule_no         = 100 -> null
+          - to_port         = 0 -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - ingress {
+          - action          = "allow" -> null
+          - from_port       = 0 -> null
+          - ipv6_cidr_block = "::/0" -> null
+          - protocol        = "-1" -> null
+          - rule_no         = 101 -> null
+          - to_port         = 0 -> null
+            # (1 unchanged attribute hidden)
+        }
+      - ingress {
+          - action          = "allow" -> null
+          - cidr_block      = "0.0.0.0/0" -> null
+          - from_port       = 0 -> null
+          - protocol        = "-1" -> null
+          - rule_no         = 100 -> null
+          - to_port         = 0 -> null
+            # (1 unchanged attribute hidden)
+        }
+    }
+
+  # module.vpc.aws_default_route_table.default[0] will be destroyed
+  - resource "aws_default_route_table" "default" {
+      - arn                    = "arn:aws:ec2:ap-south-1:123456789012:route-table/rtb-573d2e82f654ac9c0" -> null
+      - default_route_table_id = "rtb-573d2e82f654ac9c0" -> null
+      - id                     = "rtb-573d2e82f654ac9c0" -> null
+      - owner_id               = "123456789012" -> null
+      - region                 = "ap-south-1" -> null
+      - route                  = [] -> null
+      - tags                   = {
+          - "Name" = "pantrix-dev-default"
+        } -> null
+      - tags_all               = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "pantrix-dev-default"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - vpc_id                 = "vpc-f6e482378519608b8" -> null
+
+      - timeouts {
+          - create = "5m" -> null
+          - update = "5m" -> null
+        }
+    }
+
+  # module.vpc.aws_default_security_group.this[0] will be destroyed
+  - resource "aws_default_security_group" "this" {
+      - arn                    = "arn:aws:ec2:ap-south-1:123456789012:security-group/sg-2eef6c871c988e70c" -> null
+      - description            = "default VPC security group" -> null
+      - egress                 = [] -> null
+      - id                     = "sg-2eef6c871c988e70c" -> null
+      - ingress                = [] -> null
+      - name                   = "default" -> null
+      - owner_id               = "123456789012" -> null
+      - region                 = "ap-south-1" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {
+          - "Name" = "pantrix-dev-default"
+        } -> null
+      - tags_all               = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "pantrix-dev-default"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - vpc_id                 = "vpc-f6e482378519608b8" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.vpc.aws_eip.nat[0] will be destroyed
+  - resource "aws_eip" "nat" {
+      - allocation_id            = "eipalloc-ee349e6a925cdfbdb" -> null
+      - arn                      = "arn:aws:ec2:ap-south-1:123456789012:elastic-ip/eipalloc-ee349e6a925cdfbdb" -> null
+      - domain                   = "vpc" -> null
+      - id                       = "eipalloc-ee349e6a925cdfbdb" -> null
+      - public_dns               = "ec2-127-105-119-252.ap-south-1.compute.amazonaws.com" -> null
+      - public_ip                = "127.105.119.252" -> null
+      - region                   = "ap-south-1" -> null
+      - tags                     = {
+          - "Name" = "pantrix-dev-ap-south-1a"
+        } -> null
+      - tags_all                 = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "pantrix-dev-ap-south-1a"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+        # (12 unchanged attributes hidden)
+    }
+
+  # module.vpc.aws_flow_log.this[0] will be destroyed
+  - resource "aws_flow_log" "this" {
+      - arn                        = "arn:aws:ec2:ap-south-1:123456789012:vpc-flow-log/fl-2347a684d1f921966" -> null
+      - iam_role_arn               = "arn:aws:iam::123456789012:role/vpc-flow-log-role-b3de9999127ae73339b3516046" -> null
+      - id                         = "fl-2347a684d1f921966" -> null
+      - log_destination            = "arn:aws:logs:ap-south-1:123456789012:log-group:/aws/vpc-flow-log/vpc-f6e482378519608b8" -> null
+      - log_destination_type       = "cloud-watch-logs" -> null
+      - log_format                 = "${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status}" -> null
+      - max_aggregation_interval   = 600 -> null
+      - region                     = "ap-south-1" -> null
+      - tags_all                   = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - traffic_type               = "ALL" -> null
+      - vpc_id                     = "vpc-f6e482378519608b8" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.vpc.aws_iam_policy.vpc_flow_log_cloudwatch[0] will be destroyed
+  - resource "aws_iam_policy" "vpc_flow_log_cloudwatch" {
+      - arn              = "arn:aws:iam::123456789012:policy/vpc-flow-log-to-cloudwatch-962c9f9663ffef028b414ba862" -> null
+      - attachment_count = 0 -> null
+      - id               = "arn:aws:iam::123456789012:policy/vpc-flow-log-to-cloudwatch-962c9f9663ffef028b414ba862" -> null
+      - name             = "vpc-flow-log-to-cloudwatch-962c9f9663ffef028b414ba862" -> null
+      - name_prefix      = "vpc-flow-log-to-cloudwatch-" -> null
+      - path             = "/" -> null
+      - policy           = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action   = [
+                          - "logs:PutLogEvents",
+                          - "logs:DescribeLogStreams",
+                          - "logs:DescribeLogGroups",
+                          - "logs:CreateLogStream",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = "arn:aws:logs:ap-south-1:123456789012:log-group:/aws/vpc-flow-log/vpc-f6e482378519608b8:*"
+                      - Sid      = "AWSVPCFlowLogsPushToCloudWatch"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - policy_id        = "AEYD3R4WYXGDZ8SUIV525" -> null
+      - tags_all         = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.vpc.aws_iam_role.vpc_flow_log_cloudwatch[0] will be destroyed
+  - resource "aws_iam_role" "vpc_flow_log_cloudwatch" {
+      - arn                   = "arn:aws:iam::123456789012:role/vpc-flow-log-role-b3de9999127ae73339b3516046" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "sts:AssumeRole"
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - Service = "vpc-flow-logs.amazonaws.com"
+                        }
+                      - Sid       = "AWSVPCFlowLogsAssumeRole"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-10-12T18:32:43Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "vpc-flow-log-role-b3de9999127ae73339b3516046" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "vpc-flow-log-role-b3de9999127ae73339b3516046" -> null
+      - name_prefix           = "vpc-flow-log-role-" -> null
+      - path                  = "/" -> null
+      - tags_all              = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - unique_id             = "AROARZPUZDIKOIKCWMJH3" -> null
+        # (2 unchanged attributes hidden)
+    }
+
+  # module.vpc.aws_iam_role_policy_attachment.vpc_flow_log_cloudwatch[0] will be destroyed
+  - resource "aws_iam_role_policy_attachment" "vpc_flow_log_cloudwatch" {
+      - id         = "vpc-flow-log-role-b3de9999127ae73339b3516046/arn:aws:iam::123456789012:policy/vpc-flow-log-to-cloudwatch-962c9f9663ffef028b414ba862" -> null
+      - policy_arn = "arn:aws:iam::123456789012:policy/vpc-flow-log-to-cloudwatch-962c9f9663ffef028b414ba862" -> null
+      - role       = "vpc-flow-log-role-b3de9999127ae73339b3516046" -> null
+    }
+
+  # module.vpc.aws_internet_gateway.this[0] will be destroyed
+  - resource "aws_internet_gateway" "this" {
+      - arn      = "arn:aws:ec2:ap-south-1:123456789012:internet-gateway/igw-c254ac3512d94b910" -> null
+      - id       = "igw-c254ac3512d94b910" -> null
+      - owner_id = "123456789012" -> null
+      - region   = "ap-south-1" -> null
+      - tags     = {
+          - "Name" = "pantrix-dev"
+        } -> null
+      - tags_all = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "pantrix-dev"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - vpc_id   = "vpc-f6e482378519608b8" -> null
+    }
+
+  # module.vpc.aws_nat_gateway.this[0] will be destroyed
+  - resource "aws_nat_gateway" "this" {
+      - allocation_id                  = "eipalloc-ee349e6a925cdfbdb" -> null
+      - connectivity_type              = "public" -> null
+      - id                             = "nat-3af93bb267b95b445" -> null
+      - region                         = "ap-south-1" -> null
+      - regional_nat_gateway_address   = [] -> null
+      - secondary_allocation_ids       = [] -> null
+      - secondary_private_ip_addresses = [] -> null
+      - subnet_id                      = "subnet-5a719f11f4a3a37c5" -> null
+      - tags                           = {
+          - "Name" = "pantrix-dev-ap-south-1a"
+        } -> null
+      - tags_all                       = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "pantrix-dev-ap-south-1a"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - vpc_id                         = "vpc-f6e482378519608b8" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.vpc.aws_route.private_nat_gateway[0] will be destroyed
+  - resource "aws_route" "private_nat_gateway" {
+      - destination_cidr_block      = "0.0.0.0/0" -> null
+      - id                          = "r-rtb-0376a7992d384957c1080289494" -> null
+      - nat_gateway_id              = "nat-3af93bb267b95b445" -> null
+      - origin                      = "CreateRoute" -> null
+      - region                      = "ap-south-1" -> null
+      - route_table_id              = "rtb-0376a7992d384957c" -> null
+      - state                       = "active" -> null
+        # (14 unchanged attributes hidden)
+
+      - timeouts {
+          - create = "5m" -> null
+        }
+    }
+
+  # module.vpc.aws_route.public_internet_gateway[0] will be destroyed
+  - resource "aws_route" "public_internet_gateway" {
+      - destination_cidr_block      = "0.0.0.0/0" -> null
+      - gateway_id                  = "igw-c254ac3512d94b910" -> null
+      - id                          = "r-rtb-597c3ff60b130dc411080289494" -> null
+      - origin                      = "CreateRoute" -> null
+      - region                      = "ap-south-1" -> null
+      - route_table_id              = "rtb-597c3ff60b130dc41" -> null
+      - state                       = "active" -> null
+        # (14 unchanged attributes hidden)
+
+      - timeouts {
+          - create = "5m" -> null
+        }
+    }
+
+  # module.vpc.aws_route_table.private[0] will be destroyed
+  - resource "aws_route_table" "private" {
+      - arn              = "arn:aws:ec2:ap-south-1:123456789012:route-table/rtb-0376a7992d384957c" -> null
+      - id               = "rtb-0376a7992d384957c" -> null
+      - owner_id         = "123456789012" -> null
+      - propagating_vgws = [] -> null
+      - region           = "ap-south-1" -> null
+      - route            = [] -> null
+      - tags             = {
+          - "Name" = "pantrix-dev-private"
+        } -> null
+      - tags_all         = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "pantrix-dev-private"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - vpc_id           = "vpc-f6e482378519608b8" -> null
+    }
+
+  # module.vpc.aws_route_table.public[0] will be destroyed
+  - resource "aws_route_table" "public" {
+      - arn              = "arn:aws:ec2:ap-south-1:123456789012:route-table/rtb-597c3ff60b130dc41" -> null
+      - id               = "rtb-597c3ff60b130dc41" -> null
+      - owner_id         = "123456789012" -> null
+      - propagating_vgws = [] -> null
+      - region           = "ap-south-1" -> null
+      - route            = [] -> null
+      - tags             = {
+          - "Name" = "pantrix-dev-public"
+        } -> null
+      - tags_all         = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "pantrix-dev-public"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - vpc_id           = "vpc-f6e482378519608b8" -> null
+    }
+
+  # module.vpc.aws_route_table_association.private[0] will be destroyed
+  - resource "aws_route_table_association" "private" {
+      - id             = "rtbassoc-3049f70a26a94cb37" -> null
+      - region         = "ap-south-1" -> null
+      - route_table_id = "rtb-0376a7992d384957c" -> null
+      - subnet_id      = "subnet-8354bc37447cc2a8a" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.vpc.aws_route_table_association.private[1] will be destroyed
+  - resource "aws_route_table_association" "private" {
+      - id             = "rtbassoc-a4085c1227af9a2d3" -> null
+      - region         = "ap-south-1" -> null
+      - route_table_id = "rtb-0376a7992d384957c" -> null
+      - subnet_id      = "subnet-afaf617cc0cf26cfb" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.vpc.aws_route_table_association.public[0] will be destroyed
+  - resource "aws_route_table_association" "public" {
+      - id             = "rtbassoc-0acc45a954134d099" -> null
+      - region         = "ap-south-1" -> null
+      - route_table_id = "rtb-597c3ff60b130dc41" -> null
+      - subnet_id      = "subnet-5a719f11f4a3a37c5" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.vpc.aws_route_table_association.public[1] will be destroyed
+  - resource "aws_route_table_association" "public" {
+      - id             = "rtbassoc-8c7f3852e110692ab" -> null
+      - region         = "ap-south-1" -> null
+      - route_table_id = "rtb-597c3ff60b130dc41" -> null
+      - subnet_id      = "subnet-73d206acf914f0475" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.vpc.aws_subnet.private[0] will be destroyed
+  - resource "aws_subnet" "private" {
+      - arn                                            = "arn:aws:ec2:ap-south-1:123456789012:subnet/subnet-8354bc37447cc2a8a" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "ap-south-1a" -> null
+      - availability_zone_id                           = "aps1-az1" -> null
+      - cidr_block                                     = "10.42.48.0/20" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-8354bc37447cc2a8a" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = false -> null
+      - owner_id                                       = "123456789012" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - region                                         = "ap-south-1" -> null
+      - tags                                           = {
+          - "Name"                            = "pantrix-dev-private-ap-south-1a"
+          - "kubernetes.io/role/internal-elb" = "1"
+        } -> null
+      - tags_all                                       = {
+          - "Environment"                     = "dev"
+          - "ManagedBy"                       = "terraform"
+          - "Name"                            = "pantrix-dev-private-ap-south-1a"
+          - "Owner"                           = "dhruv-sharma"
+          - "Project"                         = "pantrix"
+          - "Repository"                      = "pantrix"
+          - "kubernetes.io/role/internal-elb" = "1"
+        } -> null
+      - vpc_id                                         = "vpc-f6e482378519608b8" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # module.vpc.aws_subnet.private[1] will be destroyed
+  - resource "aws_subnet" "private" {
+      - arn                                            = "arn:aws:ec2:ap-south-1:123456789012:subnet/subnet-afaf617cc0cf26cfb" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "ap-south-1b" -> null
+      - availability_zone_id                           = "aps1-az3" -> null
+      - cidr_block                                     = "10.42.64.0/20" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-afaf617cc0cf26cfb" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = false -> null
+      - owner_id                                       = "123456789012" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - region                                         = "ap-south-1" -> null
+      - tags                                           = {
+          - "Name"                            = "pantrix-dev-private-ap-south-1b"
+          - "kubernetes.io/role/internal-elb" = "1"
+        } -> null
+      - tags_all                                       = {
+          - "Environment"                     = "dev"
+          - "ManagedBy"                       = "terraform"
+          - "Name"                            = "pantrix-dev-private-ap-south-1b"
+          - "Owner"                           = "dhruv-sharma"
+          - "Project"                         = "pantrix"
+          - "Repository"                      = "pantrix"
+          - "kubernetes.io/role/internal-elb" = "1"
+        } -> null
+      - vpc_id                                         = "vpc-f6e482378519608b8" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # module.vpc.aws_subnet.public[0] will be destroyed
+  - resource "aws_subnet" "public" {
+      - arn                                            = "arn:aws:ec2:ap-south-1:123456789012:subnet/subnet-5a719f11f4a3a37c5" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "ap-south-1a" -> null
+      - availability_zone_id                           = "aps1-az1" -> null
+      - cidr_block                                     = "10.42.0.0/20" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-5a719f11f4a3a37c5" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = false -> null
+      - owner_id                                       = "123456789012" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - region                                         = "ap-south-1" -> null
+      - tags                                           = {
+          - "Name"                   = "pantrix-dev-public-ap-south-1a"
+          - "kubernetes.io/role/elb" = "1"
+        } -> null
+      - tags_all                                       = {
+          - "Environment"            = "dev"
+          - "ManagedBy"              = "terraform"
+          - "Name"                   = "pantrix-dev-public-ap-south-1a"
+          - "Owner"                  = "dhruv-sharma"
+          - "Project"                = "pantrix"
+          - "Repository"             = "pantrix"
+          - "kubernetes.io/role/elb" = "1"
+        } -> null
+      - vpc_id                                         = "vpc-f6e482378519608b8" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # module.vpc.aws_subnet.public[1] will be destroyed
+  - resource "aws_subnet" "public" {
+      - arn                                            = "arn:aws:ec2:ap-south-1:123456789012:subnet/subnet-73d206acf914f0475" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "ap-south-1b" -> null
+      - availability_zone_id                           = "aps1-az3" -> null
+      - cidr_block                                     = "10.42.16.0/20" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-73d206acf914f0475" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = false -> null
+      - owner_id                                       = "123456789012" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - region                                         = "ap-south-1" -> null
+      - tags                                           = {
+          - "Name"                   = "pantrix-dev-public-ap-south-1b"
+          - "kubernetes.io/role/elb" = "1"
+        } -> null
+      - tags_all                                       = {
+          - "Environment"            = "dev"
+          - "ManagedBy"              = "terraform"
+          - "Name"                   = "pantrix-dev-public-ap-south-1b"
+          - "Owner"                  = "dhruv-sharma"
+          - "Project"                = "pantrix"
+          - "Repository"             = "pantrix"
+          - "kubernetes.io/role/elb" = "1"
+        } -> null
+      - vpc_id                                         = "vpc-f6e482378519608b8" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # module.vpc.aws_vpc.this[0] will be destroyed
+  - resource "aws_vpc" "this" {
+      - arn                                  = "arn:aws:ec2:ap-south-1:123456789012:vpc/vpc-f6e482378519608b8" -> null
+      - assign_generated_ipv6_cidr_block     = false -> null
+      - cidr_block                           = "10.42.0.0/16" -> null
+      - default_network_acl_id               = "acl-633ebf42ce891db46" -> null
+      - default_route_table_id               = "rtb-573d2e82f654ac9c0" -> null
+      - default_security_group_id            = "sg-2eef6c871c988e70c" -> null
+      - dhcp_options_id                      = "default" -> null
+      - enable_dns_hostnames                 = true -> null
+      - enable_dns_support                   = true -> null
+      - enable_network_address_usage_metrics = false -> null
+      - id                                   = "vpc-f6e482378519608b8" -> null
+      - instance_tenancy                     = "default" -> null
+      - ipv6_netmask_length                  = 0 -> null
+      - main_route_table_id                  = "rtb-573d2e82f654ac9c0" -> null
+      - owner_id                             = "123456789012" -> null
+      - region                               = "ap-south-1" -> null
+      - tags                                 = {
+          - "Name" = "pantrix-dev"
+        } -> null
+      - tags_all                             = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "pantrix-dev"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # module.eks.module.eks_managed_node_group["general"].aws_eks_node_group.this[0] will be destroyed
+  - resource "aws_eks_node_group" "this" {
+      - ami_type               = "AL2023_x86_64_STANDARD" -> null
+      - arn                    = "arn:aws:eks:ap-south-1:123456789012:nodegroup/pantrix-dev/general-86cfb3a5ff601f4c0983516103/af070601-3093-4352-9097-70706823bdfe" -> null
+      - capacity_type          = "ON_DEMAND" -> null
+      - cluster_name           = "pantrix-dev" -> null
+      - disk_size              = 20 -> null
+      - id                     = "pantrix-dev:general-86cfb3a5ff601f4c0983516103" -> null
+      - instance_types         = [
+          - "t3.medium",
+        ] -> null
+      - labels                 = {
+          - "workload" = "pantrix"
+        } -> null
+      - node_group_name        = "general-86cfb3a5ff601f4c0983516103" -> null
+      - node_group_name_prefix = "general-" -> null
+      - node_role_arn          = "arn:aws:iam::123456789012:role/general-eks-node-group-3e13b78722e80573dfbd94737d" -> null
+      - region                 = "ap-south-1" -> null
+      - release_version        = "1.19.8-20210414" -> null
+      - resources              = [
+          - {
+              - autoscaling_groups              = [
+                  - {
+                      - name = "eks-af070601-3093-4352-9097-70706823bdfe"
+                    },
+                ]
+              - remote_access_security_group_id = "sg-odb5zmsxmft21hsnd"
+            },
+        ] -> null
+      - status                 = "ACTIVE" -> null
+      - subnet_ids             = [
+          - "subnet-8354bc37447cc2a8a",
+          - "subnet-afaf617cc0cf26cfb",
+        ] -> null
+      - tags                   = {
+          - "Name" = "general"
+        } -> null
+      - tags_all               = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Name"        = "general"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - version                = "1.35" -> null
+
+      - launch_template {
+          - id      = "lt-f38abc4db64168eb6" -> null
+          - name    = "general-4247950cae8555eec35067d968" -> null
+          - version = "1" -> null
+        }
+
+      - remote_access {
+          - ec2_ssh_key               = "eksKeypair" -> null
+          - source_security_group_ids = [] -> null
+        }
+
+      - scaling_config {
+          - desired_size = 2 -> null
+          - max_size     = 3 -> null
+          - min_size     = 1 -> null
+        }
+    }
+
+  # module.eks.module.eks_managed_node_group["general"].aws_iam_role.this[0] will be destroyed
+  - resource "aws_iam_role" "this" {
+      - arn                   = "arn:aws:iam::123456789012:role/general-eks-node-group-3e13b78722e80573dfbd94737d" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "sts:AssumeRole"
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - Service = "ec2.amazonaws.com"
+                        }
+                      - Sid       = "EKSNodeAssumeRole"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-10-12T18:32:43Z" -> null
+      - description           = "EKS managed node group IAM role" -> null
+      - force_detach_policies = true -> null
+      - id                    = "general-eks-node-group-3e13b78722e80573dfbd94737d" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "general-eks-node-group-3e13b78722e80573dfbd94737d" -> null
+      - name_prefix           = "general-eks-node-group-" -> null
+      - path                  = "/" -> null
+      - tags_all              = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - unique_id             = "AROARZPUZDIKOO6OYEL5F" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.eks.module.eks_managed_node_group["general"].aws_iam_role_policy_attachment.this["AmazonEC2ContainerRegistryReadOnly"] will be destroyed
+  - resource "aws_iam_role_policy_attachment" "this" {
+      - id         = "general-eks-node-group-3e13b78722e80573dfbd94737d/arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly" -> null
+      - policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly" -> null
+      - role       = "general-eks-node-group-3e13b78722e80573dfbd94737d" -> null
+    }
+
+  # module.eks.module.eks_managed_node_group["general"].aws_iam_role_policy_attachment.this["AmazonEKSWorkerNodePolicy"] will be destroyed
+  - resource "aws_iam_role_policy_attachment" "this" {
+      - id         = "general-eks-node-group-3e13b78722e80573dfbd94737d/arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy" -> null
+      - policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy" -> null
+      - role       = "general-eks-node-group-3e13b78722e80573dfbd94737d" -> null
+    }
+
+  # module.eks.module.eks_managed_node_group["general"].aws_iam_role_policy_attachment.this["AmazonEKS_CNI_Policy"] will be destroyed
+  - resource "aws_iam_role_policy_attachment" "this" {
+      - id         = "general-eks-node-group-3e13b78722e80573dfbd94737d/arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy" -> null
+      - policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy" -> null
+      - role       = "general-eks-node-group-3e13b78722e80573dfbd94737d" -> null
+    }
+
+  # module.eks.module.eks_managed_node_group["general"].aws_launch_template.this[0] will be destroyed
+  - resource "aws_launch_template" "this" {
+      - arn                                  = "arn:aws:ec2:ap-south-1:123456789012:launch-template/lt-f38abc4db64168eb6" -> null
+      - default_version                      = 1 -> null
+      - description                          = "Custom launch template for general EKS managed node group" -> null
+      - disable_api_stop                     = false -> null
+      - disable_api_termination              = false -> null
+      - id                                   = "lt-f38abc4db64168eb6" -> null
+      - latest_version                       = 1 -> null
+      - name                                 = "general-4247950cae8555eec35067d968" -> null
+      - name_prefix                          = "general-" -> null
+      - region                               = "ap-south-1" -> null
+      - tags_all                             = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+      - update_default_version               = true -> null
+      - vpc_security_group_ids               = [
+          - "sg-3f073cac7e590cf32",
+        ] -> null
+        # (8 unchanged attributes hidden)
+
+      - metadata_options {
+          - http_endpoint               = "enabled" -> null
+          - http_put_response_hop_limit = 1 -> null
+          - http_tokens                 = "required" -> null
+            # (2 unchanged attributes hidden)
+        }
+
+      - tag_specifications {
+          - resource_type = "instance" -> null
+          - tags          = {
+              - "Name" = "general"
+            } -> null
+        }
+      - tag_specifications {
+          - resource_type = "network-interface" -> null
+          - tags          = {
+              - "Name" = "general"
+            } -> null
+        }
+      - tag_specifications {
+          - resource_type = "volume" -> null
+          - tags          = {
+              - "Name" = "general"
+            } -> null
+        }
+      - tag_specifications {
+          - resource_type = "launch-template" -> null
+          - tags          = {
+              - "Environment" = "dev"
+              - "ManagedBy"   = "terraform"
+              - "Owner"       = "dhruv-sharma"
+              - "Project"     = "pantrix"
+              - "Repository"  = "pantrix"
+            } -> null
+        }
+    }
+
+  # module.eks.module.kms.aws_kms_alias.this["cluster"] will be destroyed
+  - resource "aws_kms_alias" "this" {
+      - arn            = "arn:aws:kms:ap-south-1:123456789012:alias/eks/pantrix-dev" -> null
+      - id             = "alias/eks/pantrix-dev" -> null
+      - name           = "alias/eks/pantrix-dev" -> null
+      - region         = "ap-south-1" -> null
+      - target_key_arn = "arn:aws:kms:ap-south-1:123456789012:key/3483a11c-e019-4791-be65-3d19d6b011af" -> null
+      - target_key_id  = "3483a11c-e019-4791-be65-3d19d6b011af" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.eks.module.kms.aws_kms_key.this[0] will be destroyed
+  - resource "aws_kms_key" "this" {
+      - arn                                = "arn:aws:kms:ap-south-1:123456789012:key/3483a11c-e019-4791-be65-3d19d6b011af" -> null
+      - bypass_policy_lockout_safety_check = false -> null
+      - customer_master_key_spec           = "SYMMETRIC_DEFAULT" -> null
+      - description                        = "pantrix-dev cluster encryption key" -> null
+      - enable_key_rotation                = true -> null
+      - id                                 = "3483a11c-e019-4791-be65-3d19d6b011af" -> null
+      - is_enabled                         = true -> null
+      - key_id                             = "3483a11c-e019-4791-be65-3d19d6b011af" -> null
+      - key_usage                          = "ENCRYPT_DECRYPT" -> null
+      - multi_region                       = false -> null
+      - policy                             = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "kms:*"
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - AWS = "arn:aws:iam::123456789012:root"
+                        }
+                      - Resource  = "*"
+                      - Sid       = "Default"
+                    },
+                  - {
+                      - Action    = [
+                          - "kms:Update*",
+                          - "kms:UntagResource",
+                          - "kms:TagResource",
+                          - "kms:ScheduleKeyDeletion",
+                          - "kms:Revoke*",
+                          - "kms:ReplicateKey",
+                          - "kms:Put*",
+                          - "kms:List*",
+                          - "kms:ImportKeyMaterial",
+                          - "kms:Get*",
+                          - "kms:Enable*",
+                          - "kms:Disable*",
+                          - "kms:Describe*",
+                          - "kms:Delete*",
+                          - "kms:Create*",
+                          - "kms:CancelKeyDeletion",
+                        ]
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - AWS = "arn:aws:sts::123456789012:user/moto"
+                        }
+                      - Resource  = "*"
+                      - Sid       = "KeyAdministration"
+                    },
+                  - {
+                      - Action    = [
+                          - "kms:ReEncrypt*",
+                          - "kms:GenerateDataKey*",
+                          - "kms:Encrypt",
+                          - "kms:DescribeKey",
+                          - "kms:Decrypt",
+                        ]
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - AWS = "arn:aws:iam::123456789012:role/pantrix-dev-cluster-6f794e3fa2f771b65b47389521"
+                        }
+                      - Resource  = "*"
+                      - Sid       = "KeyUsage"
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - region                             = "ap-south-1" -> null
+      - rotation_period_in_days            = 0 -> null
+      - tags_all                           = {
+          - "Environment" = "dev"
+          - "ManagedBy"   = "terraform"
+          - "Owner"       = "dhruv-sharma"
+          - "Project"     = "pantrix"
+          - "Repository"  = "pantrix"
+        } -> null
+        # (2 unchanged attributes hidden)
+    }
+
+Plan: 0 to add, 0 to change, 54 to destroy.
+
+Changes to Outputs:
+  - cluster_name       = "pantrix-dev" -> null
+  - cluster_version    = "1.35" -> null
+  - configure_kubectl  = "aws eks update-kubeconfig --region ap-south-1 --name pantrix-dev" -> null
+  - nat_gateway_ids    = [
+      - "nat-3af93bb267b95b445",
+    ] -> null
+  - node_group_names   = [
+      - "general",
+    ] -> null
+  - private_subnet_ids = [
+      - "subnet-8354bc37447cc2a8a",
+      - "subnet-afaf617cc0cf26cfb",
+    ] -> null
+  - public_subnet_ids  = [
+      - "subnet-5a719f11f4a3a37c5",
+      - "subnet-73d206acf914f0475",
+    ] -> null
+  - region             = "ap-south-1" -> null
+  - vpc_id             = "vpc-f6e482378519608b8" -> null
+module.eks.module.kms.aws_kms_alias.this["cluster"]: Destroying... [id=alias/eks/pantrix-dev]
+module.vpc.aws_route_table_association.private[1]: Destroying... [id=rtbassoc-a4085c1227af9a2d3]
+module.eks.aws_iam_openid_connect_provider.oidc_provider[0]: Destroying... [id=arn:aws:iam::123456789012:oidc-provider/oidc.eks.ap-south-1.amazonaws.com/id/OzHRG9EUJV]
+module.eks.aws_iam_role_policy_attachment.cluster_encryption[0]: Destroying... [id=pantrix-dev-cluster-6f794e3fa2f771b65b47389521/arn:aws:iam::123456789012:policy/pantrix-dev-cluster-ClusterEncryptionaf0143640e22fd876f03383974]
+module.vpc.aws_default_security_group.this[0]: Destroying... [id=sg-2eef6c871c988e70c]
+module.vpc.aws_iam_role_policy_attachment.vpc_flow_log_cloudwatch[0]: Destroying... [id=vpc-flow-log-role-b3de9999127ae73339b3516046/arn:aws:iam::123456789012:policy/vpc-flow-log-to-cloudwatch-962c9f9663ffef028b414ba862]
+module.vpc.aws_route.private_nat_gateway[0]: Destroying... [id=r-rtb-0376a7992d384957c1080289494]
+module.vpc.aws_route_table_association.public[1]: Destroying... [id=rtbassoc-8c7f3852e110692ab]
+module.vpc.aws_default_network_acl.this[0]: Destroying... [id=acl-633ebf42ce891db46]
+module.vpc.aws_default_route_table.default[0]: Destroying... [id=rtb-573d2e82f654ac9c0]
+module.vpc.aws_default_route_table.default[0]: Destruction complete after 0s
+module.vpc.aws_default_security_group.this[0]: Destruction complete after 0s
+module.vpc.aws_default_network_acl.this[0]: Destruction complete after 0s
+module.vpc.aws_route.public_internet_gateway[0]: Destroying... [id=r-rtb-597c3ff60b130dc411080289494]
+module.eks.aws_iam_openid_connect_provider.oidc_provider[0]: Destruction complete after 0s
+module.vpc.aws_iam_role_policy_attachment.vpc_flow_log_cloudwatch[0]: Destruction complete after 0s
+module.eks.module.kms.aws_kms_alias.this["cluster"]: Destruction complete after 0s
+module.vpc.aws_route_table_association.private[0]: Destroying... [id=rtbassoc-3049f70a26a94cb37]
+module.vpc.aws_route_table_association.public[0]: Destroying... [id=rtbassoc-0acc45a954134d099]
+module.vpc.aws_flow_log.this[0]: Destroying... [id=fl-2347a684d1f921966]
+module.eks.aws_iam_role_policy_attachment.cluster_encryption[0]: Destruction complete after 0s
+module.eks.module.eks_managed_node_group["general"].aws_eks_node_group.this[0]: Destroying... [id=pantrix-dev:general-86cfb3a5ff601f4c0983516103]
+module.eks.aws_iam_policy.cluster_encryption[0]: Destroying... [id=arn:aws:iam::123456789012:policy/pantrix-dev-cluster-ClusterEncryptionaf0143640e22fd876f03383974]
+module.vpc.aws_iam_policy.vpc_flow_log_cloudwatch[0]: Destroying... [id=arn:aws:iam::123456789012:policy/vpc-flow-log-to-cloudwatch-962c9f9663ffef028b414ba862]
+module.vpc.aws_route_table_association.private[1]: Destruction complete after 1s
+module.vpc.aws_flow_log.this[0]: Destruction complete after 1s
+module.vpc.aws_route_table_association.public[1]: Destruction complete after 1s
+module.vpc.aws_iam_role.vpc_flow_log_cloudwatch[0]: Destroying... [id=vpc-flow-log-role-b3de9999127ae73339b3516046]
+module.vpc.aws_route_table_association.public[0]: Destruction complete after 1s
+module.vpc.aws_route_table_association.private[0]: Destruction complete after 1s
+module.eks.module.eks_managed_node_group["general"].aws_eks_node_group.this[0]: Destruction complete after 1s
+module.eks.aws_iam_policy.cluster_encryption[0]: Destruction complete after 1s
+module.vpc.aws_iam_policy.vpc_flow_log_cloudwatch[0]: Destruction complete after 1s
+module.eks.module.eks_managed_node_group["general"].aws_launch_template.this[0]: Destroying... [id=lt-f38abc4db64168eb6]
+module.vpc.aws_iam_role.vpc_flow_log_cloudwatch[0]: Destruction complete after 0s
+module.vpc.aws_cloudwatch_log_group.flow_log[0]: Destroying... [id=/aws/vpc-flow-log/vpc-f6e482378519608b8]
+module.eks.module.eks_managed_node_group["general"].aws_launch_template.this[0]: Destruction complete after 0s
+module.vpc.aws_cloudwatch_log_group.flow_log[0]: Destruction complete after 0s
+module.vpc.aws_route.private_nat_gateway[0]: Destruction complete after 1s
+module.eks.module.eks_managed_node_group["general"].aws_iam_role_policy_attachment.this["AmazonEKS_CNI_Policy"]: Destroying... [id=general-eks-node-group-3e13b78722e80573dfbd94737d/arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy]
+module.eks.module.eks_managed_node_group["general"].aws_iam_role_policy_attachment.this["AmazonEC2ContainerRegistryReadOnly"]: Destroying... [id=general-eks-node-group-3e13b78722e80573dfbd94737d/arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly]
+module.eks.time_sleep.this[0]: Destroying... [id=2026-10-12T18:33:25Z]
+module.eks.module.eks_managed_node_group["general"].aws_iam_role_policy_attachment.this["AmazonEKSWorkerNodePolicy"]: Destroying... [id=general-eks-node-group-3e13b78722e80573dfbd94737d/arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy]
+module.eks.time_sleep.this[0]: Destruction complete after 0s
+module.eks.module.eks_managed_node_group["general"].aws_iam_role_policy_attachment.this["AmazonEC2ContainerRegistryReadOnly"]: Destruction complete after 0s
+module.vpc.aws_route.public_internet_gateway[0]: Destruction complete after 1s
+module.vpc.aws_nat_gateway.this[0]: Destroying... [id=nat-3af93bb267b95b445]
+module.vpc.aws_route_table.private[0]: Destroying... [id=rtb-0376a7992d384957c]
+module.eks.module.eks_managed_node_group["general"].aws_iam_role_policy_attachment.this["AmazonEKS_CNI_Policy"]: Destruction complete after 0s
+module.eks.module.eks_managed_node_group["general"].aws_iam_role_policy_attachment.this["AmazonEKSWorkerNodePolicy"]: Destruction complete after 0s
+module.vpc.aws_route_table.public[0]: Destroying... [id=rtb-597c3ff60b130dc41]
+module.eks.aws_eks_cluster.this[0]: Destroying... [id=pantrix-dev]
+module.eks.module.eks_managed_node_group["general"].aws_iam_role.this[0]: Destroying... [id=general-eks-node-group-3e13b78722e80573dfbd94737d]
+module.eks.module.eks_managed_node_group["general"].aws_iam_role.this[0]: Destruction complete after 0s
+module.vpc.aws_route_table.private[0]: Destruction complete after 0s
+module.vpc.aws_route_table.public[0]: Destruction complete after 0s
+module.vpc.aws_nat_gateway.this[0]: Still destroying... [id=nat-3af93bb267b95b445, 00m10s elapsed]
+module.eks.aws_eks_cluster.this[0]: Still destroying... [id=pantrix-dev, 00m10s elapsed]
+module.vpc.aws_nat_gateway.this[0]: Still destroying... [id=nat-3af93bb267b95b445, 00m20s elapsed]
+module.eks.aws_eks_cluster.this[0]: Still destroying... [id=pantrix-dev, 00m20s elapsed]
+module.vpc.aws_nat_gateway.this[0]: Destruction complete after 20s
+module.vpc.aws_eip.nat[0]: Destroying... [id=eipalloc-ee349e6a925cdfbdb]
+module.vpc.aws_subnet.public[1]: Destroying... [id=subnet-73d206acf914f0475]
+module.vpc.aws_subnet.public[0]: Destroying... [id=subnet-5a719f11f4a3a37c5]
+module.vpc.aws_eip.nat[0]: Destruction complete after 0s
+module.vpc.aws_internet_gateway.this[0]: Destroying... [id=igw-c254ac3512d94b910]
+module.vpc.aws_subnet.public[1]: Destruction complete after 0s
+module.vpc.aws_subnet.public[0]: Destruction complete after 0s
+module.vpc.aws_internet_gateway.this[0]: Destruction complete after 0s
+module.eks.aws_eks_cluster.this[0]: Still destroying... [id=pantrix-dev, 00m30s elapsed]
+module.eks.aws_eks_cluster.this[0]: Still destroying... [id=pantrix-dev, 00m40s elapsed]
+module.eks.aws_eks_cluster.this[0]: Still destroying... [id=pantrix-dev, 00m50s elapsed]
+module.eks.aws_eks_cluster.this[0]: Still destroying... [id=pantrix-dev, 01m00s elapsed]
+module.eks.aws_eks_cluster.this[0]: Destruction complete after 1m1s
+module.eks.aws_security_group_rule.node["ingress_cluster_8443_webhook"]: Destroying... [id=sgrule-265792560]
+module.eks.aws_security_group_rule.node["ingress_cluster_443"]: Destroying... [id=sgrule-3344274384]
+module.eks.aws_security_group_rule.node["ingress_cluster_kubelet"]: Destroying... [id=sgrule-3515505735]
+module.eks.aws_iam_role_policy_attachment.this["AmazonEKSClusterPolicy"]: Destroying... [id=pantrix-dev-cluster-6f794e3fa2f771b65b47389521/arn:aws:iam::aws:policy/AmazonEKSClusterPolicy]
+module.eks.module.kms.aws_kms_key.this[0]: Destroying... [id=3483a11c-e019-4791-be65-3d19d6b011af]
+module.eks.aws_security_group_rule.node["ingress_cluster_10251_webhook"]: Destroying... [id=sgrule-3854765116]
+module.eks.aws_security_group_rule.node["ingress_cluster_6443_webhook"]: Destroying... [id=sgrule-478908433]
+module.vpc.aws_subnet.private[0]: Destroying... [id=subnet-8354bc37447cc2a8a]
+module.eks.aws_security_group_rule.node["ingress_self_coredns_tcp"]: Destroying... [id=sgrule-535396337]
+module.vpc.aws_subnet.private[1]: Destroying... [id=subnet-afaf617cc0cf26cfb]
+module.eks.aws_iam_role_policy_attachment.this["AmazonEKSClusterPolicy"]: Destruction complete after 0s
+module.eks.aws_security_group_rule.node["ingress_nodes_ephemeral"]: Destroying... [id=sgrule-2506802939]
+module.vpc.aws_subnet.private[1]: Destruction complete after 0s
+module.vpc.aws_subnet.private[0]: Destruction complete after 0s
+module.eks.aws_security_group_rule.node["ingress_cluster_9443_webhook"]: Destroying... [id=sgrule-1802936315]
+module.eks.aws_security_group_rule.cluster["ingress_nodes_443"]: Destroying... [id=sgrule-4062194262]
+module.eks.aws_security_group_rule.node["ingress_cluster_8443_webhook"]: Destruction complete after 0s
+module.eks.module.kms.aws_kms_key.this[0]: Destruction complete after 0s
+module.eks.aws_cloudwatch_log_group.this[0]: Destroying... [id=/aws/eks/pantrix-dev/cluster]
+module.eks.aws_security_group_rule.node["ingress_self_coredns_udp"]: Destroying... [id=sgrule-3149323294]
+module.eks.aws_cloudwatch_log_group.this[0]: Destruction complete after 0s
+module.eks.aws_security_group_rule.node["egress_all"]: Destroying... [id=sgrule-1340274943]
+module.eks.aws_security_group_rule.node["ingress_cluster_443"]: Destruction complete after 0s
+module.eks.aws_security_group_rule.node["ingress_cluster_4443_webhook"]: Destroying... [id=sgrule-3586783111]
+module.eks.aws_security_group_rule.cluster["ingress_nodes_443"]: Destruction complete after 0s
+module.eks.aws_security_group_rule.node["ingress_cluster_kubelet"]: Destruction complete after 0s
+module.eks.aws_iam_role.this[0]: Destroying... [id=pantrix-dev-cluster-6f794e3fa2f771b65b47389521]
+module.eks.aws_security_group_rule.node["ingress_cluster_6443_webhook"]: Destruction complete after 0s
+module.eks.aws_security_group_rule.node["ingress_self_coredns_tcp"]: Destruction complete after 0s
+module.eks.aws_iam_role.this[0]: Destruction complete after 0s
+module.eks.aws_security_group_rule.node["ingress_cluster_10251_webhook"]: Destruction complete after 0s
+module.eks.aws_security_group_rule.node["ingress_nodes_ephemeral"]: Destruction complete after 0s
+module.eks.aws_security_group_rule.node["ingress_cluster_9443_webhook"]: Destruction complete after 0s
+module.eks.aws_security_group_rule.node["ingress_self_coredns_udp"]: Destruction complete after 0s
+module.eks.aws_security_group_rule.node["egress_all"]: Destruction complete after 0s
+module.eks.aws_security_group_rule.node["ingress_cluster_4443_webhook"]: Destruction complete after 0s
+module.eks.aws_security_group.cluster[0]: Destroying... [id=sg-c026ecc0cd2436b33]
+module.eks.aws_security_group.node[0]: Destroying... [id=sg-3f073cac7e590cf32]
+module.eks.aws_security_group.cluster[0]: Destruction complete after 0s
+module.eks.aws_security_group.node[0]: Destruction complete after 0s
+module.vpc.aws_vpc.this[0]: Destroying... [id=vpc-f6e482378519608b8]
+module.vpc.aws_vpc.this[0]: Destruction complete after 0s
+
+Destroy complete! Resources: 54 destroyed.

@@ -104,6 +104,27 @@
     "footer": "Real output: terraform plan cannot run without valid AWS credentials on this computer - see docs/SUBMISSION-CHECKLIST.md (M7)"
   },
   {
+    "in": "docs/evidence/transcripts/terraform-plan-emulator.txt",
+    "out": "docs/evidence/terraform-plan-emulator.png",
+    "max": 60,
+    "title": "dhruv-sharma@pantrix: ~/pantrix  [terraform -> Moto AWS API emulator, NOT real AWS]",
+    "footer": "Real terraform output against Moto, a local AWS API EMULATOR - not a real AWS account. No AWS resources exist."
+  },
+  {
+    "in": "docs/evidence/transcripts/terraform-emulator-summary.txt",
+    "out": "docs/evidence/terraform-emulator-apply-destroy.png",
+    "max": 60,
+    "title": "dhruv-sharma@pantrix: ~/pantrix  [terraform -> Moto AWS API emulator, NOT real AWS]",
+    "footer": "Real terraform output against Moto, a local AWS API EMULATOR - not a real AWS account. No AWS resources exist."
+  },
+  {
+    "in": "docs/evidence/transcripts/terraform-destroy-emulator.txt",
+    "out": "docs/evidence/terraform-destroy-emulator.png",
+    "max": 40,
+    "title": "dhruv-sharma@pantrix: ~/pantrix  [terraform -> Moto AWS API emulator, NOT real AWS]",
+    "footer": "Real terraform output against Moto, a local AWS API EMULATOR - not a real AWS account. No AWS resources exist."
+  },
+  {
     "in": "docs/evidence/transcripts/kubernetes-resources.txt",
     "out": "docs/evidence/kubernetes-pods.png",
     "from": "kubectl get nodes",

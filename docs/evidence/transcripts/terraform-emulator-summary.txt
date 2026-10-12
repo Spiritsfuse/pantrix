@@ -1,0 +1,30 @@
+
+[0;33m# terraform/ run against Moto, a local AWS API emulator - NOT a real AWS account[0m
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ sed 's/\x1b\[[0-9;]*m//g' docs/evidence/transcripts/terraform-plan-emulator.txt | grep -E '^Plan:'
+Plan: 62 to add, 0 to change, 0 to destroy.
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ sed 's/\x1b\[[0-9;]*m//g' docs/evidence/transcripts/terraform-apply-emulator.txt | grep -E 'Creation complete' | grep -E 'aws_vpc\.this|aws_subnet\.|aws_internet_gateway|aws_nat_gateway|aws_eks_cluster|aws_eks_node_group' | sed -E 's/: Creation complete after [0-9]+s \[id=/  ->  /; s/\]$//'
+module.vpc.aws_vpc.this[0]  ->  vpc-f6e482378519608b8
+module.vpc.aws_subnet.private[1]  ->  subnet-afaf617cc0cf26cfb
+module.vpc.aws_subnet.private[0]  ->  subnet-8354bc37447cc2a8a
+module.vpc.aws_subnet.public[0]  ->  subnet-5a719f11f4a3a37c5
+module.vpc.aws_subnet.public[1]  ->  subnet-73d206acf914f0475
+module.vpc.aws_internet_gateway.this[0]  ->  igw-c254ac3512d94b910
+module.vpc.aws_nat_gateway.this[0]  ->  nat-3af93bb267b95b445
+module.eks.aws_eks_cluster.this[0]  ->  pantrix-dev
+module.eks.module.eks_managed_node_group["general"].aws_eks_node_group.this[0]  ->  pantrix-dev:general-86cfb3a5ff601f4c0983516103
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ sed 's/\x1b\[[0-9;]*m//g' docs/evidence/transcripts/terraform-apply-emulator.txt | grep -c 'Creation complete'
+54
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ sed 's/\x1b\[[0-9;]*m//g' docs/evidence/transcripts/terraform-apply-emulator.txt | grep -oE 'Error: (creating EKS Access Entry|reading EKS Add-On version info \([a-z-]+)' | sort -u
+Error: creating EKS Access Entry
+Error: reading EKS Add-On version info (coredns
+Error: reading EKS Add-On version info (eks-pod-identity-agent
+Error: reading EKS Add-On version info (kube-proxy
+Error: reading EKS Add-On version info (metrics-server
+Error: reading EKS Add-On version info (vpc-cni
+
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ sed 's/\x1b\[[0-9;]*m//g' docs/evidence/transcripts/terraform-destroy-emulator.txt | grep -E '^Destroy complete'
+Destroy complete! Resources: 54 destroyed.

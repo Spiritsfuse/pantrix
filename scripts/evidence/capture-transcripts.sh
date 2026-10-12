@@ -178,6 +178,22 @@ t_terraform_plan() {
   cd ..
 }
 
+# Needs a running Moto server; see scripts/terraform/plan-against-emulator.sh.
+t_terraform_emulator() {
+  export TF_EMULATOR_DIR="${TF_EMULATOR_DIR:-/c/Codeing/.pantrix-tf-emulator}"
+  rm -rf "$TF_EMULATOR_DIR"
+  bash scripts/terraform/plan-against-emulator.sh plan > "$OUT/terraform-plan-emulator.txt" 2>&1
+  bash scripts/terraform/plan-against-emulator.sh apply > "$OUT/terraform-apply-emulator.txt" 2>&1
+  bash scripts/terraform/plan-against-emulator.sh destroy > "$OUT/terraform-destroy-emulator.txt" 2>&1
+  local strip="sed 's/\x1b\\[[0-9;]*m//g'"
+  note "terraform/ run against Moto, a local AWS API emulator - NOT a real AWS account"
+  run "$strip $OUT/terraform-plan-emulator.txt | grep -E '^Plan:'"
+  run "$strip $OUT/terraform-apply-emulator.txt | grep -E 'Creation complete' | grep -E 'aws_vpc\\.this|aws_subnet\\.|aws_internet_gateway|aws_nat_gateway|aws_eks_cluster|aws_eks_node_group' | sed -E 's/: Creation complete after [0-9]+s \\[id=/  ->  /; s/\\]\$//'"
+  run "$strip $OUT/terraform-apply-emulator.txt | grep -c 'Creation complete'"
+  run "$strip $OUT/terraform-apply-emulator.txt | grep -oE 'Error: (creating EKS Access Entry|reading EKS Add-On version info \\([a-z-]+)' | sort -u"
+  run "$strip $OUT/terraform-destroy-emulator.txt | grep -E '^Destroy complete'"
+}
+
 # ----------------------------------------------------------------- kubernetes
 t_k8s() {
   run kubectl config current-context
@@ -270,6 +286,7 @@ for s in "${sections[@]}"; do
     security) capture trivy-backend t_trivy_backend; capture trivy-frontend t_trivy_frontend
               capture trivy-config t_trivy_config; capture gitleaks t_gitleaks; capture sbom t_sbom ;;
     terraform) capture terraform-init-validate t_terraform; capture terraform-plan-attempt t_terraform_plan ;;
+    terraform-emulator) capture terraform-emulator-summary t_terraform_emulator ;;
     k8s) capture kubernetes-resources t_k8s; capture helm-release t_helm; capture ingress-routing t_ingress ;;
     hpa) capture hpa-scaling t_hpa ;;
     monitoring) capture metrics-endpoint t_metrics; capture prometheus-scrape t_monitoring ;;
