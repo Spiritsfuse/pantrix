@@ -6,7 +6,11 @@ ENV PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# pip is only needed to build the venv. Its vendored urllib3/msgpack were flagged
+# HIGH by Trivy, so it is removed and never ships in the runtime image.
+RUN pip install --upgrade pip \
+ && pip install -r requirements.txt \
+ && python -m pip uninstall -y pip
 
 # ---- runtime stage: no compilers, no pip cache, non-root --------------------
 FROM python:3.12-slim AS runtime
@@ -19,8 +23,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PATH="/opt/venv/bin:$PATH"
 
-# pip/setuptools are not needed at runtime and only add CVE surface.
-RUN pip uninstall -y pip setuptools wheel 2>/dev/null || true \
+# The base image's own pip and ensurepip wheels are not needed at runtime and
+# only add CVE surface.
+RUN python -m pip uninstall -y pip setuptools wheel || true \
+ && rm -rf /usr/local/lib/python3.12/ensurepip/_bundled /usr/local/bin/pip* \
  && groupadd --system --gid 10001 pantrix \
  && useradd --system --uid 10001 --gid pantrix --no-create-home --shell /usr/sbin/nologin pantrix
 
