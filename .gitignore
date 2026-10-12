@@ -65,3 +65,6 @@ desktop.ini
 
 # --- Demo build scratch (final assets in demo/ are committed) ----------------
 demo/.work/
+
+# Browser-automation scratch output
+.playwright-mcp/

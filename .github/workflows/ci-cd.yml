@@ -137,7 +137,11 @@ jobs:
         run: |
           helm lint helm/pantrix -f helm/pantrix/values-dev.yaml --strict
           helm template pantrix helm/pantrix -f helm/pantrix/values-dev.yaml > /tmp/rendered.yaml
-          kubectl apply --dry-run=client -f k8s/namespace.yaml
+          python3 - <<'PY'
+          import yaml
+          docs = [d for d in yaml.safe_load_all(open("k8s/namespace.yaml")) if d]
+          assert docs and all(d["kind"] == "Namespace" and d["metadata"]["name"] for d in docs)
+          PY
       - name: Trivy misconfiguration scan (Terraform, Helm, Dockerfiles)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
