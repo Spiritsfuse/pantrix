@@ -1,0 +1,42 @@
+# Drill 1: a Deployment whose image tag does not exist.
+# Expected symptom: pods stuck in ErrImagePull / ImagePullBackOff.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shelf-ui
+  namespace: pantrix-lab
+  labels: { drill: broken-image }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: shelf-ui }
+  template:
+    metadata:
+      labels: { app: shelf-ui }
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: frontend
+          # BUG: no image was ever published with this tag.
+          image: ghcr.io/spiritsfuse/pantrix-frontend:v9.9.9-typo
+          env:
+            - { name: API_UPSTREAM, value: "lab-api:8000" }
+          ports:
+            - { name: http, containerPort: 8080 }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits: { cpu: 100m, memory: 64Mi }
+          volumeMounts:
+            - { name: conf, mountPath: /etc/nginx/conf.d }
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - { name: conf, emptyDir: {} }
+        - { name: tmp, emptyDir: {} }

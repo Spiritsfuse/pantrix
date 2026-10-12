@@ -1,0 +1,57 @@
+# Drill 4: the migration init container cannot reach the database.
+# Expected symptom: pod stuck in Init:Error / Init:CrashLoopBackOff; the API
+# container never starts because migrations must succeed first.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab-migrate
+  namespace: pantrix-lab
+  labels: { drill: migration-failure }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: lab-migrate }
+  template:
+    metadata:
+      labels: { app: lab-migrate }
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile: { type: RuntimeDefault }
+      initContainers:
+        - name: migrate
+          image: PANTRIX_BACKEND_IMAGE # replaced by scripts/troubleshooting/run-drill.sh
+          command: ["alembic", "upgrade", "head"]
+          env:
+            # BUG: the database Service is "lab-postgres", not "lab-postgresql".
+            - name: DATABASE_URL
+              value: postgresql+psycopg://pantrix:lab-only-password@lab-postgresql:5432/pantrix
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          resources:
+            requests: { cpu: 20m, memory: 96Mi }
+            limits: { cpu: 300m, memory: 256Mi }
+      containers:
+        - name: backend
+          image: PANTRIX_BACKEND_IMAGE
+          env:
+            - { name: RUN_MIGRATIONS, value: "false" }
+            - name: DATABASE_URL
+              valueFrom: { secretKeyRef: { name: lab-db, key: DATABASE_URL } }
+          ports:
+            - { name: http, containerPort: 8000 }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          resources:
+            requests: { cpu: 20m, memory: 96Mi }
+            limits: { cpu: 300m, memory: 256Mi }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - { name: tmp, emptyDir: {} }

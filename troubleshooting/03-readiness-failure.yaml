@@ -1,0 +1,68 @@
+# Drill 3: the API process is alive but cannot reach its database.
+# Expected symptom: pod Running but 0/1 READY; /health = 200, /ready = 503;
+# the Service has no ready endpoints, so no traffic is sent to the broken pod.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: lab-db-wrong
+  namespace: pantrix-lab
+type: Opaque
+stringData:
+  # BUG: wrong password for the lab database.
+  DATABASE_URL: postgresql+psycopg://pantrix:not-the-password@lab-postgres:5432/pantrix
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab-api
+  namespace: pantrix-lab
+  labels: { drill: readiness-failure }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: lab-api }
+  template:
+    metadata:
+      labels: { app: lab-api }
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: backend
+          image: PANTRIX_BACKEND_IMAGE # replaced by scripts/troubleshooting/run-drill.sh
+          env:
+            - { name: RUN_MIGRATIONS, value: "false" }
+            - name: DATABASE_URL
+              valueFrom: { secretKeyRef: { name: lab-db-wrong, key: DATABASE_URL } }
+          ports:
+            - { name: http, containerPort: 8000 }
+          livenessProbe:
+            httpGet: { path: /health, port: http }
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /ready, port: http }
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          resources:
+            requests: { cpu: 20m, memory: 96Mi }
+            limits: { cpu: 300m, memory: 256Mi }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - { name: tmp, emptyDir: {} }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lab-api
+  namespace: pantrix-lab
+spec:
+  selector: { app: lab-api }
+  ports:
+    - { name: http, port: 8000, targetPort: http }

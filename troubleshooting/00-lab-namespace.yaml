@@ -1,0 +1,80 @@
+# Isolated namespace for the troubleshooting drills, with a throw-away PostgreSQL
+# so the drills never touch the real Pantrix release or its data.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pantrix-lab
+  labels:
+    app.kubernetes.io/part-of: pantrix
+    pod-security.kubernetes.io/enforce: restricted
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: lab-db
+  namespace: pantrix-lab
+type: Opaque
+stringData:
+  # Lab-only credentials for an ephemeral database that holds no real data.
+  POSTGRES_PASSWORD: lab-only-password
+  DATABASE_URL: postgresql+psycopg://pantrix:lab-only-password@lab-postgres:5432/pantrix
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab-postgres
+  namespace: pantrix-lab
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: lab-postgres }
+  template:
+    metadata:
+      labels: { app: lab-postgres }
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 70
+        runAsGroup: 70
+        fsGroup: 70
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+          env:
+            - { name: POSTGRES_DB, value: pantrix }
+            - { name: POSTGRES_USER, value: pantrix }
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: lab-db, key: POSTGRES_PASSWORD } }
+            - { name: PGDATA, value: /var/lib/postgresql/data/pgdata }
+          ports:
+            - { name: postgres, containerPort: 5432 }
+          readinessProbe:
+            exec: { command: ["pg_isready", "-U", "pantrix"] }
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 300m, memory: 256Mi }
+          volumeMounts:
+            - { name: data, mountPath: /var/lib/postgresql/data }
+            - { name: run, mountPath: /var/run/postgresql }
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - { name: data, emptyDir: {} }
+        - { name: run, emptyDir: {} }
+        - { name: tmp, emptyDir: {} }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lab-postgres
+  namespace: pantrix-lab
+spec:
+  selector: { app: lab-postgres }
+  ports:
+    - { name: postgres, port: 5432, targetPort: postgres }

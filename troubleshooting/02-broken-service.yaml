@@ -1,0 +1,17 @@
+# Drill 2: a Service whose selector matches no pods.
+# Expected symptom: the Service exists but has no endpoints; requests time out
+# or are refused even though the pods are Running and Ready.
+apiVersion: v1
+kind: Service
+metadata:
+  name: shelf-ui
+  namespace: pantrix-lab
+  labels: { drill: broken-service }
+spec:
+  selector:
+    # BUG: the pods are labelled app=shelf-ui, not app=shelf-frontend.
+    app: shelf-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
