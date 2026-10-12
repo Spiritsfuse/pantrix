@@ -87,9 +87,8 @@ drill5() {
   run kubectl get pods -n pantrix
   run "for i in 1 2 3; do curl -s -o /dev/null -w 'GET /api/items/stats -> %{http_code}\\n' http://pantrix.localtest.me/api/items/stats; sleep 1; done"
   note "Old pods keep serving (maxUnavailable: 0), new pods are ImagePullBackOff. Roll back to the last good revision."
-  local good
-  good=$(helm history pantrix -n pantrix -o json | grep -o '"revision":[0-9]*,"updated":"[^"]*","status":"superseded"' | tail -1 | grep -o '"revision":[0-9]*' | cut -d: -f2)
-  run helm rollback pantrix "$good" -n pantrix --wait --timeout 3m
+  # No revision number = the release before the failed one (the last good one).
+  run helm rollback pantrix -n pantrix --wait --timeout 3m
   run helm history pantrix -n pantrix --max 4
   run kubectl get pods -n pantrix
 }
