@@ -17,12 +17,9 @@ Built by **Dhruv Sharma** · GitHub [@Spiritsfuse](https://github.com/spiritsfus
 | Delivery checklist | [`docs/DELIVERY-CHECKLIST.md`](docs/DELIVERY-CHECKLIST.md) |
 | Evidence | [`docs/evidence/EVIDENCE-MANIFEST.md`](docs/evidence/EVIDENCE-MANIFEST.md) (real output only) |
 
-> **Verification status, in short:** the application, tests, Docker, Helm/Kubernetes with Ingress and
-> HPA, Argo CD, Prometheus/Grafana, security scans and troubleshooting drills were run and verified
-> locally. The **GitHub Actions pipeline is green** on the public repository (every gate, both Trivy
-> scans, the GHCR push with commit-SHA tags, provenance attestation and a kind deploy rehearsal), and
-> `promote.yml` commits the verified SHA for Argo CD. AWS status is in
-> [Known limitations](#known-limitations).
+> **Status:** the pipeline is green on this public repository, and the infrastructure was applied to a real
+> AWS account and destroyed again. Per-requirement proof is in the [delivery checklist](docs/DELIVERY-CHECKLIST.md);
+> limits are listed under [Known limitations](#known-limitations).
 
 ---
 
@@ -74,41 +71,20 @@ ledger for a community pantry:
 |---|---|
 | ![Desktop](docs/evidence/application-desktop.png) | ![Mobile](docs/evidence/application-mobile.png) |
 
+| Create | Hand-out | API conflict (409) |
+|---|---|---|
+| ![create](docs/evidence/crud-1-create-form-framed.png) | ![hand-out](docs/evidence/crud-4-handout-form-framed.png) | ![conflict](docs/evidence/crud-6-api-conflict-error-framed.png) |
+
 The demo data is a fictional "Pilani demo hub", including a "Spiritsfuse Community Kitchen".
 
 ## Architecture
 
-![Architecture](docs/presentation/architecture.png)
-
-```text
-Developer ─► Git (main) ─► GitHub Actions ─┬─ backend-test  (ruff, bandit, pip-audit, pytest ≥85% coverage)
-                                           ├─ frontend-test (eslint, prettier, vitest, npm audit, vite build)
-                                           ├─ secret-scan   (gitleaks, full history)
-                                           └─ iac-scan      (terraform validate, helm lint, trivy config)
-                                                   │ all green
-                                                   ▼
-                                    build-scan-push (backend, frontend)
-                                    build → non-root check → Trivy gate → SBOM
-                                    → push ghcr.io/<owner>/pantrix-*:<git sha> → provenance
-                                                   │
-                       ┌───────────────────────────┴──────────────────────────┐
-                       ▼                                                      ▼
-            k8s-smoke (kind + Helm + Ingress)              promote.yml → gitops/environments/dev/values.yaml
-                                                                               │
-                                                                Argo CD reconciles the cluster
-Browser ─► Ingress (ingress-nginx)
-             ├─ /     ─► frontend Service ─► Nginx pods (2)  (static React build)
-             └─ /api  ─► backend Service  ─► FastAPI pods (2-6, HPA) ─► PostgreSQL StatefulSet + PVC
-Prometheus ─(ServiceMonitor, /metrics)─► backend pods      Grafana ─► Prometheus
-Terraform ─► AWS VPC (2 public + 2 private subnets, NAT) + EKS 1.35 + managed node group   (design; see below)
-```
+![Runtime architecture](docs/presentation/architecture.png)
 
 Inside the browser, every call is a relative `/api/...` request. Vite's dev proxy, the Compose Nginx
-and the Kubernetes Ingress each route it, so one frontend build works everywhere.
-
-More detail: [`docs/engineering/architecture.md`](docs/engineering/architecture.md),
-CI/CD diagram [`docs/presentation/cicd-flow.png`](docs/presentation/cicd-flow.png),
-AWS design [`docs/presentation/aws-architecture.png`](docs/presentation/aws-architecture.png).
+and the Kubernetes Ingress each route it, so one frontend build works everywhere. The delivery path
+is drawn in [CI/CD pipeline](#cicd-pipeline) and the cloud target in [Terraform and AWS](#terraform-and-aws);
+the text version is [`docs/engineering/architecture.md`](docs/engineering/architecture.md).
 
 ## Tech stack
 
@@ -237,10 +213,12 @@ failures (422), missing records (404), conflicts (409 duplicate donor, over-aski
 readiness with a broken database (503), the metrics format and the demo seed. Ten frontend tests
 cover rendering, API failure, creating an item and showing API validation errors.
 
-Evidence: [`pytest-results.png`](docs/evidence/pytest-results.png),
-[`pytest-coverage.png`](docs/evidence/pytest-coverage.png),
-[`frontend-lint-test-build.png`](docs/evidence/frontend-lint-test-build.png).
-Details: [`docs/engineering/testing.md`](docs/engineering/testing.md).
+| Pytest, 31 passed | Coverage |
+|---|---|
+| ![pytest](docs/evidence/pytest-results.png) | ![coverage](docs/evidence/pytest-coverage.png) |
+
+Frontend checks: [`frontend-lint-test-build.png`](docs/evidence/frontend-lint-test-build.png). Details:
+[`docs/engineering/testing.md`](docs/engineering/testing.md).
 
 ## Docker images
 
@@ -253,11 +231,15 @@ The frontend's Nginx resolves the API host at runtime through the container's ow
 therefore starts even when the backend does not exist yet; a troubleshooting drill found this problem
 (see ADR 0004). Compose adds `read_only`, `cap_drop: [ALL]` and `no-new-privileges`.
 
-Evidence: [`docker-compose-up.png`](docs/evidence/docker-compose-up.png),
-[`docker-nonroot-users.png`](docs/evidence/docker-nonroot-users.png),
-[`docker-persistence.png`](docs/evidence/docker-persistence.png).
+| Compose stack healthy | Non-root users |
+|---|---|
+| ![compose ps](docs/evidence/docker-compose-ps.png) | ![non-root](docs/evidence/docker-nonroot-users.png) |
+
+Data survives `down`/`up`: [`docker-persistence.png`](docs/evidence/docker-persistence.png).
 
 ## CI/CD pipeline
+
+![CI/CD and GitOps flow](docs/presentation/cicd-flow.png)
 
 [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml) runs on every push to `main`, on pull
 requests and on demand:
@@ -280,18 +262,28 @@ action is pinned to a full commit SHA.
 both SHA-tagged images exist in GHCR and commits the new tag to
 `gitops/environments/dev/values.yaml` for Argo CD. Promotion commits do not trigger a rebuild.
 
-**Status:** the latest run is green: [`ci-cd` #6](https://github.com/Spiritsfuse/pantrix/actions/runs/38305646085) on `637de02`, followed by the
-promotion commit `d311f11`, which Argo CD would deploy. Both workflows also pass `actionlint`
-([evidence](docs/evidence/ci-workflow-validation.png)).
+**Status:** green. Run [`ci-cd` #6](https://github.com/Spiritsfuse/pantrix/actions/runs/38305646085) passed
+all seven jobs and the promotion commit `d311f11` followed; later runs on `main` are green too. Both workflows
+also pass `actionlint` ([evidence](docs/evidence/ci-workflow-validation.png)). What the first hosted runs
+exposed and how it was fixed: [`docs/engineering/ci-cd.md`](docs/engineering/ci-cd.md).
 
-| Evidence | |
+| The run: seven jobs green, artifacts attached | Tests inside the run |
 |---|---|
-| Run summary with all seven jobs green and the build artifacts | [`github-actions-run.png`](docs/evidence/github-actions-run.png) |
-| Promotion workflow | [`github-promote-run.png`](docs/evidence/github-promote-run.png) |
-| GHCR packages with SHA tags | [`ghcr-backend-package.png`](docs/evidence/ghcr-backend-package.png), [`ghcr-frontend-package.png`](docs/evidence/ghcr-frontend-package.png) |
-| Commit history | [`github-commit-history.png`](docs/evidence/github-commit-history.png) |
+| ![run summary](docs/evidence/github-actions-run.png) | ![pytest log](docs/evidence/github-actions-pytest.png) |
 
-Details: [`docs/engineering/ci-cd.md`](docs/engineering/ci-cd.md).
+| Trivy scan of the pushed backend image | Push to GHCR with the commit SHA |
+|---|---|
+| ![trivy in CI](docs/evidence/github-trivy-backend.png) | ![ghcr push](docs/evidence/github-actions-ghcr-push.png) |
+
+| Backend package | Frontend package |
+|---|---|
+| ![backend package](docs/evidence/ghcr-backend-package.png) | ![frontend package](docs/evidence/ghcr-frontend-package.png) |
+
+| Deploy rehearsal on kind, through the Ingress | Promotion commit for Argo CD |
+|---|---|
+| ![smoke test](docs/evidence/github-actions-k8s-smoke.png) | ![promote run](docs/evidence/github-promote-run.png) |
+
+Commit history: [`github-commit-history.png`](docs/evidence/github-commit-history.png).
 
 ## Security (DevSecOps) and Trivy
 
@@ -312,14 +304,20 @@ urllib3. None of these libraries is used by Pantrix. They were copies vendored b
 ensurepip wheels. Removing pip from the runtime image fixed all four without suppressing anything
 (commit `964bf54`). The images now pass the gate. The backend still reports 44 HIGH findings in Debian
 packages that have no fix yet; those are tracked, not hidden.
-Before/after: [`trivy-backend-before-fix.png`](docs/evidence/trivy-backend-before-fix.png),
-[`trivy-backend.png`](docs/evidence/trivy-backend.png),
-[`trivy-frontend.png`](docs/evidence/trivy-frontend.png).
+
+| Before: the gate fails (4 fixable HIGH) | After: the gate passes |
+|---|---|
+| ![trivy before](docs/evidence/trivy-backend-before-fix.png) | ![trivy after](docs/evidence/trivy-backend.png) |
+
+Frontend scan: [`trivy-frontend.png`](docs/evidence/trivy-frontend.png). Secrets:
+[`gitleaks-history-scan.png`](docs/evidence/gitleaks-history-scan.png).
 
 `trivy config` also found the EKS API endpoint open to `0.0.0.0/0` (AWS-0040/0041). It is now private
 unless you pass your own CIDR. Node egress (AWS-0104) is the one documented, justified exception.
 
 ## Terraform and AWS
+
+![AWS design](docs/presentation/aws-architecture.png)
 
 [`terraform/`](terraform/) describes ap-south-1:
 
@@ -327,7 +325,7 @@ unless you pass your own CIDR. Node egress (AWS-0104) is the one documented, jus
   and flow logs;
 - **EKS 1.35**, with Secrets encrypted by KMS, control-plane logs, and core add-ons including
   metrics-server;
-- **one managed node group** (t3.medium, 1–3 nodes, IMDSv2) in the private subnets;
+- **one managed node group** (default `t3.medium`, 1–3 nodes, IMDSv2) in the private subnets;
 - IAM roles from the modules, outputs, and a `terraform.tfvars.example` without credentials.
 
 ```bash
@@ -339,16 +337,30 @@ $(terraform output -raw configure_kubectl) && kubectl get nodes
 terraform destroy
 ```
 
-| Step | Result |
-|---|---|
-| `init`, `fmt`, `validate`, Trivy config | **Verified** ([evidence](docs/evidence/terraform-init-validate.png)) |
-| `plan` against real AWS | **Verified**: 62 to add in account `************`, ap-south-1 ([evidence](docs/evidence/terraform-plan-aws.png)) |
-| `apply` against real AWS | **Verified**: VPC (2 public + 2 private subnets, NAT), EKS 1.35 control plane and a managed node group of two `m7i-flex.large` nodes, `kubectl get nodes` Ready. The first apply stopped at the node group because the account is on the AWS Free plan, where `t3.medium` is not eligible; the second apply used an eligible type ([attempt 1](docs/evidence/terraform-apply-aws-attempt1.png), [apply](docs/evidence/terraform-apply-aws.png), [nodes](docs/evidence/eks-nodes-aws.png)) |
-| AWS Console | VPC [`aws-vpc.png`](docs/evidence/aws-vpc.png), subnets [`aws-subnets.png`](docs/evidence/aws-subnets.png), cluster [`aws-eks-cluster.png`](docs/evidence/aws-eks-cluster.png), node group [`aws-eks-node-group.png`](docs/evidence/aws-eks-node-group.png) |
-| `destroy` against real AWS | **Verified**: 62 destroyed and nothing named `pantrix` left ([evidence](docs/evidence/terraform-destroy-aws.png)) |
-| Moto AWS emulator | plan 62 · apply 54/62 · destroy 54 ([plan](docs/evidence/terraform-plan-emulator.png)); kept as a fast offline check, **not AWS** |
+**What was run on real AWS (ap-south-1):** a plan of 62 resources, two applies, Console and `kubectl` proof,
+and a destroy of all 62 with a check that nothing named `pantrix` was left. The first apply stopped at the
+node group because the account is on the AWS Free plan, where `t3.medium` is not eligible; the second used
+`m7i-flex.large` and two nodes became Ready.
 
-Full guide, cost table and cleanup checks: [`terraform/README.md`](terraform/README.md) and
+| Plan: 62 to add | First apply stops on the Free-plan node type |
+|---|---|
+| ![plan](docs/evidence/terraform-plan-aws.png) | ![attempt 1](docs/evidence/terraform-apply-aws-attempt1.png) |
+
+| VPC `pantrix-dev` | Two public and two private subnets |
+|---|---|
+| ![vpc](docs/evidence/aws-vpc.png) | ![subnets](docs/evidence/aws-subnets.png) |
+
+| EKS 1.35 cluster, Active | Managed node group, Active |
+|---|---|
+| ![eks](docs/evidence/aws-eks-cluster.png) | ![node group](docs/evidence/aws-eks-node-group.png) |
+
+| `kubectl get nodes`: two nodes Ready | `terraform destroy`: 62 destroyed |
+|---|---|
+| ![nodes](docs/evidence/eks-nodes-aws.png) | ![destroy](docs/evidence/terraform-destroy-aws.png) |
+
+Also verified: `init`/`fmt`/`validate` and the Trivy config scan ([evidence](docs/evidence/terraform-init-validate.png)),
+and an offline run against the Moto emulator, which is **not AWS** ([plan](docs/evidence/terraform-plan-emulator.png)).
+Guide, cost table and cleanup checks: [`terraform/README.md`](terraform/README.md) and
 [`docs/runbooks/aws-provision-and-teardown.md`](docs/runbooks/aws-provision-and-teardown.md).
 
 ## Kubernetes and Helm
@@ -379,11 +391,16 @@ The chart (`helm/pantrix`) contains:
 - a NetworkPolicy so only backend pods reach PostgreSQL, PodDisruptionBudgets, a ServiceMonitor,
   and a `helm test` pod.
 
+| Pods, all Running | Services, Ingress and HPA |
+|---|---|
+| ![pods](docs/evidence/kubernetes-pods.png) | ![services](docs/evidence/kubernetes-services-ingress-hpa.png) |
+
+| Helm release | The app through the Ingress |
+|---|---|
+| ![helm](docs/evidence/helm-release.png) | ![ingress](docs/evidence/ingress-application-framed.png) |
+
 Under 12 parallel traffic generators the backend HPA went from 2 to 6 replicas
-([evidence](docs/evidence/hpa-scaling.png)). Evidence: [pods](docs/evidence/kubernetes-pods.png),
-[services/ingress/HPA](docs/evidence/kubernetes-services-ingress-hpa.png),
-[helm](docs/evidence/helm-release.png), [via Ingress](docs/evidence/ingress-application-framed.png).
-Runbook: [`docs/runbooks/deploy-local-kubernetes.md`](docs/runbooks/deploy-local-kubernetes.md).
+([`hpa-scaling.png`](docs/evidence/hpa-scaling.png)). Runbook: [`docs/runbooks/deploy-local-kubernetes.md`](docs/runbooks/deploy-local-kubernetes.md).
 
 ## GitOps with Argo CD
 
@@ -397,12 +414,13 @@ bash scripts/gitops/bootstrap-gitops.sh     # Argo CD, DB secret, rehearsal git 
 bash scripts/gitops/promote.sh              # commit the SHA the Helm release runs, publish, wait for Synced/Healthy
 ```
 
-This computer may not have a GitHub remote, so the rehearsal source is an in-cluster git daemon. Main
-is published to it as a git bundle; `git remote -v` stays empty. After the push to GitHub, `repoURL`
-switches to the GitHub repository and `promote.yml` makes the promotion commits
-([`docs/engineering/gitops.md`](docs/engineering/gitops.md)).
-Evidence: [`argocd-application.png`](docs/evidence/argocd-application.png),
-[`argocd-gitops-cli.png`](docs/evidence/argocd-gitops-cli.png).
+The demo cluster tracks an in-cluster git daemon (main is published to it as a git bundle), so it works
+offline. On GitHub, `promote.yml` makes the same promotion commits to the public repository, and `repoURL`
+can be switched to it ([`docs/engineering/gitops.md`](docs/engineering/gitops.md)).
+
+![Argo CD](docs/evidence/argocd-application-framed.png)
+
+CLI view: [`argocd-gitops-cli.png`](docs/evidence/argocd-gitops-cli.png).
 
 ## Observability: Prometheus and Grafana
 
@@ -414,13 +432,19 @@ bash scripts/monitoring/generate-traffic.sh http://pantrix.localtest.me 300
 | What | Where |
 |---|---|
 | Metrics | `/metrics`: `http_requests_total{handler,method,status}`, `http_request_duration_seconds` histogram, `pantrix_stock_events_total{action}`, `pantrix_units_distributed_total` |
-| Scraping | ServiceMonitor `pantrix-backend` (port `http`, 15 s); [targets 6/6 UP](docs/evidence/prometheus-targets.png) |
-| Dashboard | `monitoring/dashboards/pantrix-overview.json`, loaded by the Grafana sidecar: targets up, request rate, 5xx ratio, p95 latency, units handed out, HPA replicas, rate per endpoint, latency p50/p95/p99, status codes, stock events, pod CPU and memory ([screenshot](docs/evidence/grafana-dashboard.png)) |
+| Scraping | ServiceMonitor `pantrix-backend` (port `http`, 15 s) |
+| Dashboard | `monitoring/dashboards/pantrix-overview.json`, loaded by the Grafana sidecar: targets up, request rate, 5xx ratio, p95 latency, units handed out, HPA replicas, rate per endpoint, latency p50/p95/p99, status codes, stock events, pod CPU and memory |
 | Alerts | `monitoring/pantrix-alerts.yaml`: backend down, 5xx ratio > 5%, p95 > 500 ms |
 | Logs | Structured JSON access and application logs on stdout (`backend/app/observability.py`) |
 
 Prometheus: http://prometheus.localtest.me · Grafana: http://grafana.localtest.me (user `admin`; the
 password is generated into the `grafana-admin` Secret).
+
+| Prometheus targets: 6/6 UP | Grafana dashboard with live traffic |
+|---|---|
+| ![targets](docs/evidence/prometheus-targets-framed.png) | ![grafana](docs/evidence/grafana-dashboard-framed.png) |
+
+`/metrics` output: [`metrics-endpoint.png`](docs/evidence/metrics-endpoint.png).
 
 ## Troubleshooting drills
 
@@ -437,7 +461,10 @@ it and verifies the fix:
 
 Drill 2 exposed a real bug: Nginx crash-looped with "host not found in upstream" when its API Service
 did not exist yet. It was fixed in the product (runtime DNS resolution).
-Guide: [`troubleshooting/README.md`](troubleshooting/README.md).
+
+![Drill 5: a bad release fails while the old pods keep serving, then helm rollback](docs/evidence/troubleshooting-05-rollback.png)
+
+All five drills with their transcripts: [`troubleshooting/README.md`](troubleshooting/README.md).
 
 ## Engineering decisions
 
