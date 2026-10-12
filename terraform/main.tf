@@ -23,6 +23,30 @@ locals {
     ManagedBy   = "terraform"
     Repository  = "pantrix"
   }
+
+  # The one managed node group, in private subnets.
+  general_node_group = {
+    ami_type       = "AL2023_x86_64_STANDARD"
+    instance_types = var.node_instance_types
+    capacity_type  = var.node_capacity_type
+
+    min_size     = var.node_min_size
+    desired_size = var.node_desired_size
+    max_size     = var.node_max_size
+
+    disk_size = 20
+
+    labels = {
+      workload = "pantrix"
+    }
+
+    # IMDSv2 only, with a hop limit of 1 so pods cannot read node credentials.
+    metadata_options = {
+      http_endpoint               = "enabled"
+      http_tokens                 = "required"
+      http_put_response_hop_limit = 1
+    }
+  }
 }
 
 module "vpc" {
@@ -101,27 +125,6 @@ module "eks" {
   control_plane_subnet_ids = module.vpc.private_subnets
 
   eks_managed_node_groups = {
-    general = {
-      ami_type       = "AL2023_x86_64_STANDARD"
-      instance_types = var.node_instance_types
-      capacity_type  = var.node_capacity_type
-
-      min_size     = var.node_min_size
-      desired_size = var.node_desired_size
-      max_size     = var.node_max_size
-
-      disk_size = 20
-
-      labels = {
-        workload = "pantrix"
-      }
-
-      # IMDSv2 only, with a hop limit of 1 so pods cannot read node credentials.
-      metadata_options = {
-        http_endpoint               = "enabled"
-        http_tokens                 = "required"
-        http_put_response_hop_limit = 1
-      }
-    }
+    general = local.general_node_group
   }
 }

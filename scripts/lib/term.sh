@@ -5,7 +5,8 @@
 
 PROMPT_USER="${PROMPT_USER:-dhruv-sharma}"
 PROMPT_HOST="${PROMPT_HOST:-pantrix}"
-REPO_ROOT="${REPO_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+# cd+pwd turns Git for Windows' "C:/..." into the shell's "/c/..." form.
+REPO_ROOT="${REPO_ROOT:-$(cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)" && pwd)}"
 
 run() {
   local here="${PWD#"$REPO_ROOT"}"
