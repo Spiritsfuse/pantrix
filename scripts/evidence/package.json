@@ -1,0 +1,14 @@
+{
+  "name": "pantrix-evidence-tools",
+  "private": true,
+  "type": "module",
+  "description": "Render real command transcripts and capture browser evidence for docs/evidence",
+  "scripts": {
+    "terminal": "node render-terminal.mjs",
+    "browser": "node capture-browser.mjs"
+  },
+  "devDependencies": {
+    "ansi-to-html": "^0.7.2",
+    "playwright": "^1.64.0"
+  }
+}
