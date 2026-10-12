@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pantrix runtime architecture</title>
+<link rel="stylesheet" href="diagram.css">
+</head>
+<body>
+<h1>Pantrix · runtime architecture</h1>
+<div class="sub">What runs in the local kind cluster used for the demo (from helm/pantrix, monitoring/, gitops/)</div>
+
+<!-- people and source -->
+<div class="box ink" style="left:40px;top:420px;width:210px;height:150px">
+  <div class="t">Browser</div>
+  <div class="d">pantrix.localtest.me<br>(resolves to 127.0.0.1)</div>
+</div>
+<div class="box ink" style="left:40px;top:880px;width:210px;height:120px">
+  <div class="t">Local Git <code>main</code></div>
+  <div class="d">published as a git bundle - no remote</div>
+</div>
+
+<div class="frame" style="left:290px;top:140px;width:1600px;height:900px">
+  <div class="label">kind cluster "pantrix" · Kubernetes v1.37 · single node on Docker Desktop</div>
+</div>
+
+<!-- ingress -->
+<div class="ns" style="left:320px;top:360px;width:250px;height:300px"><div class="label">ingress-nginx</div></div>
+<div class="box clay" style="left:335px;top:398px;width:220px;height:245px">
+  <div class="t">Ingress controller</div>
+  <div class="d">host ports 80 / 443<br>5 hosts on *.localtest.me:<br>pantrix, pantrix-gitops, grafana, prometheus, argocd</div>
+</div>
+
+<!-- namespace pantrix -->
+<div class="ns" style="left:610px;top:170px;width:760px;height:480px"><div class="label">namespace pantrix · Helm release "pantrix"</div></div>
+<div class="box olive" style="left:640px;top:205px;width:320px;height:150px">
+  <div class="t">frontend Deployment</div>
+  <div class="d">2 pods · nginx-unprivileged :8080<br>React build · Service :80<br>HPA 2 to 4 pods at 70% CPU</div>
+</div>
+<div class="box olive" style="left:640px;top:378px;width:320px;height:178px">
+  <div class="t">backend Deployment</div>
+  <div class="d">2 pods · FastAPI :8000<br>HPA 2 to 6 pods at 60% CPU<br>init: alembic upgrade head<br>probes /health · /ready</div>
+</div>
+<div class="box mustard" style="left:1030px;top:378px;width:315px;height:178px">
+  <div class="t">postgres StatefulSet</div>
+  <div class="d">postgres:17-alpine · PVC 1Gi<br>NetworkPolicy: only backend pods<br>password from generated Secret</div>
+</div>
+<div style="position:absolute;left:640px;top:572px;width:710px">
+  <span class="chip">ConfigMap</span><span class="chip">Secret</span><span class="chip">PDB x2</span><span class="chip">NetworkPolicy</span>
+  <span class="chip c">ServiceMonitor</span><span class="chip o">non-root · read-only rootfs · restricted PSS</span>
+</div>
+
+<!-- namespace pantrix-gitops -->
+<div class="ns" style="left:610px;top:690px;width:760px;height:170px"><div class="label">namespace pantrix-gitops · owned by Argo CD</div></div>
+<div class="box" style="left:640px;top:735px;width:700px;height:105px">
+  <div class="t">Same Helm chart, desired state in Git</div>
+  <div class="d">gitops/environments/dev/values.yaml pins the image SHA · 1 replica per tier · host pantrix-gitops.localtest.me</div>
+</div>
+
+<!-- monitoring -->
+<div class="ns" style="left:1410px;top:170px;width:450px;height:480px"><div class="label">namespace monitoring</div></div>
+<div class="box clay" style="left:1440px;top:215px;width:390px;height:140px">
+  <div class="t">Prometheus</div>
+  <div class="d">discovers the ServiceMonitor, scrapes every backend pod /metrics each 15 s · alert rules</div>
+</div>
+<div class="box clay" style="left:1440px;top:395px;width:390px;height:120px">
+  <div class="t">Grafana</div>
+  <div class="d">"Pantrix · API overview": traffic, 5xx ratio, p50/p95/p99, stock events, pods</div>
+</div>
+<div class="box" style="left:1440px;top:545px;width:390px;height:80px">
+  <div class="d" style="margin-top:0"><b>kube-state-metrics</b> · <b>metrics-server</b> (kube-system) feeds the HPAs</div>
+</div>
+
+<!-- argocd + git server -->
+<div class="ns" style="left:1410px;top:690px;width:450px;height:170px"><div class="label">namespace argocd</div></div>
+<div class="box ink" style="left:1440px;top:735px;width:390px;height:105px">
+  <div class="t">Argo CD · app pantrix-dev</div>
+  <div class="d">auto-sync · prune · self-heal</div>
+</div>
+<div class="ns" style="left:1410px;top:885px;width:450px;height:130px"><div class="label">namespace gitops</div></div>
+<div class="box" style="left:1440px;top:925px;width:390px;height:75px">
+  <div class="d" style="margin-top:0"><b>git-server</b> (git daemon) - rehearsal source of truth until the GitHub repository exists</div>
+</div>
+
+<svg class="wires" viewBox="0 0 1920 1080">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b8532d"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5f7330"/></marker>
+  </defs>
+  <g fill="none" stroke-width="3">
+    <path d="M250 495 L333 495" stroke="#b8532d" marker-end="url(#a)"/>
+    <path d="M555 470 L598 470 L598 285 L638 285" stroke="#b8532d" marker-end="url(#a)"/>
+    <path d="M555 560 L600 560 L600 467 L638 467" stroke="#b8532d" marker-end="url(#a)"/>
+    <path d="M960 467 L1028 467" stroke="#b8532d" marker-end="url(#a)"/>
+    <path d="M1438 300 L995 300 L995 425 L964 425" stroke="#5f7330" stroke-dasharray="9 6" marker-end="url(#g)"/>
+    <path d="M1635 395 L1635 357" stroke="#5f7330" marker-end="url(#g)"/>
+    <path d="M1438 787 L1342 787" stroke="#2b211a" marker-end="url(#a)"/>
+    <path d="M1635 925 L1635 842" stroke="#2b211a" marker-end="url(#a)"/>
+    <path d="M250 960 L1100 960 L1100 1025 L1600 1025 L1600 1002" stroke="#2b211a" stroke-dasharray="9 6" marker-end="url(#a)"/>
+    <path d="M555 625 L590 625 L590 787 L638 787" stroke="#b8532d" stroke-dasharray="6 6" marker-end="url(#a)"/>
+  </g>
+</svg>
+<div class="wl" style="left:268px;top:466px">HTTP</div>
+<div class="wl" style="left:580px;top:248px">/</div>
+<div class="wl" style="left:570px;top:528px">/api</div>
+<div class="wl" style="left:962px;top:438px">SQL</div>
+<div class="wl" style="left:1090px;top:272px;color:#5f7330">scrape /metrics · 15 s</div>
+<div class="wl" style="left:1645px;top:362px;color:#5f7330">PromQL</div>
+<div class="wl" style="left:1352px;top:757px;color:#2b211a">sync</div>
+<div class="wl" style="left:1645px;top:870px;color:#2b211a">watches main</div>
+<div class="wl" style="left:680px;top:996px;color:#2b211a">git bundle (scripts/gitops/push-to-local-git.sh)</div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pantrix CI/CD and GitOps flow</title>
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .step { font-size: 17px; line-height: 1.32; margin: 7px 0; color: var(--ink); }
+  .step b { display: inline-block; width: 26px; height: 26px; border-radius: 50%; background: var(--clay); color: #fff;
+    text-align: center; line-height: 26px; font-size: 14px; margin-right: 8px; }
+  .gate .d { font-size: 16px; }
+  .divider { border-top: 2px dashed var(--line); margin: 12px 0 8px; padding-top: 8px; font-size: 14px; font-weight: 700;
+    color: var(--clay); letter-spacing: .06em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<h1>Pantrix · CI/CD and GitOps flow</h1>
+<div class="sub">.github/workflows/ci-cd.yml and promote.yml · every action pinned to a commit SHA · least-privilege job permissions</div>
+
+<div class="box ink" style="left:48px;top:420px;width:250px;height:150px">
+  <div class="t">Trigger</div>
+  <div class="d">push to <b>main</b><br>pull request to main<br>manual dispatch</div>
+</div>
+
+<div class="box olive gate" style="left:370px;top:150px;width:390px;height:160px">
+  <div class="t">backend-test</div>
+  <div class="d">Ruff lint + format · Bandit (SAST) · <span style="white-space:nowrap">pip-audit --strict</span> · <b>pytest -v</b> with coverage floor 85% · JUnit + coverage artifacts</div>
+</div>
+<div class="box olive gate" style="left:370px;top:330px;width:390px;height:150px">
+  <div class="t">frontend-test</div>
+  <div class="d">ESLint · Prettier · Vitest · npm audit (runtime deps, high) · <b>vite build</b> artifact</div>
+</div>
+<div class="box olive gate" style="left:370px;top:500px;width:390px;height:120px">
+  <div class="t">secret-scan</div>
+  <div class="d">Gitleaks 8.30.1 over the full Git history</div>
+</div>
+<div class="box olive gate" style="left:370px;top:640px;width:390px;height:160px">
+  <div class="t">iac-scan</div>
+  <div class="d">terraform fmt + validate · <span style="white-space:nowrap">helm lint --strict</span> + render · Trivy config scan (Terraform, Helm, Dockerfiles), fails on HIGH/CRITICAL</div>
+</div>
+
+<div class="box clay" style="left:830px;top:150px;width:520px;height:650px">
+  <div class="t">build-scan-push · matrix [backend, frontend]</div>
+  <div class="d" style="margin-bottom:6px">needs all four gates · packages: write · id-token: write</div>
+  <div class="step"><b>1</b>docker build with Buildx (GitHub Actions cache)</div>
+  <div class="step"><b>2</b>verify the image user is not root</div>
+  <div class="step"><b>3</b>Trivy report, all severities (artifact)</div>
+  <div class="step"><b>4</b>Trivy gate: fixable HIGH or CRITICAL = job fails</div>
+  <div class="step"><b>5</b>CycloneDX SBOM (artifact)</div>
+  <div class="divider">only for a push to main, after steps 1-5</div>
+  <div class="step"><b>6</b>push ghcr.io/&lt;owner&gt;/pantrix-backend:<b style="all:unset;font-weight:700;color:#8f3c1d">&lt;git sha&gt;</b><br><span style="margin-left:34px">and pantrix-frontend:&lt;git sha&gt; (never latest)</span></div>
+  <div class="step"><b>7</b>build-provenance attestation pushed to GHCR</div>
+  <div class="divider" style="color:var(--olive)">traceability</div>
+  <div class="d" style="font-size:17px;color:var(--ink)">commit A &rarr; image A: the tag in the cluster names the exact source commit.
+  Kept as run artifacts: pytest JUnit + coverage, frontend dist, Trivy reports, SBOMs.</div>
+</div>
+
+<div class="box ink" style="left:1420px;top:150px;width:450px;height:250px">
+  <div class="t">k8s-smoke</div>
+  <div class="d">ephemeral kind cluster · pull the SHA-tagged images from GHCR · ingress-nginx + metrics-server · <b>helm upgrade --install --atomic</b> · smoke test UI + API write through the Ingress · diagnostics on failure</div>
+</div>
+
+<div class="box mustard" style="left:1420px;top:450px;width:450px;height:175px">
+  <div class="t">promote.yml · promote-dev</div>
+  <div class="d">triggered by workflow_run when ci-cd succeeds on main (or by hand with a SHA): confirm both images exist in GHCR, commit the tag to <b>gitops/environments/dev/values.yaml</b></div>
+</div>
+<div class="box ink" style="left:1420px;top:670px;width:450px;height:130px">
+  <div class="t">Argo CD · pantrix-dev</div>
+  <div class="d">sees the commit and syncs the cluster to it (prune + self-heal)</div>
+</div>
+
+<svg class="wires" viewBox="0 0 1920 1080">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b8532d"/></marker>
+    <marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2b211a"/></marker>
+  </defs>
+  <g fill="none" stroke-width="3" stroke="#b8532d">
+    <path d="M298 495 L330 495 L330 230 L368 230" marker-end="url(#a)"/>
+    <path d="M330 405 L368 405" marker-end="url(#a)"/>
+    <path d="M330 495 L330 560 L368 560" marker-end="url(#a)"/>
+    <path d="M330 560 L330 720 L368 720" marker-end="url(#a)"/>
+    <path d="M760 230 L795 230 L795 475 L828 475"/>
+    <path d="M760 405 L795 405"/>
+    <path d="M760 560 L795 560"/>
+    <path d="M760 720 L795 720 L795 475 L828 475" marker-end="url(#a)"/>
+    <path d="M1350 275 L1418 275" marker-end="url(#a)"/>
+  </g>
+  <g fill="none" stroke-width="3" stroke="#2b211a">
+    <path d="M1350 590 L1385 590 L1385 537 L1418 537" stroke-dasharray="9 6" marker-end="url(#k)"/>
+    <path d="M1645 625 L1645 668" marker-end="url(#k)"/>
+  </g>
+</svg>
+<div class="wl" style="left:1352px;top:244px">needs</div>
+<div class="wl" style="left:1655px;top:636px;color:#2b211a">git commit</div>
+<div class="wl" style="left:765px;top:808px;color:#a92f3c">any failed gate stops the run: no image is published</div>
+
+<div class="banner">Status on the first computer: both workflows validated with actionlint 1.7.12; every gate, build, scan and the kind deploy were run locally (not the GHCR push or attestation).
+The first real GitHub Actions run and GHCR publish happen after the repository is pushed (second computer).</div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pantrix AWS design from Terraform</title>
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .subnet { position: absolute; border-radius: 14px; padding: 12px 16px; border: 2px solid; }
+  .pub { background: #fff7ec; border-color: var(--mustard); }
+  .priv { background: #f6f8ee; border-color: var(--olive); }
+  .subnet .n { font-weight: 700; font-size: 18px; }
+  .subnet .c { font-family: "Cascadia Mono", Consolas, monospace; font-size: 16px; color: var(--ink2); margin-top: 2px; }
+  .node { display: inline-block; margin: 10px 8px 0 0; padding: 6px 10px; border-radius: 10px; background: #fff;
+    border: 2px solid var(--olive); font-size: 15px; font-weight: 700; }
+  .warn { position: absolute; left: 48px; right: 48px; top: 128px; border-radius: 14px; padding: 12px 20px;
+    background: #fbe3d8; border: 3px solid var(--clay); color: #7a2f12; font-size: 22px; font-weight: 700; }
+</style>
+</head>
+<body>
+<h1>Pantrix on AWS · design from terraform/</h1>
+<div class="sub">terraform-aws-modules/vpc ~&gt; 6.7 and eks ~&gt; 21.29 · AWS provider ~&gt; 6.0 · region ap-south-1</div>
+<div class="warn">Design from terraform/ - not provisioned in a real AWS account (no credentials); exercised against the Moto emulator</div>
+
+<!-- region / VPC -->
+<div class="frame" style="left:48px;top:215px;width:1310px;height:800px"><div class="label">Region ap-south-1</div></div>
+<div class="ns" style="left:80px;top:250px;width:1250px;height:740px"><div class="label">VPC pantrix-dev · 10.42.0.0/16 · DNS hostnames on · VPC flow logs to CloudWatch (7 days)</div></div>
+
+<div class="box ink" style="left:520px;top:295px;width:370px;height:80px">
+  <div class="t" style="font-size:20px">Internet gateway</div>
+</div>
+
+<!-- AZ a -->
+<div class="frame" style="left:110px;top:400px;width:580px;height:560px"><div class="label">AZ ap-south-1a</div></div>
+<div class="subnet pub" style="left:135px;top:430px;width:530px;height:180px">
+  <div class="n">public subnet</div><div class="c">10.42.0.0/20 · tag kubernetes.io/role/elb</div>
+  <div class="node" style="border-color:var(--mustard)">NAT gateway + Elastic IP (single, shared)</div>
+  <div class="d" style="font-size:15px;color:var(--ink2);margin-top:8px">internet-facing load balancers land here</div>
+</div>
+<div class="subnet priv" style="left:135px;top:640px;width:530px;height:290px">
+  <div class="n">private subnet</div><div class="c">10.42.48.0/20 · tag kubernetes.io/role/internal-elb</div>
+  <div class="node">EKS node · t3.medium</div>
+  <div class="d" style="font-size:15px;color:var(--ink2);margin-top:12px">managed node group "general": min 1 · desired 2 · max 3<br>AL2023 AMI · 20 GB disk · IMDSv2 required, hop limit 1<br>egress to the internet only through the NAT gateway</div>
+</div>
+
+<!-- AZ b -->
+<div class="frame" style="left:720px;top:400px;width:580px;height:560px"><div class="label">AZ ap-south-1b</div></div>
+<div class="subnet pub" style="left:745px;top:430px;width:530px;height:180px">
+  <div class="n">public subnet</div><div class="c">10.42.16.0/20 · tag kubernetes.io/role/elb</div>
+  <div class="d" style="font-size:15px;color:var(--ink2);margin-top:12px">routes 0.0.0.0/0 to the internet gateway</div>
+</div>
+<div class="subnet priv" style="left:745px;top:640px;width:530px;height:290px">
+  <div class="n">private subnet</div><div class="c">10.42.64.0/20 · tag kubernetes.io/role/internal-elb</div>
+  <div class="node">EKS node · t3.medium</div>
+  <div class="d" style="font-size:15px;color:var(--ink2);margin-top:12px">second node of the same node group<br>(spread across both AZs)</div>
+</div>
+
+<!-- control plane and services -->
+<div class="box clay" style="left:1400px;top:230px;width:470px;height:300px">
+  <div class="t">EKS control plane · pantrix-dev</div>
+  <div class="d">Kubernetes 1.35 (AWS managed)<br>API endpoint private to the VPC; public only for CIDRs you list (validation rejects 0.0.0.0/0)<br>cluster-creator admin via access entry<br>add-ons: vpc-cni, coredns, kube-proxy, pod-identity-agent, metrics-server</div>
+</div>
+<div class="box" style="left:1400px;top:560px;width:470px;height:120px">
+  <div class="t">KMS key</div>
+  <div class="d">envelope encryption of Kubernetes Secrets</div>
+</div>
+<div class="box" style="left:1400px;top:705px;width:470px;height:120px">
+  <div class="t">CloudWatch Logs</div>
+  <div class="d">control-plane api, audit, authenticator logs + VPC flow logs, 7-day retention</div>
+</div>
+<div class="box" style="left:1400px;top:850px;width:470px;height:120px">
+  <div class="t">IAM</div>
+  <div class="d">cluster role, node role (worker, CNI, ECR read-only policies), OIDC provider</div>
+</div>
+
+<svg class="wires" viewBox="0 0 1920 1080">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2b211a"/></marker>
+  </defs>
+  <g fill="none" stroke-width="3" stroke="#2b211a">
+    <path d="M600 375 L600 428" marker-end="url(#a)"/>
+    <path d="M890 335 L1010 335 L1010 428" marker-end="url(#a)"/>
+    <path d="M400 638 L400 612" marker-end="url(#a)" stroke-dasharray="8 6"/>
+    <path d="M1398 500 L1340 500 L1340 845 L1277 845" marker-end="url(#a)" stroke-dasharray="8 6"/>
+  </g>
+</svg>
+<div class="wl" style="left:410px;top:612px;color:#2b211a;font-size:14px">egress via NAT</div>
+<div class="wl" style="left:990px;top:885px;color:#2b211a;font-size:14px">control-plane ENIs (in both private subnets)</div>
+</body>
+</html>
