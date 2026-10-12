@@ -1,20 +1,47 @@
 #!/usr/bin/env bash
 # Publish local main to the in-cluster rehearsal Git server.
-# A git bundle is streamed into the pod (base64, checksum-verified) and fetched
-# there: streaming a push over `kubectl port-forward`, or raw binary over
-# `kubectl exec` stdin, is unreliable on Windows. `git remote -v` stays empty.
+# A git bundle is copied into the pod with `kubectl cp`, checksum-verified and
+# fetched there. (Streaming `git push` through `kubectl port-forward`, or large
+# payloads through `kubectl exec` stdin, hangs or truncates on Windows; kubectl cp
+# is reliable as long as the local path is relative, without a drive letter.)
+# Only commits the server does not have yet are bundled. `git remote -v` stays empty.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
-tmp="$(mktemp -d)"
-trap 'rm -rf "${tmp}"' EXIT
-git bundle create "${tmp}/pantrix.bundle" main >/dev/null 2>&1
-sum="$(sha256sum "${tmp}/pantrix.bundle" | cut -d' ' -f1)"
-base64 -w0 "${tmp}/pantrix.bundle" > "${tmp}/pantrix.b64"
+repo="$(pwd)"
+# Under Git Bash, hand kubectl a Windows-style KUBECONFIG path: MSYS_NO_PATHCONV
+# (used below) would otherwise leave a /c/... path that kubectl.exe cannot open.
+if [ -n "${KUBECONFIG:-}" ] && command -v cygpath >/dev/null 2>&1; then
+  KUBECONFIG="$(cygpath -m -p "${KUBECONFIG}")"
+  export KUBECONFIG
+fi
+
+work="${TMPDIR:-/tmp}/pantrix-gitops-push"
+mkdir -p "${work}"
+
 pod="$(kubectl -n gitops get pod -l app=git-server -o jsonpath='{.items[0].metadata.name}')"
-kubectl -n gitops exec -i "${pod}" -- sh -c 'base64 -d > /tmp/pantrix.bundle' < "${tmp}/pantrix.b64"
-kubectl -n gitops exec "${pod}" -- sh -c "
-  set -e
-  echo '${sum}  /tmp/pantrix.bundle' | sha256sum -c -s
-  git -C /srv/git/pantrix.git fetch --force /tmp/pantrix.bundle main:main
-  rm /tmp/pantrix.bundle
-  git -C /srv/git/pantrix.git log --oneline -1 main"
+# MSYS_NO_PATHCONV keeps Git Bash from rewriting in-pod paths such as /srv/git.
+in_pod() { MSYS_NO_PATHCONV=1 kubectl -n gitops exec "${pod}" -- "$@"; }
+
+# Bundle only what the server is missing (full history the first time).
+server_head="$(in_pod git -C /srv/git/pantrix.git rev-parse --verify -q main 2>/dev/null | tr -d '\r' || true)"
+range=(main)
+if [ -n "${server_head}" ] && git merge-base --is-ancestor "${server_head}" main 2>/dev/null; then
+  if [ "${server_head}" = "$(git rev-parse main)" ]; then
+    echo "rehearsal server already at $(git rev-parse --short main)"
+    exit 0
+  fi
+  range=(main "^${server_head}")
+fi
+git bundle create "${work}/pantrix.bundle" "${range[@]}" >/dev/null 2>&1
+sum="$(sha256sum "${work}/pantrix.bundle" | cut -d' ' -f1)"
+
+(cd "${work}" && MSYS_NO_PATHCONV=1 kubectl cp pantrix.bundle "gitops/${pod}:/tmp/pantrix.bundle")
+cd "${repo}"
+
+remote_sum="$(in_pod sha256sum /tmp/pantrix.bundle | cut -d' ' -f1)"
+if [ "${remote_sum}" != "${sum}" ]; then
+  echo "bundle checksum mismatch after copy (${remote_sum} != ${sum})" >&2
+  exit 1
+fi
+in_pod git -C /srv/git/pantrix.git fetch -q --force /tmp/pantrix.bundle main:main
+in_pod git -C /srv/git/pantrix.git log --oneline -1 main
