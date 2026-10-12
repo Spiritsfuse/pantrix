@@ -23,11 +23,9 @@ prometheus:
       limits: { memory: 1Gi }
 
 alertmanager:
-  enabled: true
-  alertmanagerSpec:
-    resources:
-      requests: { cpu: 10m, memory: 32Mi }
-      limits: { memory: 96Mi }
+  # Alert rules still evaluate in Prometheus (see the Alerts page); routing them
+  # to a receiver is out of scope for the laptop demo, so Alertmanager is off.
+  enabled: false
 
 grafana:
   enabled: true

@@ -14,3 +14,15 @@ serviceMonitor:
   # The Helm-installed release in namespace "pantrix" is the one scraped for the
   # demo dashboard; keep this copy out of the same Prometheus job.
   enabled: false
+# The GitOps rehearsal shares a laptop with the Helm-installed release, so it
+# runs one replica of each tier; the Helm release keeps the 2+2 baseline.
+backend:
+  autoscaling:
+    minReplicas: 1
+    maxReplicas: 2
+frontend:
+  autoscaling:
+    minReplicas: 1
+    maxReplicas: 2
+podDisruptionBudget:
+  enabled: false
