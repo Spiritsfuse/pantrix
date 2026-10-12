@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Children, cloneElement, useEffect, useId } from "react";
 import { X } from "lucide-react";
 
 // Slide-in side sheet used for every create/edit form.
@@ -27,12 +27,22 @@ export function Drawer({ title, subtitle, onClose, children }) {
   );
 }
 
+// Explicit label/for pairing: wrapping a <select> in its <label> makes screen
+// readers announce the selected option as part of the field name.
 export function Field({ label, hint, children }) {
+  const id = useId();
+  const hintId = hint ? `${id}-hint` : undefined;
   return (
-    <label className="field">
-      <span className="field__label">{label}</span>
-      {children}
-      {hint && <span className="field__hint">{hint}</span>}
-    </label>
+    <div className="field">
+      <label className="field__label" htmlFor={id}>
+        {label}
+      </label>
+      {cloneElement(Children.only(children), { id, "aria-describedby": hintId })}
+      {hint && (
+        <span className="field__hint" id={hintId}>
+          {hint}
+        </span>
+      )}
+    </div>
   );
 }
