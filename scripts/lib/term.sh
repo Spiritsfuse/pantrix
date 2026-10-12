@@ -5,9 +5,12 @@
 
 PROMPT_USER="${PROMPT_USER:-dhruv-sharma}"
 PROMPT_HOST="${PROMPT_HOST:-pantrix}"
+REPO_ROOT="${REPO_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 
 run() {
-  printf '\n\033[1;32m%s@%s\033[0m:\033[1;34m~/pantrix\033[0m$ %s\n' "$PROMPT_USER" "$PROMPT_HOST" "$*"
+  local here="${PWD#"$REPO_ROOT"}"
+  printf '\n\033[1;32m%s@%s\033[0m:\033[1;34m~/pantrix%s\033[0m$ %s\n' \
+    "$PROMPT_USER" "$PROMPT_HOST" "$here" "$*"
   eval "$@"
 }
 

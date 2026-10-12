@@ -1,0 +1,77 @@
+# GitOps promotion: point the dev environment at images CI already built,
+# scanned and pushed. Argo CD notices the commit and reconciles the cluster.
+#
+# Runs automatically after a successful ci-cd run on main, or by hand with a SHA.
+# The commit it makes only touches gitops/, which ci-cd ignores, and pushes made
+# with GITHUB_TOKEN never trigger further workflow runs, so there is no loop.
+
+name: promote
+
+on:
+  workflow_run:
+    workflows: [ci-cd]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Full 40-character commit SHA whose images should run in dev
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: promote-dev
+  cancel-in-progress: false
+
+jobs:
+  promote-dev:
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write # commit the new desired state
+      packages: read # confirm the images exist
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+      - name: Resolve the SHA to promote
+        id: sha
+        env:
+          INPUT_SHA: ${{ github.event.inputs.sha }}
+          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          sha="${INPUT_SHA:-$RUN_SHA}"
+          if ! [[ "$sha" =~ ^[0-9a-f]{40}$ ]]; then echo "::error::not a full commit SHA: $sha"; exit 1; fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - name: Confirm both images were published
+        env:
+          SHA: ${{ steps.sha.outputs.sha }}
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          for c in backend frontend; do
+            docker manifest inspect "ghcr.io/${owner}/pantrix-${c}:${SHA}" > /dev/null
+            echo "found ghcr.io/${owner}/pantrix-${c}:${SHA}"
+          done
+      - name: Update gitops/environments/dev/values.yaml
+        env:
+          SHA: ${{ steps.sha.outputs.sha }}
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          file=gitops/environments/dev/values.yaml
+          sed -i "s#^  registry: .*#  registry: ghcr.io/${owner}#" "$file"
+          sed -i "s/^  tag: \"[0-9a-f]\{40\}\"/  tag: \"${SHA}\"/" "$file"
+          git diff --stat
+      - name: Commit and push the promotion
+        env:
+          SHA: ${{ steps.sha.outputs.sha }}
+        run: |
+          if git diff --quiet; then echo "dev already runs ${SHA:0:7}"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Promote ${SHA:0:7} to the dev environment through GitOps"
+          git push origin HEAD:main
+          echo "Promoted \`${SHA}\` to dev" >> "$GITHUB_STEP_SUMMARY"
