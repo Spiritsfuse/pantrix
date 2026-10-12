@@ -1,0 +1,6 @@
+# Gitleaks false positives. Each entry: fingerprint, what matched, why it is not a secret.
+#
+# generic-api-key matched remote_access_security_group_id = "sg-..." in the Terraform destroy
+# transcript. The value is a security-group ID invented by the Moto AWS emulator for a resource
+# that never existed in AWS; it is an identifier, not a credential. Reviewed 2026-10-13.
+ad1106676e282c5aff465a34b8a940954077061e:docs/evidence/transcripts/terraform-destroy-emulator.txt:generic-api-key:1092
