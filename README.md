@@ -1,5 +1,7 @@
 # Pantrix
 
+[![ci-cd](https://github.com/Spiritsfuse/pantrix/actions/workflows/ci-cd.yml/badge.svg?branch=main)](https://github.com/Spiritsfuse/pantrix/actions/workflows/ci-cd.yml)
+
 **Donated stock and expiry tracking for community food banks, taken from a laptop to a monitored
 Kubernetes cluster.**
 
@@ -11,14 +13,15 @@ Built by **Dhruv Sharma** · GitHub [@Spiritsfuse](https://github.com/spiritsfus
 |---|---|
 | Video walkthrough | [`demo/presentation.mp4`](demo/presentation.mp4) (captions: [`demo/presentation.srt`](demo/presentation.srt)) |
 | Slides | [`demo/presentation.pptx`](demo/presentation.pptx) · [`demo/presentation.pdf`](demo/presentation.pdf) · [script](demo/DEMO-SCRIPT.md) |
+| CI/CD | [green `ci-cd` run](https://github.com/Spiritsfuse/pantrix/actions/runs/38305646085) · packages [`pantrix-backend`](https://github.com/Spiritsfuse/pantrix/pkgs/container/pantrix-backend) and [`pantrix-frontend`](https://github.com/Spiritsfuse/pantrix/pkgs/container/pantrix-frontend) (public, commit-SHA tags) |
 | Delivery checklist | [`docs/DELIVERY-CHECKLIST.md`](docs/DELIVERY-CHECKLIST.md) |
 | Evidence | [`docs/evidence/EVIDENCE-MANIFEST.md`](docs/evidence/EVIDENCE-MANIFEST.md) (real output only) |
 
 > **Verification status, in short:** the application, tests, Docker, Helm/Kubernetes with Ingress and
 > HPA, Argo CD, Prometheus/Grafana, security scans and troubleshooting drills were run and verified
-> locally. The **GitHub Actions run and GHCR push** happen once this repository is pushed to GitHub.
-> The **Terraform has not been applied to a real AWS account**, because no valid credentials were
-> available. It was validated and run against a local AWS API emulator instead. See
+> locally. The **GitHub Actions pipeline is green** on the public repository (every gate, both Trivy
+> scans, the GHCR push with commit-SHA tags, provenance attestation and a kind deploy rehearsal), and
+> `promote.yml` commits the verified SHA for Argo CD. AWS status is in
 > [Known limitations](#known-limitations).
 
 ---
@@ -277,10 +280,18 @@ action is pinned to a full commit SHA.
 both SHA-tagged images exist in GHCR and commits the new tag to
 `gitops/environments/dev/values.yaml` for Argo CD. Promotion commits do not trigger a rebuild.
 
-**Status:** both workflows pass `actionlint`
-([evidence](docs/evidence/ci-workflow-validation.png)), and every step was run locally with the same
-tools. The first real GitHub run, and the GHCR packages, will be captured after the repository is
-pushed. Details: [`docs/engineering/ci-cd.md`](docs/engineering/ci-cd.md).
+**Status:** the latest run is green: [`ci-cd` #6](https://github.com/Spiritsfuse/pantrix/actions/runs/38305646085) on `637de02`, followed by the
+promotion commit `d311f11`, which Argo CD would deploy. Both workflows also pass `actionlint`
+([evidence](docs/evidence/ci-workflow-validation.png)).
+
+| Evidence | |
+|---|---|
+| Run summary with all seven jobs green and the build artifacts | [`github-actions-run.png`](docs/evidence/github-actions-run.png) |
+| Promotion workflow | [`github-promote-run.png`](docs/evidence/github-promote-run.png) |
+| GHCR packages with SHA tags | [`ghcr-backend-package.png`](docs/evidence/ghcr-backend-package.png), [`ghcr-frontend-package.png`](docs/evidence/ghcr-frontend-package.png) |
+| Commit history | [`github-commit-history.png`](docs/evidence/github-commit-history.png) |
+
+Details: [`docs/engineering/ci-cd.md`](docs/engineering/ci-cd.md).
 
 ## Security (DevSecOps) and Trivy
 
@@ -448,7 +459,7 @@ Runbooks: [`docs/runbooks/`](docs/runbooks/README.md). Engineering notes:
 
 ## Measurements
 
-Only values that were actually measured, on the first computer (Windows 11, Docker Desktop, kind
+Only values that were actually measured, on the build machine (Windows 11, Docker Desktop, kind
 single node), 12–13 October 2026. Method and context: [`docs/engineering/measurements.md`](docs/engineering/measurements.md).
 
 | Metric | Value | How |
@@ -465,18 +476,15 @@ single node), 12–13 October 2026. Method and context: [`docs/engineering/measu
 
 - **No real AWS run.** The credentials on the build machine are invalid. The Terraform is validated
   and emulator-tested, but VPC/EKS provisioning, Console screenshots and a real destroy are pending.
-- **GitHub Actions and GHCR have not run yet.** The repository is pushed from a second computer. The
-  workflow is validated with actionlint, and every step was run locally.
 - **ingress-nginx was retired upstream in March 2026** (last release v1.15.1). It is fine for the
   local demo; production should use the Gateway API or the AWS Load Balancer Controller.
 - The demo runs on a single-node kind cluster with in-cluster PostgreSQL and no backups. Use RDS in
   production.
-- GHCR packages are private by default. Make them public, or add an `imagePullSecret`, before pulling
-  them from a cluster.
+- The GHCR packages are public. If they are made private, add an `imagePullSecret` before pulling them
+  from a cluster.
 - Alert rules are evaluated, but the laptop demo has no alert routing and Loki is not deployed.
 - kind's default CNI does not enforce NetworkPolicy, so the policy is declared but was not exercised.
-- The video narration is a synthesized voice reading the project script. The CI/CD-on-GitHub segment
-  is recorded after the repository exists.
+- The video narration is a synthesized voice reading the project script.
 
 Full list: [`docs/engineering/known-limitations.md`](docs/engineering/known-limitations.md).
 

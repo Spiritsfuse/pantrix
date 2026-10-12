@@ -1,6 +1,6 @@
 # 0006 — Images tagged with the Git commit SHA, pushed to GHCR with provenance
 
-**Status:** Accepted (the GHCR push is pending the first GitHub Actions run)
+**Status:** Accepted and verified on GitHub
 
 ## Context
 
@@ -40,8 +40,8 @@ images into kind instead of pushing.
 - GHCR packages are private by default. The cluster needs an `imagePullSecret`,
   or the packages need to be made public.
 
-**Status today:** the GHCR push has not run yet. The repository has no GitHub
-remote on this computer by design. The first run happens on the second computer.
+**Status today:** verified. Run #6 pushed both images tagged with the full commit SHA, attested
+them, and the kind job pulled them back from GHCR. The packages are public.
 
 ## What I would do in production
 

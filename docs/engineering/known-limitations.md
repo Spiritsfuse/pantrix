@@ -7,8 +7,7 @@ Stated plainly so nobody has to guess what was and was not done.
 | Item | State | What is needed |
 |------|-------|----------------|
 | Real AWS VPC + EKS (`terraform apply`, Console screenshots, real `terraform destroy`) | **Not done.** AWS credentials on the build computer were invalid (`InvalidClientTokenId`). Terraform passes `init`/`validate` and was exercised against the Moto emulator only. | Valid AWS credentials and the owner's approval of the cost, then `docs/runbooks/aws-provision-and-teardown.md` |
-| GitHub repository, Actions run, GHCR packages, provenance attestation | **Not run yet.** By design, no Git remote exists on the build computer. Workflows pass `actionlint`, and every step was run locally. | The destination repository URL (second computer) |
-| Argo CD pointing at GitHub | Rehearsed against an in-cluster `git daemon` | Switch `repoURL` ([gitops.md](gitops.md)) |
+| Argo CD pointing at GitHub | Rehearsed against an in-cluster `git daemon`. The GitHub repository is public and `promote.yml` writes to it | Switch `repoURL` ([gitops.md](gitops.md)) when a cluster should track GitHub |
 
 ## Simplifications in the demo platform
 

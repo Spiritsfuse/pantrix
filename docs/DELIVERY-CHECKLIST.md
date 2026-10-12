@@ -7,7 +7,7 @@ the evidence, and its status.
 | Status | Meaning |
 |---|---|
 | **VERIFIED** | Run and checked on 12–13 October 2026 |
-| **PENDING EXTERNAL ACCESS** | Needs the GitHub repository (second computer) or valid AWS credentials plus cost approval |
+| **PENDING EXTERNAL ACCESS** | Needs valid AWS credentials plus cost approval |
 | **NOT COMPLETE** | Work still to do |
 
 A file existing is not counted as proof. Each VERIFIED row has real output behind it, listed in
@@ -38,10 +38,10 @@ A file existing is not counted as proof. Each VERIFIED row has real output behin
 
 | Criterion | Implementation | Verify | Evidence | Status |
 |---|---|---|---|---|
-| Public GitHub repository linked in the form | — | — | — | PENDING EXTERNAL ACCESS (second computer pushes; the user submits the form) |
-| Meaningful commit messages | local `main`, 40+ descriptive commits authored as Dhruv Sharma | `git log --oneline` | `git-local-history.png` | VERIFIED locally |
+| Public GitHub repository linked in the form | — | — | — | VERIFIED: https://github.com/Spiritsfuse/pantrix (public) |
+| Meaningful commit messages | local `main`, 40+ descriptive commits authored as Dhruv Sharma | `git log --oneline` | `git-local-history.png`, `github-commit-history.png` | VERIFIED |
 | `.gitignore` covers `.env`, `__pycache__`, `node_modules`, `.venv` | `.gitignore` (also Terraform state, tfvars, kubeconfigs, the handoff prompt) | `git check-ignore -v ...` | `git-local-history.png` | VERIFIED |
-| Commit-history screenshot (≥10 commits) on GitHub | — | — | `github-commit-history.png` | PENDING EXTERNAL ACCESS |
+| Commit-history screenshot (≥10 commits) on GitHub | — | — | `github-commit-history.png` | VERIFIED |
 
 ## Docker
 
@@ -58,13 +58,13 @@ A file existing is not counted as proof. Each VERIFIED row has real output behin
 | Criterion | Implementation | Verify | Evidence | Status |
 |---|---|---|---|---|
 | Workflow file present | `.github/workflows/ci-cd.yml`, `promote.yml` | `actionlint` | `ci-workflow-validation.png` | VERIFIED |
-| Triggers on push to `main` | `on.push.branches: [main]` | file | `ci-workflow-validation.png` | VERIFIED (config); a real run is PENDING |
-| Pytest job fails the build on test failure | `backend-test` (`pytest ... --cov-fail-under=85`); `build-scan-push` `needs:` every gate | file | — | Config VERIFIED; real run PENDING EXTERNAL ACCESS |
-| Frontend built in the pipeline | `frontend-test` → `npm run build` | file | — | Config VERIFIED; real run PENDING |
-| Docker images built for both | `build-scan-push` matrix [backend, frontend] | file | — | Config VERIFIED; real run PENDING |
-| Images pushed to GHCR | `docker/login-action` + `docker push ghcr.io/<owner>/pantrix-*` (main only) | GHCR packages page | `ghcr-*-package.png` | PENDING EXTERNAL ACCESS |
-| Tags use the commit SHA, not `latest` | `tag=${GITHUB_SHA}` | file / GHCR | `ci-workflow-validation.png` | Config VERIFIED; real tags PENDING |
-| Green run URL, GHCR screenshot | — | — | — | PENDING EXTERNAL ACCESS |
+| Triggers on push to `main` | `on.push.branches: [main]` | file | `ci-workflow-validation.png` | VERIFIED in a real run |
+| Pytest job fails the build on test failure | `backend-test` (`pytest ... --cov-fail-under=85`); `build-scan-push` `needs:` every gate | file | — | VERIFIED in a real run |
+| Frontend built in the pipeline | `frontend-test` → `npm run build` | file | — | VERIFIED in a real run |
+| Docker images built for both | `build-scan-push` matrix [backend, frontend] | file | — | VERIFIED in a real run |
+| Images pushed to GHCR | `docker/login-action` + `docker push ghcr.io/<owner>/pantrix-*` (main only) | GHCR packages page | `ghcr-backend-package.png`, `ghcr-frontend-package.png` | VERIFIED |
+| Tags use the commit SHA, not `latest` | `tag=${GITHUB_SHA}` | file / GHCR | `ci-workflow-validation.png` | VERIFIED: tags are full commit SHAs |
+| Green run URL, GHCR screenshot | — | https://github.com/Spiritsfuse/pantrix/actions/runs/38305646085 | `github-actions-run.png` | VERIFIED |
 
 Local equivalents of every CI step (tests, lint, audits, builds, Trivy, Gitleaks, Helm lint, Terraform
 validate) were run on this computer; see module , module , module , module  and module .
@@ -73,7 +73,7 @@ validate) were run on this computer; see module , module , module , module  
 
 | Criterion | Implementation | Verify | Evidence | Status |
 |---|---|---|---|---|
-| Trivy scans both images in CI | `build-scan-push` (`aquasecurity/trivy-action`, pinned SHA, v0.36.0) | local `trivy image` | `trivy-backend.png`, `trivy-frontend.png` | Local VERIFIED; CI run PENDING |
+| Trivy scans both images in CI | `build-scan-push` (`aquasecurity/trivy-action`, pinned SHA, v0.36.0) | local `trivy image` | `trivy-backend.png`, `trivy-frontend.png` | VERIFIED locally and in the CI run (`security-backend` / `security-frontend` artifacts) |
 | Fail on HIGH/CRITICAL | `severity: HIGH,CRITICAL`, `exit-code: 1`, `ignore-unfixed: true` | policy | `security/TRIVY-POLICY.md`, `trivy-backend-before-fix.png` (it really failed) | VERIFIED |
 | Explain a CVE / a clean result | `security/TRIVY-POLICY.md`, `docs/engineering/security.md` | — | — | VERIFIED |
 | 2–3 sentence explanation | below | — | — | VERIFIED |
@@ -141,7 +141,7 @@ Video order:
 |---|---|
 | Slides first | VERIFIED |
 | Codebase | VERIFIED |
-| CI/CD — push and pipeline end to end | PENDING EXTERNAL ACCESS |
+| CI/CD — push and pipeline end to end | VERIFIED (segment recorded from the real run) |
 | Terraform plan + AWS Console (VPC + EKS) | Plan blocker and emulator shown; Console PENDING EXTERNAL ACCESS |
 | Argo CD synced app + GitOps flow | VERIFIED |
 | Kubernetes pods / services / ingress | VERIFIED |

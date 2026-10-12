@@ -57,12 +57,16 @@ Argo CD then reconciles the cluster. See [gitops.md](gitops.md).
 - The Helm deploy plus smoke test that `k8s-smoke` performs was run on a local
   kind cluster and passed.
 
-## Pending (needs the GitHub repository — second computer)
+## First hosted run: what it exposed
 
-- The first real GitHub Actions run, and fixes for anything the hosted runners
-  expose. Likely candidates:
-  - first-time GHCR package permissions;
-  - kind on `ubuntu-24.04`;
-  - action input changes.
-- GHCR packages with SHA tags, their visibility, and the attestation.
-- Screenshots of the green run, the Trivy step logs and the GHCR package pages.
+The first runs on GitHub-hosted runners found two real problems that local runs could not:
+
+- `kubectl apply --dry-run=client` still performs API discovery, so it fails on a runner with no
+  cluster. The IaC job now checks `k8s/namespace.yaml` structurally; the kind job applies it for real.
+- The shell scripts had been committed without the executable bit (exit code 126). They are now
+  `100755` in Git.
+
+After those fixes the run is green: [`ci-cd` #6](https://github.com/Spiritsfuse/pantrix/actions/runs/38305646085) with all seven jobs passing, both
+images pushed to GHCR as `ghcr.io/spiritsfuse/pantrix-{backend,frontend}:<full sha>`, attested, pulled
+back and deployed on kind through Helm and the Ingress. `promote.yml` then committed the SHA to
+`gitops/environments/dev/values.yaml`.

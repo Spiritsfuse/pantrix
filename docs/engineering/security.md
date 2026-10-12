@@ -15,7 +15,7 @@ A clean scanner result means "nothing known was found by this tool", not "secure
 | Container images | Trivy, gate = fixable HIGH/CRITICAL | CI `build-scan-push` | both images pass (exit 0) |
 | IaC / manifests | Trivy config: Terraform, Helm, Dockerfiles, k8s YAML | CI `iac-scan` | clean except documented AWS-0104 |
 | SBOM | Trivy CycloneDX per image | CI artifact, `security/sbom/` | backend 119, frontend 71 components |
-| Provenance | `actions/attest-build-provenance` | CI, after push | pending first GitHub run |
+| Provenance | `actions/attest-build-provenance` | CI, after push | verified in run #6 |
 | Supply chain of CI itself | Actions pinned to commit SHAs, least-privilege token per job | `.github/workflows/` | validated with actionlint |
 | Runtime: users | non-root images (10001 / 101), `runAsNonRoot` | Dockerfiles, chart | verified (`/proc/1/status`) |
 | Runtime: hardening | read-only root FS, no privilege escalation, drop `ALL` capabilities, seccomp `RuntimeDefault`, no service account token | chart | enforced by `restricted` PSS on the namespace |

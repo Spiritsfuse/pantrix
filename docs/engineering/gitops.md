@@ -34,10 +34,10 @@ promotion commit.
   the Deployments on the new image
   (`docs/evidence/argocd-application.png`, `argocd-gitops-cli.png`).
 
-## Switching Argo CD to the GitHub repository (second computer)
+## Switching Argo CD to the GitHub repository
 
-1. Push the repository to GitHub. CI then publishes images, and `promote.yml`
-   commits the SHA to `gitops/environments/dev/values.yaml`.
+1. The repository is on GitHub. CI publishes images, and `promote.yml`
+   commits the SHA to `gitops/environments/dev/values.yaml` (see commit `d311f11`).
 2. If the repository is private, register it with Argo CD:
    `argocd repo add https://github.com/<owner>/<repo>.git --username <user> --password <fine-grained read-only token>`.
    A public repository needs nothing.
@@ -48,8 +48,7 @@ promotion commit.
      targetRevision: main
    ```
 4. Commit, push and `kubectl apply -f gitops/application.yaml`.
-5. GHCR packages are private by default. Either set both packages to public, or
-   create a pull secret in `pantrix-gitops` and add `imagePullSecrets` to
+5. The GHCR packages are public. If they are made private, create a pull secret in `pantrix-gitops` and add `imagePullSecrets` to
    `gitops/environments/dev/values.yaml`:
    ```bash
    kubectl -n pantrix-gitops create secret docker-registry ghcr-pull \

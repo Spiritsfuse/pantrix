@@ -15,7 +15,7 @@ from another project or account.
 **Status values**
 
 - **VERIFIED**: captured and checked against the output.
-- **PENDING EXTERNAL ACCESS**: needs the GitHub repository or real AWS credentials.
+- **PENDING EXTERNAL ACCESS**: needs real AWS credentials.
 
 Capture date for everything below: 2026-10-12 and 2026-10-13 (IST), on the first computer, against the
 kind cluster `pantrix`, the Docker Compose stack and the local repository.
@@ -47,7 +47,7 @@ kind cluster `pantrix`, the Docker Compose stack and the local repository.
 | File | Proves | Method | Status |
 |---|---|---|---|
 | `git-local-history.png` | Local `main` history, commit count, empty `git remote -v`, `.gitignore` rules for `.env`, `.venv`, `node_modules`, Terraform state and the handoff prompt | T | VERIFIED (local) |
-| `github-commit-history.png` | Commit history on GitHub | B | PENDING EXTERNAL ACCESS |
+| `github-repository.png`, `github-commit-history.png` | Repository front page and commit history on GitHub | B | VERIFIED |
 
 ## Docker (M4)
 
@@ -65,7 +65,7 @@ kind cluster `pantrix`, the Docker Compose stack and the local repository.
 |---|---|---|---|
 | `ci-workflow-validation.png` | `actionlint` passes on `ci-cd.yml` and `promote.yml`; the job graph, Trivy flags and SHA tagging lines | T | VERIFIED (local) |
 | `github-actions-run.png`, `github-actions-pytest.png`, `github-actions-ghcr-push.png`, `github-actions-k8s-smoke.png`, `github-promote-run.png`, `github-actions-artifacts.png` | A real pipeline run on GitHub | B | PENDING EXTERNAL ACCESS |
-| `ghcr-backend-package.png`, `ghcr-frontend-package.png` | GHCR packages with commit-SHA tags | B | PENDING EXTERNAL ACCESS |
+| `ghcr-backend-package.png`, `ghcr-frontend-package.png` | GHCR packages with commit-SHA tags | B | VERIFIED |
 
 ## Trivy / DevSecOps (M6)
 
