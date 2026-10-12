@@ -71,7 +71,7 @@ OpenAPI: http://localhost:8000/docs.
 
 All Pantrix namespaces enforce the `restricted` Pod Security Standard.
 
-## AWS target (Terraform, not yet applied)
+## AWS target (Terraform, applied and destroyed in ap-south-1)
 
 A VPC `10.42.0.0/16` spans two AZs:
 - public subnets for the NAT gateway and load balancers;

@@ -1,71 +1,311 @@
 {
-  "voice": "Microsoft David Desktop",
-  "rate": 0,
-  "segments": [
-    { "card": ["Pantrix", "DevSecOps capstone - Dhruv Sharma (@Spiritsfuse)", "Narration in this video is a synthesized voice reading the project script. Everything shown is real output from the project."], "seconds": 6,
-      "say": "Pantrix. A DevSecOps capstone project by Dhruv Sharma. This video starts with the presentation and then walks through the running system." },
-    { "card": ["1 · Presentation", "Slides from demo/presentation.pptx"], "seconds": 3, "say": "Part one: the presentation." },
-    { "image": "demo/.work/slides/slide-01.png", "say": "Pantrix helps community food banks track donated stock and its expiry dates, so food is handed out before it spoils. It is built as a complete delivery pipeline, from a developer laptop to a monitored Kubernetes cluster." },
-    { "image": "demo/.work/slides/slide-02.png", "say": "Volunteers log donations, see what expires first, record hand-outs to partner organisations, and the stock count goes down automatically. Expired stock cannot be handed out, and over-asking is rejected by the API." },
-    { "image": "demo/.work/slides/slide-03.png", "say": "These screenshots come from a real create, edit, hand-out and delete flow, captured against the running application, on desktop and on a phone-sized screen." },
-    { "image": "demo/.work/slides/slide-04.png", "say": "The stack follows the course reference: React with Vite, FastAPI, PostgreSQL with SQLAlchemy and Alembic, pytest, Docker, GitHub Actions, Trivy, the GitHub Container Registry, Terraform for AWS, Kubernetes with Helm, Argo CD, Prometheus and Grafana." },
-    { "image": "demo/.work/slides/slide-05.png", "say": "Traffic enters through the ingress controller. Slash goes to the frontend Nginx pods, slash API goes to the FastAPI pods, which talk to PostgreSQL. Prometheus scrapes every backend pod, Grafana shows the dashboard, and Argo CD keeps a second environment in sync with Git." },
-    { "image": "demo/.work/slides/slide-06.png", "say": "Three tables, created by an Alembic migration: donors, stock items and distributions. The API offers full create, read, update and delete for items and donors, plus statistics, distributions, health, readiness and metrics endpoints." },
-    { "image": "demo/.work/slides/slide-07.png", "say": "Thirty-one backend tests reach ninety-six percent coverage against a throw-away database built by the real migrations. Ten frontend tests cover rendering, API failures and form validation. Ruff, Bandit, pip-audit, ESLint and npm audit run as well." },
-    { "image": "demo/.work/slides/slide-08.png", "say": "Both images are multi-stage builds. The backend runs as user ten thousand and one, the frontend as user one hundred and one on an unprivileged Nginx. Docker Compose starts PostgreSQL, the API and the UI with health checks and a persistent volume." },
-    { "image": "demo/.work/slides/slide-09.png", "say": "The pipeline runs on every push to main. Tests, linting, secret scanning and infrastructure checks run first. Only then are both images built, checked for a non-root user, scanned by Trivy, and pushed to the GitHub Container Registry tagged with the commit SHA. The first real GitHub run happens once the repository is pushed." },
-    { "image": "demo/.work/slides/slide-10.png", "say": "Trivy found real problems. The first backend image failed the gate with four fixable high severity vulnerabilities in libraries vendored by pip, which the API never uses. The fix removed pip from the runtime image, and the gate now passes without suppressing anything." },
-    { "image": "demo/.work/slides/slide-11.png", "say": "The Terraform describes a VPC with two public and two private subnets in the Mumbai region and an EKS cluster with a managed node group. It was not applied to a real AWS account, because no valid credentials were available. Instead it was planned, applied and destroyed against the Moto AWS emulator. A real apply is still pending." },
-    { "image": "demo/.work/slides/slide-12.png", "say": "Helm deploys two replicas of each tier with hardened pods, an Ingress, and autoscalers. Under generated load, the horizontal pod autoscaler took the backend from two to six pods." },
-    { "image": "demo/.work/slides/slide-13.png", "say": "Building and deploying are separate. Continuous integration only builds, scans and publishes images. Deployment is a Git commit that changes the image tag, and Argo CD reconciles the cluster to match." },
-    { "image": "demo/.work/slides/slide-14.png", "say": "FastAPI exposes Prometheus metrics. Every backend pod is a target in state up, and the Grafana dashboard shows request rate, error ratio, latency percentiles, business events and pod resources." },
-    { "image": "demo/.work/slides/slide-15.png", "say": "Five troubleshooting drills were scripted and run: a missing image tag, a Service with no endpoints, a readiness failure, a migration failure, and a bad release that was rolled back without downtime. One drill exposed a real Nginx startup bug, which was then fixed." },
-    { "image": "demo/.work/slides/slide-16.png", "say": "Two items are pending external access: the first GitHub Actions run with the registry push, and a real AWS apply. Everything else in this video is backed by real output in the docs evidence folder." },
-
-    { "card": ["2 · Working application", "Live, through the Kubernetes Ingress at pantrix.localtest.me"], "seconds": 3, "say": "Part two: the working application." },
-    { "clip": "demo/.work/clips/app.webm", "say": "This is the live application through the Kubernetes Ingress. The shelf is sorted by expiry. A new donation is logged, edited, partly handed out to a shelter, and finally deleted. Every action calls the FastAPI backend, and the data is stored in PostgreSQL. The layout also adapts to a phone-sized screen." },
-    { "clip": "demo/.work/clips/swagger.webm", "say": "The same API is documented in Swagger. Here the statistics endpoint is executed live, followed by the raw Prometheus metrics endpoint." },
-
-    { "card": ["3 · Codebase overview", "Repository layout and key files"], "seconds": 3, "say": "Part three: the codebase." },
-    { "image": "demo/.work/code/tree.png", "say": "The repository holds the backend, the frontend, the Helm chart, Kubernetes manifests, Terraform, GitOps desired state, monitoring, troubleshooting drills, scripts, workflows, documentation and the demo material." },
-    { "image": "demo/.work/code/distributions.png", "say": "The distribution endpoint locks the stock row, rejects expired stock and over-asking with a conflict response, and decrements the quantity in one transaction." },
-    { "image": "demo/.work/code/main.png", "say": "Liveness never touches the database. Readiness does, so a pod without a database stops receiving traffic but is not restarted. Prometheus instrumentation is added in one line." },
-    { "image": "demo/.work/code/helm-backend.png", "say": "In the Helm chart, migrations run in an init container before the API starts, with an advisory lock so replicas never race. Every container runs as non-root with a read-only root file system." },
-
-    { "card": ["4 · Tests and Docker", "Real terminal output"], "seconds": 3, "say": "Part four: tests and Docker." },
-    { "image": "docs/evidence/pytest-results.png", "say": "Pytest runs thirty-one tests, all passing." },
-    { "image": "docs/evidence/frontend-lint-test-build.png", "say": "The frontend passes ESLint, Prettier, ten Vitest tests, npm audit, and the production build." },
-    { "image": "docs/evidence/docker-compose-up.png", "say": "Docker Compose builds both images and waits until PostgreSQL, the backend and the frontend are all healthy." },
-    { "image": "docs/evidence/docker-nonroot-users.png", "say": "Both containers run as non-root users, confirmed from the image configuration and from the running process." },
-
-    { "card": ["5 · CI/CD and GHCR", "Workflow validated locally - the live GitHub run is recorded after the repository is pushed"], "seconds": 4, "say": "Part five: continuous integration and delivery." },
-    { "image": "docs/presentation/cicd-flow.png", "say": "This is the real job graph of the workflow. Images are only pushed after every gate passes, and they are tagged with the commit SHA, never latest." },
-    { "image": "docs/evidence/ci-workflow-validation.png", "say": "The workflow files were validated with actionlint, with no problems found. Every action is pinned to a commit SHA." },
-    { "card": ["GitHub Actions run · GHCR packages", "PENDING - recorded on the second computer after the first push to GitHub", "This placeholder is replaced by the real recording. No pipeline result is shown here because none exists yet."], "seconds": 6,
-      "say": "The live pipeline run and the published packages will be recorded once the repository is on GitHub. No pipeline result is shown here, because none exists yet." },
-
-    { "card": ["6 · Terraform and AWS", "Real output - no real AWS account was available"], "seconds": 3, "say": "Part six: Terraform and AWS." },
-    { "image": "docs/presentation/aws-architecture.png", "say": "This is the design described by the Terraform code. It has not been provisioned in a real AWS account." },
-    { "image": "docs/evidence/terraform-init-validate.png", "say": "Terraform initialises and validates successfully." },
-    { "image": "docs/evidence/terraform-plan-blocked.png", "say": "A plan against real AWS stops immediately, because the credentials on this machine are invalid. That is the real blocker." },
-    { "image": "docs/evidence/terraform-plan-emulator.png", "say": "Against the Moto AWS emulator, the plan resolves sixty-two resources." },
-    { "image": "docs/evidence/terraform-emulator-apply-destroy.png", "say": "In the emulator, apply created fifty-four of them, including the VPC, subnets, NAT gateway, EKS cluster and node group, before reaching APIs the emulator does not implement. Destroy then removed all fifty-four. Nothing was created in AWS." },
-
-    { "card": ["7 · Kubernetes, Helm, Ingress, Argo CD", "Local kind cluster"], "seconds": 3, "say": "Part seven: Kubernetes, Helm, the Ingress and Argo CD." },
-    { "image": "docs/evidence/kubernetes-pods.png", "say": "The Helm release runs two backend pods, two frontend pods and PostgreSQL, all running." },
-    { "image": "docs/evidence/kubernetes-services-ingress-hpa.png", "say": "ClusterIP services, the Ingress for pantrix dot localtest dot me, and the autoscalers." },
-    { "image": "docs/evidence/helm-release.png", "say": "Helm shows the release history, including a failed bad release and its rollback, and the Helm test passes." },
-    { "image": "docs/evidence/hpa-scaling.png", "say": "Under load, CPU reached almost four hundred percent of the target and the autoscaler scaled the backend from two to six pods." },
-    { "clip": "demo/.work/clips/argocd.webm", "say": "Argo CD shows the dev application synced and healthy, deployed from a Git commit that sets the image SHA." },
-    { "image": "docs/evidence/argocd-gitops-cli.png", "say": "Every promotion is a commit to the GitOps values file, and Argo CD reconciles the cluster to it." },
-
-    { "card": ["8 · Prometheus and Grafana", "Live"], "seconds": 3, "say": "Part eight: monitoring." },
-    { "clip": "demo/.work/clips/prometheus.webm", "say": "Prometheus shows every backend pod as a target in state up, a live request-rate query, and the Pantrix alert rules." },
-    { "clip": "demo/.work/clips/grafana.webm", "say": "The Grafana dashboard updates live with request rate, error ratio, latency percentiles, stock events, and pod CPU and memory." },
-
-    { "card": ["9 · Troubleshooting and conclusion", "Break, diagnose, fix"], "seconds": 3, "say": "Part nine: troubleshooting." },
-    { "image": "docs/evidence/troubleshooting-02-broken-service.png", "say": "A Service whose selector matches no pods has no endpoints, so requests are refused. Comparing the selector with the pod labels finds the cause, and correcting it restores traffic." },
-    { "image": "docs/evidence/troubleshooting-05-rollback.png", "say": "A release with a missing image fails, but the old pods keep serving, so every request still succeeds. Helm rollback returns to the last good revision." },
-    { "image": "demo/.work/slides/slide-16.png", "say": "That is Pantrix. Real output for every claim is in the docs evidence folder. Thank you for watching." }
-  ]
+ "voice": "Microsoft David Desktop",
+ "rate": 0,
+ "segments": [
+  {
+   "card": [
+    "Pantrix",
+    "DevSecOps capstone - Dhruv Sharma (@Spiritsfuse)",
+    "Narration in this video is a synthesized voice reading the project script. Everything shown is real output from the project."
+   ],
+   "seconds": 6,
+   "say": "Pantrix. A DevSecOps capstone project by Dhruv Sharma. This video starts with the presentation and then walks through the running system."
+  },
+  {
+   "card": [
+    "1 · Presentation",
+    "Slides from demo/presentation.pptx"
+   ],
+   "seconds": 3,
+   "say": "Part one: the presentation."
+  },
+  {
+   "image": "demo/.work/slides/slide-01.png",
+   "say": "Pantrix helps community food banks track donated stock and its expiry dates, so food is handed out before it spoils. It is built as a complete delivery pipeline, from a developer laptop to a monitored Kubernetes cluster."
+  },
+  {
+   "image": "demo/.work/slides/slide-02.png",
+   "say": "Volunteers log donations, see what expires first, record hand-outs to partner organisations, and the stock count goes down automatically. Expired stock cannot be handed out, and over-asking is rejected by the API."
+  },
+  {
+   "image": "demo/.work/slides/slide-03.png",
+   "say": "These screenshots come from a real create, edit, hand-out and delete flow, captured against the running application, on desktop and on a phone-sized screen."
+  },
+  {
+   "image": "demo/video-assets/slides/slide-04.png",
+   "say": "The stack follows a standard reference architecture: React with Vite, FastAPI, PostgreSQL with SQLAlchemy and Alembic, pytest, Docker, GitHub Actions, Trivy, the GitHub Container Registry, Terraform for AWS, Kubernetes with Helm, Argo CD, Prometheus and Grafana."
+  },
+  {
+   "image": "demo/.work/slides/slide-05.png",
+   "say": "Traffic enters through the ingress controller. Slash goes to the frontend Nginx pods, slash API goes to the FastAPI pods, which talk to PostgreSQL. Prometheus scrapes every backend pod, Grafana shows the dashboard, and Argo CD keeps a second environment in sync with Git."
+  },
+  {
+   "image": "demo/.work/slides/slide-06.png",
+   "say": "Three tables, created by an Alembic migration: donors, stock items and distributions. The API offers full create, read, update and delete for items and donors, plus statistics, distributions, health, readiness and metrics endpoints."
+  },
+  {
+   "image": "demo/.work/slides/slide-07.png",
+   "say": "Thirty-one backend tests reach ninety-six percent coverage against a throw-away database built by the real migrations. Ten frontend tests cover rendering, API failures and form validation. Ruff, Bandit, pip-audit, ESLint and npm audit run as well."
+  },
+  {
+   "image": "demo/.work/slides/slide-08.png",
+   "say": "Both images are multi-stage builds. The backend runs as user ten thousand and one, the frontend as user one hundred and one on an unprivileged Nginx. Docker Compose starts PostgreSQL, the API and the UI with health checks and a persistent volume."
+  },
+  {
+   "image": "demo/video-assets/slides/slide-09.png",
+   "say": "The pipeline runs on every push to main. Tests, linting, secret scanning and infrastructure checks run first. Only then are both images built, checked for a non-root user, scanned by Trivy, and pushed to the GitHub Container Registry tagged with the commit SHA. A real run on GitHub is green, and part five shows it."
+  },
+  {
+   "image": "demo/.work/slides/slide-10.png",
+   "say": "Trivy found real problems. The first backend image failed the gate with four fixable high severity vulnerabilities in libraries vendored by pip, which the API never uses. The fix removed pip from the runtime image, and the gate now passes without suppressing anything."
+  },
+  {
+   "image": "demo/video-assets/slides/slide-11.png",
+   "say": "The Terraform describes a VPC with two public and two private subnets in the Mumbai region and an EKS cluster with a managed node group. I applied it to a real AWS account, captured the Console and kubectl proof, and destroyed it again. Part six shows all of that."
+  },
+  {
+   "image": "demo/.work/slides/slide-12.png",
+   "say": "Helm deploys two replicas of each tier with hardened pods, an Ingress, and autoscalers. Under generated load, the horizontal pod autoscaler took the backend from two to six pods."
+  },
+  {
+   "image": "demo/.work/slides/slide-13.png",
+   "say": "Building and deploying are separate. Continuous integration only builds, scans and publishes images. Deployment is a Git commit that changes the image tag, and Argo CD reconciles the cluster to match."
+  },
+  {
+   "image": "demo/.work/slides/slide-14.png",
+   "say": "FastAPI exposes Prometheus metrics. Every backend pod is a target in state up, and the Grafana dashboard shows request rate, error ratio, latency percentiles, business events and pod resources."
+  },
+  {
+   "image": "demo/.work/slides/slide-15.png",
+   "say": "Five troubleshooting drills were scripted and run: a missing image tag, a Service with no endpoints, a readiness failure, a migration failure, and a bad release that was rolled back without downtime. One drill exposed a real Nginx startup bug, which was then fixed."
+  },
+  {
+   "image": "demo/video-assets/slides/slide-16.png",
+   "say": "Everything in the middle and right columns is backed by real output in the docs evidence folder, including the GitHub Actions run and the AWS apply and destroy."
+  },
+  {
+   "card": [
+    "2 · Working application",
+    "Live, through the Kubernetes Ingress at pantrix.localtest.me"
+   ],
+   "seconds": 3,
+   "say": "Part two: the working application."
+  },
+  {
+   "clip": "demo/.work/clips/app.webm",
+   "say": "This is the live application through the Kubernetes Ingress. The shelf is sorted by expiry. A new donation is logged, edited, partly handed out to a shelter, and finally deleted. Every action calls the FastAPI backend, and the data is stored in PostgreSQL. The layout also adapts to a phone-sized screen."
+  },
+  {
+   "clip": "demo/.work/clips/swagger.webm",
+   "say": "The same API is documented in Swagger. Here the statistics endpoint is executed live, followed by the raw Prometheus metrics endpoint."
+  },
+  {
+   "card": [
+    "3 · Codebase overview",
+    "Repository layout and key files"
+   ],
+   "seconds": 3,
+   "say": "Part three: the codebase."
+  },
+  {
+   "image": "demo/.work/code/tree.png",
+   "say": "The repository holds the backend, the frontend, the Helm chart, Kubernetes manifests, Terraform, GitOps desired state, monitoring, troubleshooting drills, scripts, workflows, documentation and the demo material."
+  },
+  {
+   "image": "demo/.work/code/distributions.png",
+   "say": "The distribution endpoint locks the stock row, rejects expired stock and over-asking with a conflict response, and decrements the quantity in one transaction."
+  },
+  {
+   "image": "demo/.work/code/main.png",
+   "say": "Liveness never touches the database. Readiness does, so a pod without a database stops receiving traffic but is not restarted. Prometheus instrumentation is added in one line."
+  },
+  {
+   "image": "demo/.work/code/helm-backend.png",
+   "say": "In the Helm chart, migrations run in an init container before the API starts, with an advisory lock so replicas never race. Every container runs as non-root with a read-only root file system."
+  },
+  {
+   "card": [
+    "4 · Tests and Docker",
+    "Real terminal output"
+   ],
+   "seconds": 3,
+   "say": "Part four: tests and Docker."
+  },
+  {
+   "image": "docs/evidence/pytest-results.png",
+   "say": "Pytest runs thirty-one tests, all passing."
+  },
+  {
+   "image": "docs/evidence/frontend-lint-test-build.png",
+   "say": "The frontend passes ESLint, Prettier, ten Vitest tests, npm audit, and the production build."
+  },
+  {
+   "image": "docs/evidence/docker-compose-up.png",
+   "say": "Docker Compose builds both images and waits until PostgreSQL, the backend and the frontend are all healthy."
+  },
+  {
+   "image": "docs/evidence/docker-nonroot-users.png",
+   "say": "Both containers run as non-root users, confirmed from the image configuration and from the running process."
+  },
+  {
+   "image": "demo/video-assets/card-ci.png",
+   "say": "Part five: continuous integration and delivery."
+  },
+  {
+   "image": "docs/presentation/cicd-flow.png",
+   "say": "This is the real job graph of the workflow. Images are only pushed after every gate passes, and they are tagged with the commit SHA, never latest."
+  },
+  {
+   "image": "docs/evidence/github-actions-run.png",
+   "say": "This is the real run on GitHub, run number six, triggered by a push to main. All seven jobs are green: backend, frontend, secret scan and infrastructure checks, then both images, then the kind deployment. The artifacts are the test reports, the Trivy reports and the software bills of materials."
+  },
+  {
+   "image": "docs/evidence/github-actions-pytest.png",
+   "say": "In the backend job, pytest ran thirty-one tests, all passing, with ninety-six percent coverage. That is above the eighty-five percent floor that would fail the build."
+  },
+  {
+   "image": "docs/evidence/github-trivy-backend.png",
+   "say": "Trivy scans the backend image that was just built, tagged with the commit SHA. A separate gate step fails the job on any fixable high or critical vulnerability, and this run passed."
+  },
+  {
+   "image": "docs/evidence/github-actions-ghcr-push.png",
+   "say": "The push step publishes the image tagged with the full commit SHA, never latest, and prints the digest. A provenance attestation is attached to it."
+  },
+  {
+   "image": "docs/evidence/ghcr-backend-package.png",
+   "say": "The backend package is public in the GitHub Container Registry, with tags that are commit SHAs."
+  },
+  {
+   "image": "docs/evidence/ghcr-frontend-package.png",
+   "say": "The frontend package is published the same way."
+  },
+  {
+   "image": "docs/evidence/github-actions-k8s-smoke.png",
+   "say": "A kind cluster then pulls those exact images from the registry, installs the Helm chart and runs a smoke test through the Ingress. It ends with smoke test passed."
+  },
+  {
+   "image": "docs/evidence/github-promote-run.png",
+   "say": "Finally the promote workflow ran and committed the verified commit SHA to the GitOps values file, which is what Argo CD deploys."
+  },
+  {
+   "image": "docs/evidence/ci-workflow-validation.png",
+   "say": "The workflow files were validated with actionlint, with no problems found. Every action is pinned to a commit SHA."
+  },
+  {
+   "image": "demo/video-assets/card-terraform.png",
+   "say": "Part six: Terraform and AWS."
+  },
+  {
+   "image": "docs/presentation/aws-architecture.png",
+   "say": "This is the design described by the Terraform code. It was applied to a real AWS account in the Mumbai region and destroyed afterwards."
+  },
+  {
+   "image": "docs/evidence/terraform-init-validate.png",
+   "say": "Terraform initialises and validates successfully."
+  },
+  {
+   "image": "docs/evidence/terraform-plan-aws.png",
+   "say": "The plan against the real account resolves sixty-two resources to add."
+  },
+  {
+   "image": "docs/evidence/terraform-apply-aws-attempt1.png",
+   "say": "The first apply created fifty-eight resources and then stopped at the node group. The account is on the AWS Free plan, which rejects the t3 medium instance type, so the autoscaling group could not launch any nodes."
+  },
+  {
+   "image": "docs/evidence/terraform-apply-aws.png",
+   "say": "With a Free plan eligible instance type, m7i flex large, the second apply replaced the node group and finished without errors."
+  },
+  {
+   "image": "docs/evidence/aws-vpc.png",
+   "say": "In the AWS Console, the VPC pantrix dev exists in the Mumbai region, with the ten dot forty-two dot zero dot zero slash sixteen address range."
+  },
+  {
+   "image": "docs/evidence/aws-subnets.png",
+   "say": "It has two public and two private subnets across two availability zones."
+  },
+  {
+   "image": "docs/evidence/aws-eks-cluster.png",
+   "say": "The EKS cluster pantrix dev is active on Kubernetes one point thirty-five, with two nodes, one node group and zero health issues."
+  },
+  {
+   "image": "docs/evidence/aws-eks-node-group.png",
+   "say": "The managed node group general is active, with a desired size of two."
+  },
+  {
+   "image": "docs/evidence/eks-nodes-aws.png",
+   "say": "kubectl against the cluster shows both nodes Ready, and the system pods, including CoreDNS, kube-proxy and the network plugin, are running."
+  },
+  {
+   "image": "docs/evidence/terraform-destroy-aws.png",
+   "say": "Finally terraform destroy removed all sixty-two resources, and a check of the account found nothing named pantrix left, so no cost is running."
+  },
+  {
+   "card": [
+    "7 · Kubernetes, Helm, Ingress, Argo CD",
+    "Local kind cluster"
+   ],
+   "seconds": 3,
+   "say": "Part seven: Kubernetes, Helm, the Ingress and Argo CD."
+  },
+  {
+   "image": "docs/evidence/kubernetes-pods.png",
+   "say": "The Helm release runs two backend pods, two frontend pods and PostgreSQL, all running."
+  },
+  {
+   "image": "docs/evidence/kubernetes-services-ingress-hpa.png",
+   "say": "ClusterIP services, the Ingress for pantrix dot localtest dot me, and the autoscalers."
+  },
+  {
+   "image": "docs/evidence/helm-release.png",
+   "say": "Helm shows the release history, including a failed bad release and its rollback, and the Helm test passes."
+  },
+  {
+   "image": "docs/evidence/hpa-scaling.png",
+   "say": "Under load, CPU reached almost four hundred percent of the target and the autoscaler scaled the backend from two to six pods."
+  },
+  {
+   "clip": "demo/.work/clips/argocd.webm",
+   "say": "Argo CD shows the dev application synced and healthy, deployed from a Git commit that sets the image SHA."
+  },
+  {
+   "image": "docs/evidence/argocd-gitops-cli.png",
+   "say": "Every promotion is a commit to the GitOps values file, and Argo CD reconciles the cluster to it."
+  },
+  {
+   "card": [
+    "8 · Prometheus and Grafana",
+    "Live"
+   ],
+   "seconds": 3,
+   "say": "Part eight: monitoring."
+  },
+  {
+   "clip": "demo/.work/clips/prometheus.webm",
+   "say": "Prometheus shows every backend pod as a target in state up, a live request-rate query, and the Pantrix alert rules."
+  },
+  {
+   "clip": "demo/.work/clips/grafana.webm",
+   "say": "The Grafana dashboard updates live with request rate, error ratio, latency percentiles, stock events, and pod CPU and memory."
+  },
+  {
+   "card": [
+    "9 · Troubleshooting and conclusion",
+    "Break, diagnose, fix"
+   ],
+   "seconds": 3,
+   "say": "Part nine: troubleshooting."
+  },
+  {
+   "image": "docs/evidence/troubleshooting-02-broken-service.png",
+   "say": "A Service whose selector matches no pods has no endpoints, so requests are refused. Comparing the selector with the pod labels finds the cause, and correcting it restores traffic."
+  },
+  {
+   "image": "docs/evidence/troubleshooting-05-rollback.png",
+   "say": "A release with a missing image fails, but the old pods keep serving, so every request still succeeds. Helm rollback returns to the last good revision."
+  },
+  {
+   "image": "demo/.work/slides/slide-16.png",
+   "say": "That is Pantrix. Real output for every claim is in the docs evidence folder. Thank you for watching."
+  }
+ ]
 }

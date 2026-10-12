@@ -1,0 +1,29 @@
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/terraform[0m$ grep -c 'Creation complete' apply-attempt-1.log   # resources the first apply created before the node group failed
+58
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/terraform[0m$ terraform apply tfplan   # first attempt, real AWS
+module.eks.data.aws_eks_addon_version.this["kube-proxy"]: Read complete after 1s [id=kube-proxy]
+module.eks.aws_eks_addon.before_compute["vpc-cni"]: Creating...
+module.eks.aws_eks_addon.before_compute["eks-pod-identity-agent"]: Creating...
+module.eks.aws_eks_access_entry.this["cluster_creator"]: Creation complete after 1s [id=pantrix-dev:arn:aws:iam::************:user/dhruv-sharma]
+module.eks.aws_eks_access_policy_association.this["cluster_creator_admin"]: Creating...
+module.eks.aws_eks_access_policy_association.this["cluster_creator_admin"]: Creation complete after 1s [id=pantrix-dev#arn:aws:iam::************:user/dhruv-sharma#arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy]
+module.eks.data.tls_certificate.this[0]: Read complete after 5s [id=1e3a331631939a1ae4a625cd4244a4963dabbfa2]
+module.eks.aws_iam_openid_connect_provider.oidc_provider[0]: Creating...
+module.eks.aws_iam_openid_connect_provider.oidc_provider[0]: Creation complete after 2s [id=arn:aws:iam::************:oidc-provider/oidc.eks.ap-south-1.amazonaws.com/id/96D5CC31D86F8E83125C905000839ACB]
+module.eks.aws_eks_addon.before_compute["eks-pod-identity-agent"]: Creation complete after 8s [id=pantrix-dev:eks-pod-identity-agent]
+module.eks.aws_eks_addon.before_compute["vpc-cni"]: Creation complete after 14s [id=pantrix-dev:vpc-cni]
+module.eks.time_sleep.this[0]: Creation complete after 30s [id=2026-10-12T21:02:18Z]
+module.eks.module.eks_managed_node_group["general"].module.user_data.null_resource.validate_cluster_service_cidr: Creating...
+module.eks.module.eks_managed_node_group["general"].module.user_data.null_resource.validate_cluster_service_cidr: Creation complete after 0s [id=1388803029125463812]
+module.eks.module.eks_managed_node_group["general"].aws_launch_template.this[0]: Creating...
+module.eks.module.eks_managed_node_group["general"].aws_launch_template.this[0]: Creation complete after 10s [id=lt-0b6dd1b8b943ea1ed]
+module.eks.module.eks_managed_node_group["general"].aws_eks_node_group.this[0]: Creating...
+Error: waiting for EKS Node Group (pantrix-dev:general-3c2768539e68a7012247e1fb29) create: unexpected state 'DELETING', wanted target 'ACTIVE'
+  with module.eks.module.eks_managed_node_group["general"].aws_eks_node_group.this[0],
+  on .terraform\modules\eks\modules\eks-managed-node-group\main.tf line 458, in resource "aws_eks_node_group" "this":
+ 458: resource "aws_eks_node_group" "this" {
+exit=1
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/terraform[0m$ aws autoscaling describe-scaling-activities --max-items 1 --query 'Activities[].[StatusCode,StatusMessage]'
+Failed	Could not launch On-Demand Instances. InvalidParameterCombination - The specified instance type is not eligible for Free Tier. For a list of Free Tier instance types, run 'describe-instance-types' with the filter 'free-tier-eligible=true'. Launching EC2 instance failed.
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/terraform[0m$ aws ec2 describe-instance-types --filters Name=free-tier-eligible,Values=true --query 'InstanceTypes[].InstanceType'
+c7i-flex.large  m7i-flex.large  t3.micro  t3.small  t4g.micro  t4g.small  t8i.micro  t8i.small

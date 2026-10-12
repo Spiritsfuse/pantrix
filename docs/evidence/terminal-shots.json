@@ -212,5 +212,41 @@
     "in": "docs/evidence/transcripts/troubleshooting-05-rollback.txt",
     "out": "docs/evidence/troubleshooting-05-rollback.png",
     "max": 55
+  },
+  {
+    "in": "docs/evidence/transcripts/terraform-plan-aws.txt",
+    "out": "docs/evidence/terraform-plan-aws.png",
+    "from": "Plan: 62 to add",
+    "max": 40,
+    "title": "dhruv-sharma@pantrix: ~/pantrix/terraform  [terraform -> real AWS, ap-south-1]",
+    "footer": "Real terraform plan against account ************ in ap-south-1: 62 resources to add."
+  },
+  {
+    "in": "docs/evidence/transcripts/terraform-apply-aws-attempt1-free-tier.txt",
+    "out": "docs/evidence/terraform-apply-aws-attempt1.png",
+    "max": 60,
+    "title": "dhruv-sharma@pantrix: ~/pantrix/terraform  [terraform -> real AWS, ap-south-1]",
+    "footer": "First real apply: 58 resources created, then the node group failed because the account is on the AWS Free plan (t3.medium is not eligible)."
+  },
+  {
+    "in": "docs/evidence/transcripts/terraform-apply-aws.txt",
+    "out": "docs/evidence/terraform-apply-aws.png",
+    "max": 60,
+    "title": "dhruv-sharma@pantrix: ~/pantrix/terraform  [terraform -> real AWS, ap-south-1]",
+    "footer": "Second real apply with an eligible instance type (m7i-flex.large): the node group and add-ons are created."
+  },
+  {
+    "in": "docs/evidence/transcripts/eks-nodes-aws.txt",
+    "out": "docs/evidence/eks-nodes-aws.png",
+    "max": 60,
+    "title": "dhruv-sharma@pantrix: ~/pantrix/terraform  [terraform -> real AWS, ap-south-1]",
+    "footer": "kubectl against the real EKS cluster: two nodes Ready, system pods Running."
+  },
+  {
+    "in": "docs/evidence/transcripts/terraform-destroy-aws.txt",
+    "out": "docs/evidence/terraform-destroy-aws.png",
+    "max": 60,
+    "title": "dhruv-sharma@pantrix: ~/pantrix/terraform  [terraform -> real AWS, ap-south-1]",
+    "footer": "Real terraform destroy: 62 resources destroyed, and nothing named pantrix is left in the account."
   }
 ]

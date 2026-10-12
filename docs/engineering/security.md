@@ -22,7 +22,7 @@ A clean scanner result means "nothing known was found by this tool", not "secure
 | Network | NetworkPolicy: only backend pods reach Postgres :5432 | chart | applied (enforcement depends on the CNI, see limitations) |
 | Secrets at runtime | Random DB password in a K8s Secret (Helm `lookup` keeps it stable); Grafana password random; nothing in Git | chart, scripts | verified |
 | HTTP | CSP, `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `server_tokens off` | `frontend/nginx.conf.template` | verified in response headers |
-| Cloud | KMS envelope encryption of EKS Secrets, private API endpoint by default, IMDSv2 hop limit 1, VPC flow logs | `terraform/` | `validate` + Trivy config; not applied to AWS |
+| Cloud | KMS envelope encryption of EKS Secrets, private API endpoint by default, IMDSv2 hop limit 1, VPC flow logs | `terraform/` | `validate` + Trivy config; applied to AWS once and destroyed |
 
 Exception policy: `.trivyignore` is for IaC findings only. Each entry needs a
 reason, the mitigations and a review date. Image CVEs are never ignored

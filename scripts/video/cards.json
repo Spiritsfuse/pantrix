@@ -1,0 +1,4 @@
+[
+  {"out": "card-ci.png", "text": ["5 · CI/CD and GHCR", "A real GitHub Actions run, GHCR packages and the GitOps promotion", "Pipeline run ci-cd #6 on github.com/Spiritsfuse/pantrix"]},
+  {"out": "card-terraform.png", "text": ["6 · Terraform and AWS", "A real plan, apply and destroy in ap-south-1", "VPC, subnets, EKS 1.35 and a managed node group, created and removed with Terraform"]}
+]

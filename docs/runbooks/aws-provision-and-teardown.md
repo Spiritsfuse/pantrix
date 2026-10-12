@@ -1,13 +1,13 @@
 # Provision and tear down the AWS stack (VPC + EKS)
 
-> **Status:** this procedure has **not** been run against a real AWS account
-> yet. On the build computer the AWS credentials were invalid
-> (`InvalidClientTokenId`). Real provisioning costs money and requires the
-> owner's explicit approval first.
+> **Status:** run end to end on a real account in ap-south-1: plan (62 to add), apply, Console and
+> `kubectl` evidence, destroy (62 destroyed, nothing left). Real provisioning costs money, so destroy it
+> as soon as the evidence is captured.
 >
-> What has been verified so far:
-> - `terraform init`, `fmt` and `validate`;
-> - a plan/apply/destroy against the Moto emulator (ADR 0014).
+> **AWS Free plan accounts:** `t3.medium` is rejected ("not eligible for Free Tier") and the node group
+> never gets instances. Use a free-tier-eligible type, for example
+> `node_instance_types = ["m7i-flex.large"]` (`aws ec2 describe-instance-types --filters
+> Name=free-tier-eligible,Values=true`).
 
 ## Prerequisites
 

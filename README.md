@@ -342,9 +342,11 @@ terraform destroy
 | Step | Result |
 |---|---|
 | `init`, `fmt`, `validate`, Trivy config | **Verified** ([evidence](docs/evidence/terraform-init-validate.png)) |
-| `plan` against real AWS | **Blocked**: `InvalidClientTokenId`; the AWS credentials on the build machine are invalid ([evidence](docs/evidence/terraform-plan-blocked.png)) |
-| `plan` / `apply` / `destroy` against the **Moto AWS emulator** | plan: 62 to add · apply: 54/62 created, then stopped at EKS add-on and access-entry APIs Moto lacks · destroy: 54 destroyed ([plan](docs/evidence/terraform-plan-emulator.png), [apply/destroy](docs/evidence/terraform-emulator-apply-destroy.png)). **Not AWS.** |
-| Real apply, AWS Console screenshots, real destroy | **Pending**: needs valid credentials and the owner's approval for about $0.25–0.30/hour |
+| `plan` against real AWS | **Verified**: 62 to add in account `************`, ap-south-1 ([evidence](docs/evidence/terraform-plan-aws.png)) |
+| `apply` against real AWS | **Verified**: VPC (2 public + 2 private subnets, NAT), EKS 1.35 control plane and a managed node group of two `m7i-flex.large` nodes, `kubectl get nodes` Ready. The first apply stopped at the node group because the account is on the AWS Free plan, where `t3.medium` is not eligible; the second apply used an eligible type ([attempt 1](docs/evidence/terraform-apply-aws-attempt1.png), [apply](docs/evidence/terraform-apply-aws.png), [nodes](docs/evidence/eks-nodes-aws.png)) |
+| AWS Console | VPC [`aws-vpc.png`](docs/evidence/aws-vpc.png), subnets [`aws-subnets.png`](docs/evidence/aws-subnets.png), cluster [`aws-eks-cluster.png`](docs/evidence/aws-eks-cluster.png), node group [`aws-eks-node-group.png`](docs/evidence/aws-eks-node-group.png) |
+| `destroy` against real AWS | **Verified**: 62 destroyed and nothing named `pantrix` left ([evidence](docs/evidence/terraform-destroy-aws.png)) |
+| Moto AWS emulator | plan 62 · apply 54/62 · destroy 54 ([plan](docs/evidence/terraform-plan-emulator.png)); kept as a fast offline check, **not AWS** |
 
 Full guide, cost table and cleanup checks: [`terraform/README.md`](terraform/README.md) and
 [`docs/runbooks/aws-provision-and-teardown.md`](docs/runbooks/aws-provision-and-teardown.md).
@@ -474,8 +476,8 @@ single node), 12–13 October 2026. Method and context: [`docs/engineering/measu
 
 ## Known limitations
 
-- **No real AWS run.** The credentials on the build machine are invalid. The Terraform is validated
-  and emulator-tested, but VPC/EKS provisioning, Console screenshots and a real destroy are pending.
+- **The AWS stack is not left running.** It was applied, captured and destroyed to avoid cost, so the Console shots are from that session. The application chart was deployed to a local kind cluster, not to the EKS cluster.
+- **AWS Free plan accounts** cannot launch `t3.medium`. Set `node_instance_types = ["m7i-flex.large"]` (or another free-tier-eligible type) in `terraform.tfvars`.
 - **ingress-nginx was retired upstream in March 2026** (last release v1.15.1). It is fine for the
   local demo; production should use the Gateway API or the AWS Load Balancer Controller.
 - The demo runs on a single-node kind cluster with in-cluster PostgreSQL and no backups. Use RDS in

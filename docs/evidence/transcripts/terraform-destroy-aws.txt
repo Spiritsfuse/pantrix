@@ -1,0 +1,25 @@
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/terraform[0m$ terraform destroy -auto-approve   # real AWS, ap-south-1
+module.eks.aws_security_group_rule.node["ingress_cluster_kubelet"]: Destruction complete after 2s
+module.eks.aws_security_group_rule.node["ingress_cluster_9443_webhook"]: Destruction complete after 2s
+module.eks.aws_iam_role.this[0]: Destruction complete after 2s
+module.eks.aws_security_group_rule.node["egress_all"]: Destruction complete after 3s
+module.eks.aws_security_group_rule.node["ingress_cluster_443"]: Destruction complete after 3s
+module.eks.aws_security_group_rule.node["ingress_cluster_4443_webhook"]: Destruction complete after 4s
+module.eks.aws_security_group_rule.node["ingress_cluster_10251_webhook"]: Destruction complete after 3s
+module.eks.aws_security_group_rule.node["ingress_cluster_6443_webhook"]: Destruction complete after 4s
+module.eks.aws_security_group_rule.node["ingress_self_coredns_udp"]: Destruction complete after 5s
+module.eks.aws_security_group_rule.node["ingress_nodes_ephemeral"]: Destruction complete after 5s
+module.eks.aws_security_group.cluster[0]: Destruction complete after 1s
+module.eks.aws_security_group.node[0]: Destruction complete after 1s
+module.vpc.aws_vpc.this[0]: Destruction complete after 1s
+Destroy complete! Resources: 62 destroyed.
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/terraform[0m$ terraform state list | wc -l
+0
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/terraform[0m$ aws eks list-clusters --region ap-south-1 --query 'clusters' --output text
+(none)
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/terraform[0m$ aws ec2 describe-vpcs --region ap-south-1 --filters Name=tag:Name,Values=pantrix-dev --query 'Vpcs[].VpcId' --output text
+(none)
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/terraform[0m$ aws ec2 describe-instances --filters 'Name=tag-key,Values=eks:cluster-name' --query 'Reservations[].Instances[].State.Name' --output text
+terminated terminated
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/terraform[0m$ aws kms list-aliases / aws logs describe-log-groups / aws iam list-roles / list-open-id-connect-providers   # filtered on 'pantrix'
+(none)

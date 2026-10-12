@@ -13,7 +13,7 @@ kubernetes_version = "1.35"
 # (curl -s https://checkip.amazonaws.com). Leave [] for a private-only endpoint.
 endpoint_public_access_cidrs = ["203.0.113.10/32"]
 
-node_instance_types = ["t3.medium"]
+node_instance_types = ["t3.medium"] # Free-plan accounts: use a free-tier-eligible type, e.g. ["m7i-flex.large"]
 node_capacity_type  = "ON_DEMAND" # "SPOT" is cheaper for a short demo
 node_min_size       = 1
 node_desired_size   = 2

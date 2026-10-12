@@ -20,9 +20,10 @@ Modules: `terraform-aws-modules/vpc/aws ~> 6.7`, `terraform-aws-modules/eks/aws 
 |---|---|---|
 | `terraform fmt -check`, `init`, `validate` | **Verified** on 2026-10-12 (Terraform 1.16.5) | `docs/evidence/terraform-init-validate.png` |
 | Trivy misconfiguration scan | **Verified**, 0 HIGH/CRITICAL (AWS-0104 is a documented exception) | `docs/evidence/trivy-config-iac.png` |
-| `terraform plan` against **real AWS** | **Blocked** — the AWS credentials on the build machine are invalid (`InvalidClientTokenId`) | `docs/evidence/terraform-plan-blocked.png` |
-| `plan` / `apply` / `destroy` against the **Moto AWS API emulator** | **Verified**: plan 62 to add; apply created 54/62 (VPC, subnets, IGW, NAT, EKS cluster, node group, IAM, KMS) before EKS add-on/access-entry APIs Moto does not implement; destroy removed all 54 | `docs/evidence/terraform-plan-emulator.png`, `terraform-emulator-apply-destroy.png`, `terraform-destroy-emulator.png` |
-| Real `apply`, AWS Console screenshots, real `destroy` | **Not done** — needs a valid AWS account and an explicit go-ahead for the cost | — |
+| `terraform plan` against **real AWS** | **Verified**: 62 to add (ap-south-1) | `docs/evidence/terraform-plan-aws.png` |
+| `apply` against **real AWS** | **Verified**: VPC, 4 subnets, NAT, EKS 1.35, managed node group (2 nodes Ready). The first attempt failed at the node group on a Free-plan account (`t3.medium` not eligible); `m7i-flex.large` worked | `terraform-apply-aws-attempt1.png`, `terraform-apply-aws.png`, `eks-nodes-aws.png`, `aws-*.png` |
+| `destroy` against **real AWS** | **Verified**: 62 destroyed, nothing named `pantrix` left | `terraform-destroy-aws.png` |
+| `plan` / `apply` / `destroy` against the **Moto AWS API emulator** | **Verified** as an offline check: plan 62; apply 54/62 (Moto lacks EKS add-on/access-entry APIs); destroy 54 | `terraform-plan-emulator.png`, `terraform-emulator-apply-destroy.png`, `terraform-destroy-emulator.png` |
 
 The emulator run is a correctness check of the configuration, **not** evidence of AWS resources.
 Script: [`../scripts/terraform/plan-against-emulator.sh`](../scripts/terraform/plan-against-emulator.sh).

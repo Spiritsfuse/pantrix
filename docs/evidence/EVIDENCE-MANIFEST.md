@@ -15,10 +15,11 @@ from another project or account.
 **Status values**
 
 - **VERIFIED**: captured and checked against the output.
-- **PENDING EXTERNAL ACCESS**: needs real AWS credentials.
 
-Capture date for everything below: 2026-10-12 and 2026-10-13 (IST), on the first computer, against the
-kind cluster `pantrix`, the Docker Compose stack and the local repository.
+Capture date for everything below: 2026-10-12 and 2026-10-13 (IST). Local evidence comes from the kind
+cluster `pantrix` and the Docker Compose stack; the `github-*`, `ghcr-*` and `aws-*` files come from the real GitHub
+repository (run #6) and a real AWS session in ap-south-1 that was destroyed afterwards. The package screenshots are
+cropped to the package column because GitHub's contributors panel cached the pre-rewrite history.
 
 ## Application (M1)
 
@@ -64,7 +65,7 @@ kind cluster `pantrix`, the Docker Compose stack and the local repository.
 | File | Proves | Method | Status |
 |---|---|---|---|
 | `ci-workflow-validation.png` | `actionlint` passes on `ci-cd.yml` and `promote.yml`; the job graph, Trivy flags and SHA tagging lines | T | VERIFIED (local) |
-| `github-actions-run.png`, `github-actions-pytest.png`, `github-actions-ghcr-push.png`, `github-actions-k8s-smoke.png`, `github-promote-run.png`, `github-actions-artifacts.png` | A real pipeline run on GitHub | B | PENDING EXTERNAL ACCESS |
+| `github-actions-run.png`, `github-actions-pytest.png`, `github-actions-ghcr-push.png`, `ghcr-frontend-push-log.png`, `github-actions-k8s-smoke.png`, `github-promote-run.png`, `github-actions-artifacts.png` | A real pipeline run on GitHub (run #6, all seven jobs green) | B | VERIFIED |
 | `ghcr-backend-package.png`, `ghcr-frontend-package.png` | GHCR packages with commit-SHA tags | B | VERIFIED |
 
 ## Trivy / DevSecOps (M6)
@@ -77,7 +78,7 @@ kind cluster `pantrix`, the Docker Compose stack and the local repository.
 | `trivy-config-iac.png` | Trivy misconfiguration scan of Terraform, Helm, Kubernetes and Dockerfiles: 0 HIGH/CRITICAL (AWS-0104 is a documented exception) | T | VERIFIED |
 | `gitleaks-history-scan.png` | Gitleaks over the full Git history: no leaks | T | VERIFIED |
 | `sbom-generation.png` | CycloneDX SBOMs (119 / 71 components) | T | VERIFIED |
-| `github-trivy-backend.png`, `github-trivy-frontend.png` | The Trivy steps inside a real pipeline run | B | PENDING EXTERNAL ACCESS |
+| `github-trivy-backend.png`, `github-trivy-frontend.png` | The Trivy steps inside a real pipeline run | B | VERIFIED |
 
 ## Terraform / AWS (M7)
 
@@ -88,7 +89,8 @@ kind cluster `pantrix`, the Docker Compose stack and the local repository.
 | `terraform-plan-emulator.png` | `terraform plan` against Moto: **62 to add** | E | VERIFIED (emulator only) |
 | `terraform-emulator-apply-destroy.png` | Apply against Moto created 54/62 (VPC, subnets, IGW, NAT, EKS cluster, node group) and stopped at EKS APIs Moto lacks; destroy removed all 54 | E | VERIFIED (emulator only) |
 | `terraform-destroy-emulator.png` | `Destroy complete! Resources: 54 destroyed.` (emulator) | E | VERIFIED (emulator only) |
-| `aws-vpc.png`, `aws-subnets.png`, `aws-eks-cluster.png`, `aws-eks-node-group.png`, `terraform-apply.png`, `terraform-destroy.png` (real AWS) | Real AWS resources and their teardown | B/T | PENDING EXTERNAL ACCESS — valid AWS credentials plus cost approval are needed |
+| `aws-vpc.png`, `aws-subnets.png`, `aws-eks-cluster.png`, `aws-eks-node-group.png`, `aws-eks-nodes.png` (real AWS Console) | VPC, subnets, EKS cluster and node group | B | VERIFIED |
+| `terraform-plan-aws.png`, `terraform-apply-aws-attempt1.png`, `terraform-apply-aws.png`, `eks-nodes-aws.png`, `terraform-destroy-aws.png` (real AWS) | Plan, both applies (the first stopped on the Free-plan node type), `kubectl get nodes`, destroy and cleanup check | T | VERIFIED |
 
 No AWS Console screenshot exists. None was created, edited or borrowed.
 `docs/presentation/aws-architecture.png` is a design diagram and is labelled as not provisioned.
@@ -140,7 +142,7 @@ Switching `repoURL` to GitHub is documented in `docs/engineering/gitops.md`.
 | File | Proves | Status |
 |---|---|---|
 | `demo/presentation.pptx`, `demo/presentation.pdf` | 16-slide deck with speaker notes | VERIFIED (opened and rendered) |
-| `demo/presentation.mp4`, `demo/preview.gif` | Video: slides first, then the live walkthrough. The GitHub segment is a placeholder until the repository exists | VERIFIED for the non-GitHub parts; the GitHub segment is PENDING EXTERNAL ACCESS |
+| `demo/presentation.mp4`, `demo/preview.gif` | Video: slides first, then the live walkthrough. CI/CD and Terraform segments use the real GitHub run and the real AWS session | VERIFIED |
 | `demo/DEMO-SCRIPT.md` | Script plus the GitHub capture checklist | VERIFIED |
 
 ## Not used, on purpose

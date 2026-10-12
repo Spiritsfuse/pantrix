@@ -18,7 +18,7 @@ They describe this laptop setup, not production capacity.
 | HPA scale-out | 2 → 6 backend replicas; CPU reached 397% of the 60% target | 12 parallel `generate-traffic.sh` loops for 150 s against the Ingress, `kubectl get hpa` every 18 s (`docs/evidence/hpa-scaling.png`); event `SuccessfulRescale New size: 6` |
 | Prometheus targets during scale-out | 6/6 backend targets UP | Prometheus Targets page (`prometheus-targets.png`) |
 | Availability during a failed release | 3 of 3 requests returned 200 | Troubleshooting drill 5: `helm upgrade` with a non-existent tag, then 3 sequential `curl`s 1 s apart (`troubleshooting-05-rollback.png`). A small sample, not a load test |
-| Terraform resource graph | 62 resources planned; 54 created and 54 destroyed in the emulator | `terraform plan/apply/destroy` against Moto 5.2.4, **not AWS** (ADR 0014) |
+| Terraform resource graph | 62 resources planned; 54 created and 54 destroyed in the emulator | Against Moto 5.2.4, **not AWS** (ADR 0014). On real AWS: 62 planned, 62 created (two applies) and 62 destroyed |
 
 ## Not measured
 

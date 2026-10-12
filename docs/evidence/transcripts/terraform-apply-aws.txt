@@ -1,0 +1,20 @@
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/terraform[0m$ aws sts get-caller-identity --query Arn --output text
+arn:aws:iam::************:user/dhruv-sharma
+[1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix/terraform[0m$ terraform apply tfplan2   # node_instance_types = ["m7i-flex.large"]
+module.eks.module.eks_managed_node_group["general"].aws_eks_node_group.this[0]: Creating...
+module.eks.module.eks_managed_node_group["general"].aws_eks_node_group.this[0]: Creation complete after 1m49s [id=pantrix-dev:general-3559bb3fa7c7eb70f6f0e6037d]
+module.eks.aws_eks_addon.this["kube-proxy"]: Creating...
+module.eks.aws_eks_addon.this["metrics-server"]: Creating...
+module.eks.aws_eks_addon.this["coredns"]: Creating...
+module.eks.aws_eks_addon.this["coredns"]: Creation complete after 14s [id=pantrix-dev:coredns]
+module.eks.aws_eks_addon.this["kube-proxy"]: Creation complete after 24s [id=pantrix-dev:kube-proxy]
+module.eks.aws_eks_addon.this["metrics-server"]: Creation complete after 45s [id=pantrix-dev:metrics-server]
+module.eks.module.eks_managed_node_group["general"].aws_eks_node_group.this[0] (deposed object 1b9c38a8): Destroying... [id=pantrix-dev:general-3c2768539e68a7012247e1fb29]
+module.eks.module.eks_managed_node_group["general"].aws_eks_node_group.this[0]: Destruction complete after 2m6s
+Apply complete! Resources: 4 added, 0 changed, 1 destroyed.
+cluster_name = "pantrix-dev"
+cluster_version = "1.35"
+configure_kubectl = "aws eks update-kubeconfig --region ap-south-1 --name pantrix-dev"
+region = "ap-south-1"
+vpc_id = "vpc-055bcf53ace49720b"
+

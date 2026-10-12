@@ -2,12 +2,13 @@
 
 Stated plainly so nobody has to guess what was and was not done.
 
-## Pending external access
+## External systems
 
-| Item | State | What is needed |
-|------|-------|----------------|
-| Real AWS VPC + EKS (`terraform apply`, Console screenshots, real `terraform destroy`) | **Not done.** AWS credentials on the build computer were invalid (`InvalidClientTokenId`). Terraform passes `init`/`validate` and was exercised against the Moto emulator only. | Valid AWS credentials and the owner's approval of the cost, then `docs/runbooks/aws-provision-and-teardown.md` |
-| Argo CD pointing at GitHub | Rehearsed against an in-cluster `git daemon`. The GitHub repository is public and `promote.yml` writes to it | Switch `repoURL` ([gitops.md](gitops.md)) when a cluster should track GitHub |
+| Item | State |
+|------|-------|
+| Real AWS VPC + EKS | **Verified, then destroyed.** A real plan, apply, Console proof and destroy ran in ap-south-1. The stack is not left running (cost). Free-plan accounts need a free-tier-eligible node type. |
+| Application on EKS | Not deployed. The chart runs on a local kind cluster; EKS was provisioned for infrastructure evidence only. |
+| Argo CD pointing at GitHub | Rehearsed against an in-cluster `git daemon`. The GitHub repository is public and `promote.yml` writes to it. Switch `repoURL` ([gitops.md](gitops.md)) when a cluster should track GitHub. |
 
 ## Simplifications in the demo platform
 

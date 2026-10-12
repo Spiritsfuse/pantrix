@@ -96,7 +96,7 @@
 <div class="wl" style="left:1655px;top:636px;color:#2b211a">git commit</div>
 <div class="wl" style="left:765px;top:808px;color:#a92f3c">any failed gate stops the run: no image is published</div>
 
-<div class="banner">Status on the first computer: both workflows validated with actionlint 1.7.12; every gate, build, scan and the kind deploy were run locally (not the GHCR push or attestation).
-The first real GitHub Actions run and GHCR publish happen after the repository is pushed (second computer).</div>
+<div class="banner">Status: green on GitHub-hosted runners (ci-cd #6). Every gate, both Trivy scans, the GHCR push with provenance and the kind deploy rehearsal passed;
+promote.yml then committed the verified commit SHA to the GitOps environment for Argo CD.</div>
 </body>
 </html>

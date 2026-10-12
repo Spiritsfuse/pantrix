@@ -1,0 +1,155 @@
+{
+ "base_segments": "git:5824a84",
+ "voice": "Microsoft David Desktop",
+ "rate": 0,
+ "plan": [
+  {
+   "keep": [
+    0,
+    4
+   ]
+  },
+  {
+   "image": "demo/video-assets/slides/slide-04.png",
+   "say": "The stack follows a standard reference architecture: React with Vite, FastAPI, PostgreSQL with SQLAlchemy and Alembic, pytest, Docker, GitHub Actions, Trivy, the GitHub Container Registry, Terraform for AWS, Kubernetes with Helm, Argo CD, Prometheus and Grafana."
+  },
+  {
+   "keep": [
+    6,
+    9
+   ]
+  },
+  {
+   "image": "demo/video-assets/slides/slide-09.png",
+   "say": "The pipeline runs on every push to main. Tests, linting, secret scanning and infrastructure checks run first. Only then are both images built, checked for a non-root user, scanned by Trivy, and pushed to the GitHub Container Registry tagged with the commit SHA. A real run on GitHub is green, and part five shows it."
+  },
+  {
+   "keep": [
+    11,
+    11
+   ]
+  },
+  {
+   "image": "demo/video-assets/slides/slide-11.png",
+   "say": "The Terraform describes a VPC with two public and two private subnets in the Mumbai region and an EKS cluster with a managed node group. I applied it to a real AWS account, captured the Console and kubectl proof, and destroyed it again. Part six shows all of that."
+  },
+  {
+   "keep": [
+    13,
+    16
+   ]
+  },
+  {
+   "image": "demo/video-assets/slides/slide-16.png",
+   "say": "Everything in the middle and right columns is backed by real output in the docs evidence folder, including the GitHub Actions run and the AWS apply and destroy."
+  },
+  {
+   "keep": [
+    18,
+    30
+   ]
+  },
+  {
+   "image": "demo/video-assets/card-ci.png",
+   "say": "Part five: continuous integration and delivery."
+  },
+  {
+   "image": "docs/presentation/cicd-flow.png",
+   "say": "This is the real job graph of the workflow. Images are only pushed after every gate passes, and they are tagged with the commit SHA, never latest."
+  },
+  {
+   "image": "docs/evidence/github-actions-run.png",
+   "say": "This is the real run on GitHub, run number six, triggered by a push to main. All seven jobs are green: backend, frontend, secret scan and infrastructure checks, then both images, then the kind deployment. The artifacts are the test reports, the Trivy reports and the software bills of materials."
+  },
+  {
+   "image": "docs/evidence/github-actions-pytest.png",
+   "say": "In the backend job, pytest ran thirty-one tests, all passing, with ninety-six percent coverage. That is above the eighty-five percent floor that would fail the build."
+  },
+  {
+   "image": "docs/evidence/github-trivy-backend.png",
+   "say": "Trivy scans the backend image that was just built, tagged with the commit SHA. A separate gate step fails the job on any fixable high or critical vulnerability, and this run passed."
+  },
+  {
+   "image": "docs/evidence/github-actions-ghcr-push.png",
+   "say": "The push step publishes the image tagged with the full commit SHA, never latest, and prints the digest. A provenance attestation is attached to it."
+  },
+  {
+   "image": "docs/evidence/ghcr-backend-package.png",
+   "say": "The backend package is public in the GitHub Container Registry, with tags that are commit SHAs."
+  },
+  {
+   "image": "docs/evidence/ghcr-frontend-package.png",
+   "say": "The frontend package is published the same way."
+  },
+  {
+   "image": "docs/evidence/github-actions-k8s-smoke.png",
+   "say": "A kind cluster then pulls those exact images from the registry, installs the Helm chart and runs a smoke test through the Ingress. It ends with smoke test passed."
+  },
+  {
+   "image": "docs/evidence/github-promote-run.png",
+   "say": "Finally the promote workflow ran and committed the verified commit SHA to the GitOps values file, which is what Argo CD deploys."
+  },
+  {
+   "keep": [
+    33,
+    33
+   ]
+  },
+  {
+   "image": "demo/video-assets/card-terraform.png",
+   "say": "Part six: Terraform and AWS."
+  },
+  {
+   "image": "docs/presentation/aws-architecture.png",
+   "say": "This is the design described by the Terraform code. It was applied to a real AWS account in the Mumbai region and destroyed afterwards."
+  },
+  {
+   "keep": [
+    37,
+    37
+   ]
+  },
+  {
+   "image": "docs/evidence/terraform-plan-aws.png",
+   "say": "The plan against the real account resolves sixty-two resources to add."
+  },
+  {
+   "image": "docs/evidence/terraform-apply-aws-attempt1.png",
+   "say": "The first apply created fifty-eight resources and then stopped at the node group. The account is on the AWS Free plan, which rejects the t3 medium instance type, so the autoscaling group could not launch any nodes."
+  },
+  {
+   "image": "docs/evidence/terraform-apply-aws.png",
+   "say": "With a Free plan eligible instance type, m7i flex large, the second apply replaced the node group and finished without errors."
+  },
+  {
+   "image": "docs/evidence/aws-vpc.png",
+   "say": "In the AWS Console, the VPC pantrix dev exists in the Mumbai region, with the ten dot forty-two dot zero dot zero slash sixteen address range."
+  },
+  {
+   "image": "docs/evidence/aws-subnets.png",
+   "say": "It has two public and two private subnets across two availability zones."
+  },
+  {
+   "image": "docs/evidence/aws-eks-cluster.png",
+   "say": "The EKS cluster pantrix dev is active on Kubernetes one point thirty-five, with two nodes, one node group and zero health issues."
+  },
+  {
+   "image": "docs/evidence/aws-eks-node-group.png",
+   "say": "The managed node group general is active, with a desired size of two."
+  },
+  {
+   "image": "docs/evidence/eks-nodes-aws.png",
+   "say": "kubectl against the cluster shows both nodes Ready, and the system pods, including CoreDNS, kube-proxy and the network plugin, are running."
+  },
+  {
+   "image": "docs/evidence/terraform-destroy-aws.png",
+   "say": "Finally terraform destroy removed all sixty-two resources, and a check of the account found nothing named pantrix left, so no cost is running."
+  },
+  {
+   "keep": [
+    41,
+    54
+   ]
+  }
+ ]
+}

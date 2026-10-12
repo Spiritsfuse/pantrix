@@ -1,6 +1,6 @@
 # 0013 — Terraform community VPC/EKS modules, private API endpoint, single NAT
 
-**Status:** Accepted (real `apply` pending AWS access)
+**Status:** Accepted and verified on real AWS (plan, apply, destroy)
 
 ## Context
 
@@ -52,10 +52,12 @@ Option 2, AWS provider `~> 6.0`, region `ap-south-1` by default.
 ## Consequences
 
 - Verified locally: `terraform init`, `fmt -check` and `validate` pass.
-- A real `terraform plan` fails at STS with `InvalidClientTokenId`, because this
-  computer's AWS credentials are invalid
-  (`docs/evidence/terraform-plan-blocked.png`).
-- The configuration was exercised against an emulator instead (ADR 0014).
+- A real plan, apply and destroy were run in ap-south-1 (`terraform-plan-aws.png`,
+  `terraform-apply-aws.png`, `terraform-destroy-aws.png`): 62 resources created and destroyed.
+- The first apply stopped at the node group: the account is on the AWS Free plan, where
+  `t3.medium` is not eligible. `node_instance_types = ["m7i-flex.large"]` worked
+  (`terraform-apply-aws-attempt1.png`).
+- The configuration was also exercised against an emulator (ADR 0014).
 - Cost while running: an EKS control plane, NAT gateway, two t3.medium nodes and
   CloudWatch logs. The approximate table is in
   `docs/runbooks/aws-provision-and-teardown.md`. Destroy after evaluation.

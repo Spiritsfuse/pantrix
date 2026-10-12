@@ -32,8 +32,8 @@ Key lines to land:
 
 - Slide 1: "Pantrix tracks donated stock and its expiry so food goes out before it spoils."
 - Slide 10: "Trivy failed my backend image with four fixable HIGH CVEs. I fixed the cause, removing pip from the runtime image, instead of ignoring them."
-- Slide 11: "This Terraform has not been applied to a real AWS account. I had no credentials, so I exercised it against the Moto emulator, and I say so on the slide."
-- Slide 16: "Two things are pending external access: the first GitHub Actions run, and a real AWS apply."
+- Slide 11: "I applied this Terraform to a real AWS account, captured the Console and kubectl proof, and destroyed it again."
+- Slide 16: "Everything in the middle column is verified with real output, including the GitHub Actions run and the AWS apply and destroy."
 
 ## 2. Working application and CRUD (about 1:45)
 
@@ -81,9 +81,9 @@ docker image ls | grep -E "pantrix-(backend|frontend)"
 Narration: "31 backend tests on a throw-away database, 10 frontend tests. The images are
 multi-stage and run as uid 10001 and uid 101."
 
-## 5. CI/CD and GHCR (about 1:30) - recorded on the second computer
+## 5. CI/CD and GHCR (about 1:30)
 
-On screen (second computer only, once the repository is on GitHub):
+On screen, from the real repository:
 
 1. Make a small, real change (for example a README wording fix outside `docs/`, or a
    code comment), commit it and `git push`.
@@ -100,8 +100,8 @@ On screen (second computer only, once the repository is on GitHub):
 Narration: "Tests run first and stop the pipeline on failure. Only then are the images
 built, scanned by Trivy, and pushed to GHCR tagged with the commit SHA."
 
-On the first computer this segment is replaced by `docs/presentation/cicd-flow.png`
-and `actionlint .github/workflows/*.yml` (no problems).
+The recorded video shows the CI diagram (`docs/presentation/cicd-flow.png`), then the real run summary,
+the pytest log, the Trivy and push logs, the GHCR packages and the promotion, taken from run #6.
 
 ## 6. Terraform and AWS (about 1:30)
 
@@ -109,75 +109,24 @@ On screen: terminal and `terraform/main.tf`.
 
 ```bash
 cd terraform && terraform fmt -check && terraform validate && cd ..
-terraform -chdir=terraform plan          # real AWS: stops at InvalidClientTokenId
+terraform -chdir=terraform plan          # real AWS, ap-south-1: 62 to add
 ```
 
-Then show the emulator evidence: `docs/evidence/terraform-plan-emulator.png`
-(Plan: 62 to add) and `docs/evidence/terraform-emulator-apply-destroy.png`
-(54 created, 54 destroyed).
+Then show: `docs/evidence/terraform-plan-aws.png`, the first apply that failed on the Free-plan node type
+(`terraform-apply-aws-attempt1.png`), the second apply (`terraform-apply-aws.png`), the AWS Console pages
+(`aws-vpc.png`, `aws-subnets.png`, `aws-eks-cluster.png`, `aws-eks-node-group.png`), `kubectl get nodes`
+(`eks-nodes-aws.png`) and finally `terraform-destroy-aws.png` (62 destroyed, nothing left).
 
-Narration: "The VPC has two public and two private subnets in ap-south-1 with one NAT
-gateway; EKS 1.35 runs one managed node group in the private subnets. I did not have
-AWS credentials, so this was never applied to a real account and I have no AWS Console
-screenshots. I proved the plan and the dependency order against the Moto emulator
-instead. A real apply, Console proof and destroy are pending."
-
-If real AWS access and cost approval become available, record instead: `terraform
-apply`, AWS Console VPC, subnets, EKS cluster and node group pages in ap-south-1,
-`kubectl get nodes`, then `terraform destroy` to completion.
-
-## 7. Kubernetes, Helm, Ingress and Argo CD (about 2:00)
-
-On screen: terminal, then browser.
-
-```bash
-kubectl get nodes
-kubectl get pods,svc,ingress,hpa -n pantrix
-helm list -n pantrix
-helm test pantrix -n pantrix
-curl -s http://pantrix.localtest.me/api/items/stats
-```
-
-Browser: `http://pantrix.localtest.me` (the app through the Ingress).
-
-Argo CD: `http://argocd.localtest.me`, application **pantrix-dev**: Synced and Healthy,
-tree view, then **History and rollback**. Show the GitOps flow live:
-
-```bash
-bash scripts/gitops/promote.sh   # commits the image SHA the Helm release runs to gitops/environments/dev/values.yaml, publishes it, waits for Argo CD
-```
-
-Narration: "Helm installs two replicas of each tier, the Ingress routes slash to the UI
-and slash api to FastAPI, and the HPA scales the backend from two to six pods under
-load. Argo CD reconciles the cluster to what Git says."
-
-## 8. Prometheus and Grafana (about 1:00)
-
-On screen: browser.
-
-- `http://prometheus.localtest.me/targets?search=pantrix-backend`: every backend pod **UP**.
-- `curl -s http://localhost:8000/metrics | head` in the terminal.
-- `http://grafana.localtest.me`, dashboard **Pantrix · API overview**, last 30 minutes,
-  with the traffic generator running: request rate, 5xx ratio, p95 latency, stock events.
-
-## 9. Troubleshooting and conclusion (about 1:30)
-
-On screen: terminal.
-
-```bash
-bash scripts/troubleshooting/run-drill.sh 2   # broken Service selector: no endpoints, then fixed
-bash scripts/troubleshooting/run-drill.sh 5   # bad release, still serving, helm rollback
-bash scripts/troubleshooting/run-drill.sh cleanup
-```
-
-Close on slide 16. Narration: "Every claim in this video has real output in
-docs/evidence. Thank you."
+Narration: "The VPC has two public and two private subnets in ap-south-1 with one NAT gateway; EKS 1.35 runs one
+managed node group in the private subnets. I planned and applied it against a real account. The first apply
+stopped at the node group because the account is on the Free plan and rejects t3.medium; with an eligible type
+it created two ready nodes. Then I destroyed everything and checked that nothing was left."
 
 ---
 
-## GitHub capture checklist (second computer)
+## GitHub capture checklist
 
-Record or screenshot each item from the real repository after the push. Save
+Each item below was captured from the real repository. Save
 screenshots under `docs/evidence/` with these names and update
 `docs/evidence/EVIDENCE-MANIFEST.md`.
 

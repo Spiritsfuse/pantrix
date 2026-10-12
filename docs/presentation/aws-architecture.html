@@ -19,7 +19,7 @@
 <body>
 <h1>Pantrix on AWS · design from terraform/</h1>
 <div class="sub">terraform-aws-modules/vpc ~&gt; 6.7 and eks ~&gt; 21.29 · AWS provider ~&gt; 6.0 · region ap-south-1</div>
-<div class="warn">Design from terraform/ - not provisioned in a real AWS account (no credentials); exercised against the Moto emulator</div>
+<div class="warn" style="background:#eef3dc;border-color:#5f7330;color:#3f4d1f">Design from terraform/ - applied to a real AWS account (ap-south-1), verified in the Console, then destroyed</div>
 
 <!-- region / VPC -->
 <div class="frame" style="left:48px;top:215px;width:1310px;height:800px"><div class="label">Region ap-south-1</div></div>
@@ -38,7 +38,7 @@
 </div>
 <div class="subnet priv" style="left:135px;top:640px;width:530px;height:290px">
   <div class="n">private subnet</div><div class="c">10.42.48.0/20 · tag kubernetes.io/role/internal-elb</div>
-  <div class="node">EKS node · t3.medium</div>
+  <div class="node">EKS node · m7i-flex.large</div>
   <div class="d" style="font-size:15px;color:var(--ink2);margin-top:12px">managed node group "general": min 1 · desired 2 · max 3<br>AL2023 AMI · 20 GB disk · IMDSv2 required, hop limit 1<br>egress to the internet only through the NAT gateway</div>
 </div>
 
@@ -50,7 +50,7 @@
 </div>
 <div class="subnet priv" style="left:745px;top:640px;width:530px;height:290px">
   <div class="n">private subnet</div><div class="c">10.42.64.0/20 · tag kubernetes.io/role/internal-elb</div>
-  <div class="node">EKS node · t3.medium</div>
+  <div class="node">EKS node · m7i-flex.large</div>
   <div class="d" style="font-size:15px;color:var(--ink2);margin-top:12px">second node of the same node group<br>(spread across both AZs)</div>
 </div>
 

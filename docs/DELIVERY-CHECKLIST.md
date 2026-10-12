@@ -7,7 +7,6 @@ the evidence, and its status.
 | Status | Meaning |
 |---|---|
 | **VERIFIED** | Run and checked on 12–13 October 2026 |
-| **PENDING EXTERNAL ACCESS** | Needs valid AWS credentials plus cost approval |
 | **NOT COMPLETE** | Work still to do |
 
 A file existing is not counted as proof. Each VERIFIED row has real output behind it, listed in
@@ -92,14 +91,15 @@ validate) were run on this computer; see module , module , module , module  
 |---|---|---|---|---|
 | `terraform/` valid HCL | `versions.tf`, `variables.tf`, `main.tf`, `outputs.tf` | `terraform validate` | `terraform-init-validate.png` | VERIFIED |
 | `terraform init` succeeds | — | `terraform init` | `terraform-init-validate.png` | VERIFIED |
-| `terraform plan` non-empty, no errors | — | `terraform plan` | `terraform-plan-blocked.png` (real AWS: invalid credentials); `terraform-plan-emulator.png` (62 to add against the Moto emulator) | Real plan: PENDING EXTERNAL ACCESS. Emulator plan: VERIFIED |
-| VPC with ≥2 public subnets provisioned | `module.vpc` (2 public + 2 private subnets) | AWS Console | — | PENDING EXTERNAL ACCESS (emulator apply created them in Moto only) |
-| EKS cluster with ≥1 worker node group | `module.eks` + `general` node group | AWS Console, `kubectl get nodes` | — | PENDING EXTERNAL ACCESS |
-| `terraform destroy` clean | — | `terraform destroy` | `terraform-destroy-emulator.png` (emulator only) | Real: PENDING EXTERNAL ACCESS |
+| `terraform plan` non-empty, no errors | — | `terraform plan` | `terraform-plan-aws.png` (62 to add, real AWS) | VERIFIED |
+| VPC with ≥2 public subnets provisioned | `module.vpc` (2 public + 2 private subnets) | AWS Console | `aws-vpc.png`, `aws-subnets.png` | VERIFIED (real AWS) |
+| EKS cluster with ≥1 worker node group | `module.eks` + `general` node group | AWS Console, `kubectl get nodes` | `aws-eks-cluster.png`, `aws-eks-node-group.png`, `aws-eks-nodes.png`, `eks-nodes-aws.png` | VERIFIED (real AWS, 2 nodes Ready) |
+| `terraform destroy` clean | — | `terraform destroy` | `terraform-destroy-aws.png` | VERIFIED (62 destroyed, nothing left) |
 | `terraform.tfvars.example`, no credentials committed | `terraform/terraform.tfvars.example`; Gitleaks clean | `gitleaks git` | `gitleaks-history-scan.png` | VERIFIED |
 
-**Blocker:** `aws sts get-caller-identity` on the first computer returns `InvalidClientTokenId`.
-Provisioning real EKS costs about $0.25–0.30 per hour and requires the owner's explicit approval.
+The first real apply stopped at the node group: the AWS account is on the Free plan and rejected `t3.medium`
+(`terraform-apply-aws-attempt1.png`). With `m7i-flex.large` the second apply succeeded. The emulator
+runs (`terraform-plan-emulator.png`, `terraform-destroy-emulator.png`) remain as an offline check.
 Runbook: [`runbooks/aws-provision-and-teardown.md`](runbooks/aws-provision-and-teardown.md).
 
 ## Kubernetes and Helm
@@ -115,8 +115,8 @@ Runbook: [`runbooks/aws-provision-and-teardown.md`](runbooks/aws-provision-and-t
 | All pods Running | — | `kubectl get pods -n pantrix` | `kubernetes-pods.png` | VERIFIED |
 | HPA (README requirement) | `templates/hpa.yaml`, metrics-server | load test | `hpa-scaling.png` (2→6) | VERIFIED |
 
-The cluster is a local kind cluster, which the course permits for the demo. Deploying the same chart on
-EKS is PENDING real AWS access.
+The application cluster is a local kind cluster. The EKS stack was provisioned for infrastructure evidence and
+destroyed; the chart was not deployed to it.
 
 ## Observability
 
@@ -132,7 +132,7 @@ EKS is PENDING real AWS access.
 | Criterion | Implementation | Evidence | Status |
 |---|---|---|---|
 | `README.md` with full technical documentation | root `README.md` | — | VERIFIED |
-| Video in the repo (`demo/`) | `demo/presentation.mp4` | — | Non-GitHub parts VERIFIED; the CI/CD-on-GitHub segment is a labelled placeholder, PENDING the second computer |
+| Video in the repo (`demo/`) | `demo/presentation.mp4` | — | VERIFIED; the CI/CD and Terraform segments show the real GitHub run and the real AWS session |
 | PPT deck committed (≥8 slides) | `demo/presentation.pptx` (16 slides), `demo/presentation.pdf` | — | VERIFIED |
 
 Video order:
@@ -142,19 +142,18 @@ Video order:
 | Slides first | VERIFIED |
 | Codebase | VERIFIED |
 | CI/CD — push and pipeline end to end | VERIFIED (segment recorded from the real run) |
-| Terraform plan + AWS Console (VPC + EKS) | Plan blocker and emulator shown; Console PENDING EXTERNAL ACCESS |
+| Terraform plan + AWS Console (VPC + EKS) | VERIFIED (real plan, apply, Console, destroy) |
 | Argo CD synced app + GitOps flow | VERIFIED |
 | Kubernetes pods / services / ingress | VERIFIED |
 | Prometheus targets UP | VERIFIED |
 | Grafana live dashboard | VERIFIED |
 
-## Honest summary
+## Summary
 
-- **Done and verified on the first computer:** module , module , module , module  (locally), module , module , the module  local parts,
-  the module  configuration, the module  code/validation/emulator runs, the deck, and the video for every
-  non-GitHub segment.
-- **Needs the GitHub repository (second computer):** the push, the Actions run, GHCR packages with SHA
-  tags, the GitHub commit history, and the CI segment of the video.
-- **Needs real AWS access and the owner's cost approval:** a real `plan`/`apply`, AWS Console
-  screenshots of the VPC and EKS, and a real `destroy`. Without them, the module  provisioning criteria
-  (VPC 3, EKS 4, destroy 2, and arguably plan 2) remain at risk.
+- **Verified locally:** application, tests, Docker, Compose, Helm on kind with Ingress and HPA, Argo CD,
+  Prometheus and Grafana, troubleshooting drills, Trivy, Gitleaks and SBOMs.
+- **Verified on GitHub:** the public repository, a green `ci-cd` run (pytest, frontend build, both Trivy
+  scans, GHCR push with commit-SHA tags, provenance, kind deploy), the promotion commit, and the GHCR packages.
+- **Verified on AWS (ap-south-1):** a real plan, apply, Console proof of the VPC, subnets, EKS cluster and node
+  group, `kubectl get nodes`, and a destroy that left nothing behind.
+- **Deliverables:** `README.md`, `demo/presentation.mp4`, `demo/presentation.pptx` and `demo/presentation.pdf`.
