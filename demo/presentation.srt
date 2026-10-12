@@ -1,0 +1,524 @@
+1
+00:00:00,500 --> 00:00:01,009
+Pantrix.
+
+2
+00:00:01,009 --> 00:00:04,570
+A DevSecOps capstone project by Dhruv Sharma.
+
+3
+00:00:04,570 --> 00:00:11,183
+This video starts with the presentation and then walks through the running system.
+
+4
+00:00:12,583 --> 00:00:15,512
+Part one: the presentation.
+
+5
+00:00:16,916 --> 00:00:22,142
+Pantrix helps community food banks track donated stock and its expiry dates, so
+
+6
+00:00:22,142 --> 00:00:24,955
+food is handed out before it spoils.
+
+7
+00:00:24,955 --> 00:00:30,180
+It is built as a complete delivery pipeline, from a developer laptop to
+
+8
+00:00:30,180 --> 00:00:31,788
+a monitored Kubernetes cluster.
+
+9
+00:00:33,188 --> 00:00:39,624
+Volunteers log donations, see what expires first, record hand-outs to partner organisations, and
+
+10
+00:00:39,624 --> 00:00:42,594
+the stock count goes down automatically.
+
+11
+00:00:42,594 --> 00:00:49,030
+Expired stock cannot be handed out, and over-asking is rejected by the API.
+
+12
+00:00:50,430 --> 00:00:56,217
+These screenshots come from a real create, edit, hand-out and delete flow, captured
+
+13
+00:00:56,217 --> 00:01:01,113
+against the running application, on desktop and on a phone-sized screen.
+
+14
+00:01:02,513 --> 00:01:10,490
+The stack follows the course reference: React with Vite, FastAPI, PostgreSQL with SQLAlchemy
+
+15
+00:01:10,490 --> 00:01:18,467
+and Alembic, pytest, Docker, GitHub Actions, Trivy, the GitHub Container Registry, Terraform for
+
+16
+00:01:18,467 --> 00:01:23,990
+AWS, Kubernetes with Helm, Argo CD, Prometheus and Grafana.
+
+17
+00:01:25,389 --> 00:01:28,191
+Traffic enters through the ingress controller.
+
+18
+00:01:28,191 --> 00:01:34,262
+Slash goes to the frontend Nginx pods, slash API goes to the FastAPI
+
+19
+00:01:34,262 --> 00:01:36,596
+pods, which talk to PostgreSQL.
+
+20
+00:01:36,596 --> 00:01:42,667
+Prometheus scrapes every backend pod, Grafana shows the dashboard, and Argo CD keeps
+
+21
+00:01:42,667 --> 00:01:45,935
+a second environment in sync with Git.
+
+22
+00:01:47,335 --> 00:01:54,190
+Three tables, created by an Alembic migration: donors, stock items and distributions.
+
+23
+00:01:54,190 --> 00:02:01,617
+The API offers full create, read, update and delete for items and donors,
+
+24
+00:02:01,617 --> 00:02:06,187
+plus statistics, distributions, health, readiness and metrics endpoints.
+
+25
+00:02:07,602 --> 00:02:16,003
+Thirty-one backend tests reach ninety-six percent coverage against a throw-away database built by the real migrations.
+
+26
+00:02:16,003 --> 00:02:21,253
+Ten frontend tests cover rendering, API failures and form validation.
+
+27
+00:02:21,253 --> 00:02:26,503
+Ruff, Bandit, pip-audit, ESLint and npm audit run as well.
+
+28
+00:02:27,903 --> 00:02:30,007
+Both images are multi-stage builds.
+
+29
+00:02:30,007 --> 00:02:35,476
+The backend runs as user ten thousand and one, the frontend as user
+
+30
+00:02:35,476 --> 00:02:38,842
+one hundred and one on an unprivileged Nginx.
+
+31
+00:02:38,842 --> 00:02:45,574
+Docker Compose starts PostgreSQL, the API and the UI with health checks and a persistent volume.
+
+32
+00:02:46,974 --> 00:02:50,409
+The pipeline runs on every push to main.
+
+33
+00:02:50,409 --> 00:02:54,273
+Tests, linting, secret scanning and infrastructure checks run first.
+
+34
+00:02:54,273 --> 00:02:59,855
+Only then are both images built, checked for a non-root user, scanned by
+
+35
+00:02:59,855 --> 00:03:05,437
+Trivy, and pushed to the GitHub Container Registry tagged with the commit SHA.
+
+36
+00:03:05,437 --> 00:03:10,160
+The first real GitHub run happens once the repository is pushed.
+
+37
+00:03:11,574 --> 00:03:13,234
+Trivy found real problems.
+
+38
+00:03:13,234 --> 00:03:18,627
+The first backend image failed the gate with four fixable high severity vulnerabilities
+
+39
+00:03:18,627 --> 00:03:22,776
+in libraries vendored by pip, which the API never uses.
+
+40
+00:03:22,776 --> 00:03:29,415
+The fix removed pip from the runtime image, and the gate now passes without suppressing anything.
+
+41
+00:03:30,815 --> 00:03:35,995
+The Terraform describes a VPC with two public and two private subnets in
+
+42
+00:03:35,995 --> 00:03:40,776
+the Mumbai region and an EKS cluster with a managed node group.
+
+43
+00:03:40,776 --> 00:03:46,753
+It was not applied to a real AWS account, because no valid credentials were available.
+
+44
+00:03:46,753 --> 00:03:51,535
+Instead it was planned, applied and destroyed against the Moto AWS emulator.
+
+45
+00:03:51,535 --> 00:03:53,925
+A real apply is still pending.
+
+46
+00:03:55,325 --> 00:04:01,411
+Helm deploys two replicas of each tier with hardened pods, an Ingress, and autoscalers.
+
+47
+00:04:01,411 --> 00:04:07,932
+Under generated load, the horizontal pod autoscaler took the backend from two to six pods.
+
+48
+00:04:09,332 --> 00:04:11,705
+Building and deploying are separate.
+
+49
+00:04:11,705 --> 00:04:15,501
+Continuous integration only builds, scans and publishes images.
+
+50
+00:04:15,501 --> 00:04:21,671
+Deployment is a Git commit that changes the image tag, and Argo CD
+
+51
+00:04:21,671 --> 00:04:24,043
+reconciles the cluster to match.
+
+52
+00:04:25,443 --> 00:04:27,471
+FastAPI exposes Prometheus metrics.
+
+53
+00:04:27,471 --> 00:04:34,062
+Every backend pod is a target in state up, and the Grafana dashboard
+
+54
+00:04:34,062 --> 00:04:40,145
+shows request rate, error ratio, latency percentiles, business events and pod resources.
+
+55
+00:04:41,545 --> 00:04:47,069
+Five troubleshooting drills were scripted and run: a missing image tag, a Service
+
+56
+00:04:47,069 --> 00:04:52,593
+with no endpoints, a readiness failure, a migration failure, and a bad release
+
+57
+00:04:52,593 --> 00:04:55,142
+that was rolled back without downtime.
+
+58
+00:04:55,142 --> 00:05:00,241
+One drill exposed a real Nginx startup bug, which was then fixed.
+
+59
+00:05:01,645 --> 00:05:06,660
+Two items are pending external access: the first GitHub Actions run with the
+
+60
+00:05:06,660 --> 00:05:09,361
+registry push, and a real AWS apply.
+
+61
+00:05:09,361 --> 00:05:15,147
+Everything else in this video is backed by real output in the docs evidence folder.
+
+62
+00:05:16,547 --> 00:05:19,761
+Part two: the working application.
+
+63
+00:05:21,161 --> 00:05:25,246
+This is the live application through the Kubernetes Ingress.
+
+64
+00:05:25,246 --> 00:05:27,969
+The shelf is sorted by expiry.
+
+65
+00:05:27,969 --> 00:05:34,776
+A new donation is logged, edited, partly handed out to a shelter, and finally deleted.
+
+66
+00:05:34,776 --> 00:05:40,676
+Every action calls the FastAPI backend, and the data is stored in PostgreSQL.
+
+67
+00:05:40,676 --> 00:05:44,307
+The layout also adapts to a phone-sized screen.
+
+68
+00:06:04,561 --> 00:06:07,907
+The same API is documented in Swagger.
+
+69
+00:06:07,907 --> 00:06:14,599
+Here the statistics endpoint is executed live, followed by the raw Prometheus metrics endpoint.
+
+70
+00:06:20,361 --> 00:06:23,195
+Part three: the codebase.
+
+71
+00:06:24,595 --> 00:06:33,348
+The repository holds the backend, the frontend, the Helm chart, Kubernetes manifests, Terraform,
+
+72
+00:06:33,348 --> 00:06:42,102
+GitOps desired state, monitoring, troubleshooting drills, scripts, workflows, documentation and the demo material.
+
+73
+00:06:43,502 --> 00:06:49,305
+The distribution endpoint locks the stock row, rejects expired stock and over-asking with
+
+74
+00:06:49,305 --> 00:06:53,769
+a conflict response, and decrements the quantity in one transaction.
+
+75
+00:06:55,169 --> 00:06:57,558
+Liveness never touches the database.
+
+76
+00:06:57,558 --> 00:07:04,726
+Readiness does, so a pod without a database stops receiving traffic but is not restarted.
+
+77
+00:07:04,726 --> 00:07:08,071
+Prometheus instrumentation is added in one line.
+
+78
+00:07:09,471 --> 00:07:14,753
+In the Helm chart, migrations run in an init container before the API
+
+79
+00:07:14,753 --> 00:07:18,409
+starts, with an advisory lock so replicas never race.
+
+80
+00:07:18,409 --> 00:07:22,878
+Every container runs as non-root with a read-only root file system.
+
+81
+00:07:24,278 --> 00:07:27,247
+Part four: tests and Docker.
+
+82
+00:07:28,647 --> 00:07:32,611
+Pytest runs thirty-one tests, all passing.
+
+83
+00:07:34,014 --> 00:07:41,637
+The frontend passes ESLint, Prettier, ten Vitest tests, npm audit, and the production build.
+
+84
+00:07:43,047 --> 00:07:48,674
+Docker Compose builds both images and waits until PostgreSQL, the backend and the
+
+85
+00:07:48,674 --> 00:07:50,405
+frontend are all healthy.
+
+86
+00:07:51,814 --> 00:07:58,847
+Both containers run as non-root users, confirmed from the image configuration and from the running process.
+
+87
+00:08:00,247 --> 00:08:04,306
+Part five: continuous integration and delivery.
+
+88
+00:08:05,714 --> 00:08:09,083
+This is the real job graph of the workflow.
+
+89
+00:08:09,083 --> 00:08:13,950
+Images are only pushed after every gate passes, and they are tagged with
+
+90
+00:08:13,950 --> 00:08:15,821
+the commit SHA, never latest.
+
+91
+00:08:17,222 --> 00:08:21,942
+The workflow files were validated with actionlint, with no problems found.
+
+92
+00:08:21,942 --> 00:08:25,375
+Every action is pinned to a commit SHA.
+
+93
+00:08:26,788 --> 00:08:32,009
+The live pipeline run and the published packages will be recorded once the
+
+94
+00:08:32,009 --> 00:08:33,615
+repository is on GitHub.
+
+95
+00:08:33,615 --> 00:08:37,631
+No pipeline result is shown here, because none exists yet.
+
+96
+00:08:39,031 --> 00:08:42,710
+Part six: Terraform and AWS.
+
+97
+00:08:44,110 --> 00:08:47,605
+This is the design described by the Terraform code.
+
+98
+00:08:47,605 --> 00:08:51,489
+It has not been provisioned in a real AWS account.
+
+99
+00:08:52,888 --> 00:08:56,567
+Terraform initialises and validates successfully.
+
+100
+00:08:57,967 --> 00:09:04,566
+A plan against real AWS stops immediately, because the credentials on this machine are invalid.
+
+101
+00:09:04,566 --> 00:09:06,765
+That is the real blocker.
+
+102
+00:09:08,167 --> 00:09:13,991
+Against the Moto AWS emulator, the plan resolves sixty-two resources.
+
+103
+00:09:15,401 --> 00:09:22,001
+In the emulator, apply created fifty-four of them, including the VPC, subnets, NAT
+
+104
+00:09:22,001 --> 00:09:29,110
+gateway, EKS cluster and node group, before reaching APIs the emulator does not implement.
+
+105
+00:09:29,110 --> 00:09:31,648
+Destroy then removed all fifty-four.
+
+106
+00:09:31,648 --> 00:09:34,187
+Nothing was created in AWS.
+
+107
+00:09:35,601 --> 00:09:40,889
+Part seven: Kubernetes, Helm, the Ingress and Argo CD.
+
+108
+00:09:42,301 --> 00:09:49,349
+The Helm release runs two backend pods, two frontend pods and PostgreSQL, all running.
+
+109
+00:09:50,749 --> 00:09:57,667
+ClusterIP services, the Ingress for pantrix dot localtest dot me, and the autoscalers.
+
+110
+00:09:59,082 --> 00:10:04,432
+Helm shows the release history, including a failed bad release and its rollback,
+
+111
+00:10:04,432 --> 00:10:06,490
+and the Helm test passes.
+
+112
+00:10:07,890 --> 00:10:12,826
+Under load, CPU reached almost four hundred percent of the target and the
+
+113
+00:10:12,826 --> 00:10:16,243
+autoscaler scaled the backend from two to six pods.
+
+114
+00:10:17,657 --> 00:10:22,373
+Argo CD shows the dev application synced and healthy, deployed from a Git
+
+115
+00:10:22,373 --> 00:10:24,550
+commit that sets the image SHA.
+
+116
+00:10:37,990 --> 00:10:43,084
+Every promotion is a commit to the GitOps values file, and Argo CD
+
+117
+00:10:43,084 --> 00:10:45,043
+reconciles the cluster to it.
+
+118
+00:10:46,457 --> 00:10:48,991
+Part eight: monitoring.
+
+119
+00:10:50,391 --> 00:10:55,723
+Prometheus shows every backend pod as a target in state up, a live
+
+120
+00:10:55,723 --> 00:10:58,594
+request-rate query, and the Pantrix alert rules.
+
+121
+00:11:04,871 --> 00:11:10,986
+The Grafana dashboard updates live with request rate, error ratio, latency percentiles, stock
+
+122
+00:11:10,986 --> 00:11:13,809
+events, and pod CPU and memory.
+
+123
+00:11:27,911 --> 00:11:30,745
+Part nine: troubleshooting.
+
+124
+00:11:32,145 --> 00:11:38,137
+A Service whose selector matches no pods has no endpoints, so requests are refused.
+
+125
+00:11:38,137 --> 00:11:44,557
+Comparing the selector with the pod labels finds the cause, and correcting it restores traffic.
+
+126
+00:11:45,957 --> 00:11:51,293
+A release with a missing image fails, but the old pods keep serving,
+
+127
+00:11:51,293 --> 00:11:53,345
+so every request still succeeds.
+
+128
+00:11:53,345 --> 00:11:56,629
+Helm rollback returns to the last good revision.
+
+129
+00:11:58,030 --> 00:11:59,344
+That is Pantrix.
+
+130
+00:11:59,344 --> 00:12:04,161
+Real output for every claim is in the docs evidence folder.
+
+131
+00:12:04,161 --> 00:12:05,913
+Thank you for watching.
+
