@@ -30,9 +30,10 @@ spec:
       {{- include "pantrix.selector" (list . "postgres") | nindent 6 }}
   template:
     metadata:
+      # No version label here: an app release must not restart the database.
       labels:
-        {{- include "pantrix.labels" . | nindent 8 }}
         {{- include "pantrix.selector" (list . "postgres") | nindent 8 }}
+        app.kubernetes.io/part-of: pantrix
     spec:
       automountServiceAccountToken: false
       securityContext:
