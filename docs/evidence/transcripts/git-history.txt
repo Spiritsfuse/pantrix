@@ -1,5 +1,22 @@
 
 [1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ git log --oneline
+8e9f8fe Allow re-capturing the Gitleaks evidence on its own
+c7cbcd4 Ignore a Gitleaks false positive on an emulator security-group ID
+6b11c28 Write the README, the submission checklist and the evidence manifest
+91eb30a Add the 12-minute walkthrough video, captions and preview GIF
+5f47f3a Add the video pipeline: cards, code screens, narration and captions
+686cd75 Add the presentation: 16-slide deck, PDF, diagrams and demo script
+8caeb2c Explain the security controls, the Trivy policy and the Terraform workflow
+779d673 Document the decisions, runbooks and engineering notes
+15d06a7 Make local GitOps publishing reliable and promotions image-safe
+fe3174b Revert the promotion of 757b566 to dev
+bac4110 Promote 757b566 to the dev environment through GitOps
+757b566 Promote ad11066 to the dev environment through GitOps
+ad11066 Record the Terraform emulator plan, apply and destroy transcripts
+3be6cf0 Exercise the Terraform against a local AWS API emulator
+2941181 Capture evidence from the running system
+44f68e1 Add evidence tooling: transcript capture and terminal/browser renderers
+1c67137 Associate form labels with their controls explicitly
 ae29a59 Promote green main builds to the GitOps dev environment automatically
 82d36e6 Roll the drill back to the previous release, not the last superseded one
 ef04dee Promote 1bfb95a to the dev environment through GitOps
@@ -22,7 +39,7 @@ e73ab8a Cover the API with pytest against a migrated SQLite test database
 a127116 Add Pantrix FastAPI backend with donors, stock items and distributions
 
 [1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ git rev-list --count HEAD
-20
+37
 
 [1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ git branch --show-current
 main
@@ -32,9 +49,7 @@ main
 
 [1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ git status --short --branch
 ## main
-?? docs/
-?? scripts/evidence/
-?? security/
+ M docs/evidence/transcripts/git-history.txt
 
 [1;32mdhruv-sharma@pantrix[0m:[1;34m~/pantrix[0m$ git check-ignore -v .env NEXT_MACHINE_AGENT_PROMPT.md backend/.venv frontend/node_modules terraform/.terraform terraform/terraform.tfstate
 .gitignore:2:.env	.env
