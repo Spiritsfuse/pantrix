@@ -2,8 +2,8 @@
   "voice": "Microsoft David Desktop",
   "rate": 0,
   "segments": [
-    { "card": ["Pantrix", "DevSecOps project - Dhruv Sharma (@Spiritsfuse)", "Narration in this video is a synthesized voice reading the project script. Everything shown is real output from the project."], "seconds": 6,
-      "say": "Pantrix. A DevSecOps project by Dhruv Sharma. This video starts with the presentation and then walks through the running system." },
+    { "card": ["Pantrix", "DevSecOps capstone - Dhruv Sharma (@Spiritsfuse)", "Narration in this video is a synthesized voice reading the project script. Everything shown is real output from the project."], "seconds": 6,
+      "say": "Pantrix. A DevSecOps capstone project by Dhruv Sharma. This video starts with the presentation and then walks through the running system." },
     { "card": ["1 · Presentation", "Slides from demo/presentation.pptx"], "seconds": 3, "say": "Part one: the presentation." },
     { "image": "demo/.work/slides/slide-01.png", "say": "Pantrix helps community food banks track donated stock and its expiry dates, so food is handed out before it spoils. It is built as a complete delivery pipeline, from a developer laptop to a monitored Kubernetes cluster." },
     { "image": "demo/.work/slides/slide-02.png", "say": "Volunteers log donations, see what expires first, record hand-outs to partner organisations, and the stock count goes down automatically. Expired stock cannot be handed out, and over-asking is rejected by the API." },
