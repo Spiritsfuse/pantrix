@@ -3,7 +3,7 @@
 # (done by .github/workflows/promote.yml or by hand). Never "latest".
 image:
   registry: ghcr.io/spiritsfuse
-  tag: "1bfb95a6ec5f39b57e346f86a648a259c0191ff0"
+  tag: "ad1106676e282c5aff465a34b8a940954077061e"
 postgres:
   # Argo CD renders charts without cluster access, so the chart cannot look up a
   # generated password; bootstrap-gitops.sh creates this Secret once instead.
