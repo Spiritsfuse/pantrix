@@ -7,12 +7,19 @@ Kubernetes cluster.**
 
 Built by **Dhruv Sharma** · GitHub [@Spiritsfuse](https://github.com/spiritsfuse)
 
+> ### ▶ Project demo
+> **Walkthrough video (14 min, with captions):** [`demo/presentation.mp4`](https://github.com/Spiritsfuse/pantrix/blob/main/demo/presentation.mp4) ·
+> **Slide deck:** [`demo/presentation.pptx`](https://github.com/Spiritsfuse/pantrix/blob/main/demo/presentation.pptx) ·
+> [`demo/presentation.pdf`](https://github.com/Spiritsfuse/pantrix/blob/main/demo/presentation.pdf)
+>
+> The video starts with the slides, then walks through the application, the codebase, CI/CD on GitHub, Terraform
+> and the AWS Console, Kubernetes, Argo CD, Prometheus and Grafana.
+
 ![Pantrix walkthrough](demo/preview.gif)
 
 | | |
 |---|---|
-| Video walkthrough | [`demo/presentation.mp4`](demo/presentation.mp4) (captions: [`demo/presentation.srt`](demo/presentation.srt)) |
-| Slides | [`demo/presentation.pptx`](demo/presentation.pptx) · [`demo/presentation.pdf`](demo/presentation.pdf) · [script](demo/DEMO-SCRIPT.md) |
+| Video and slides | Linked above · captions [`demo/presentation.srt`](demo/presentation.srt) · talk track [`demo/DEMO-SCRIPT.md`](demo/DEMO-SCRIPT.md) |
 | CI/CD | [green `ci-cd` run](https://github.com/Spiritsfuse/pantrix/actions/runs/38305646085) · packages [`pantrix-backend`](https://github.com/Spiritsfuse/pantrix/pkgs/container/pantrix-backend) and [`pantrix-frontend`](https://github.com/Spiritsfuse/pantrix/pkgs/container/pantrix-frontend) (public, commit-SHA tags) |
 | Delivery checklist | [`docs/DELIVERY-CHECKLIST.md`](docs/DELIVERY-CHECKLIST.md) |
 | Evidence | [`docs/evidence/EVIDENCE-MANIFEST.md`](docs/evidence/EVIDENCE-MANIFEST.md) (real output only) |
@@ -513,7 +520,7 @@ single node), 12–13 October 2026. Method and context: [`docs/engineering/measu
   from a cluster.
 - Alert rules are evaluated, but the laptop demo has no alert routing and Loki is not deployed.
 - kind's default CNI does not enforce NetworkPolicy, so the policy is declared but was not exercised.
-- The video narration is a synthesized voice reading the project script.
+- The video narration is a text-to-speech voice (Microsoft neural, `en-IN-PrabhatNeural`) reading the project script; captions are burned in.
 
 Full list: [`docs/engineering/known-limitations.md`](docs/engineering/known-limitations.md).
 
